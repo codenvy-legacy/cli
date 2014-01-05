@@ -39,6 +39,10 @@ public class CommandAuth implements CommandInterface {
 	private boolean help;
     public boolean getHelp() { return help; }
 
+    @Parameter(names = { "--configure" }, description = "Updates your User configuration file with parameter overrides")
+    private boolean configure;
+    public boolean getConfigure() { return configure; }
+
     @ParametersDelegate
 	private CLIAuthParameterDelegate delegate = new CLIAuthParameterDelegate();
 
@@ -54,12 +58,12 @@ public class CommandAuth implements CommandInterface {
     // Step 1: Check default configuration file in USER_HOME\.codenvy\config
     // Step 2: Check environment variables and use values to override.
     // Step 3: Check any parameters and use values to override.
-    public static CLICredentials getCredentials() {
+    public static CLICredentials getCredentials(String param_user, String param_pass, String param_token) {
     	CLICredentials cred = new CLICredentials();
 
-    	cred.setUser("None Set");
-    	cred.setPass("None Set");
-    	cred.setToken("None Set");
+    	cred.setUser(null);
+    	cred.setPass(null);
+    	cred.setToken(null);
 
     	// Check for existence of configuration file.
         File config = new File(SystemUtils.USER_HOME + "\\.codenvy\\config");
@@ -93,44 +97,82 @@ public class CommandAuth implements CommandInterface {
     	if (env_pass != null) cred.setPass(env_pass);
     	if (env_token != null) cred.setToken(env_token);
 
+        // Check for parameter overrides.
+        if (param_user != null) cred.setUser(param_user);
+        if (param_pass != null) cred.setPass(param_pass);
+        if (param_token != null) cred.setToken(param_token);
+
         return cred;
     } 
 
 
     public String getUsageLongDescription() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("INSERT STRING");
+        sb.append("Manages this client's local configuration for working with a remote Codenvy cloud.\n");
+        sb.append("The Codenvy CLI provides a number of configurable settings, and these settings can \n");
+        sb.append("specified in multiple ways.  Configuration items can be set in a configuration file, \n");
+        sb.append("in an environment variable, or a command line option.\n");
+        sb.append("\n");
+        sb.append("When a configuration property is specified in multiple ways, the precedence from\n");
+        sb.append("highest to lowest is: Command Line, Environment Variable, Configuration File.\n");
+        sb.append("\n");
+        sb.append("The configuration file is stored at YOUR_HOME\\.codenvy\\config. On a Windows system\n");
+        sb.append("this would look like C:\\Users\\USERNAME\\.codenvy\\config.  On a Linux system this\n");
+        sb.append("would look like ~/.codenvy/config.\n");
+        sb.append("\n");
+        sb.append("Use the --display option to see how the CLI is loading your properties.  Use the\n");
+        sb.append("--configure option to take the parameters loaded and write them to your config file.\n");
 		return sb.toString();
 	}
 
     public void execute() {
-    	if (display) {
-    		CLICredentials cred = getCredentials();
 
-    		System.out.println("[CODENVY_USER_NAME]: " + cred.getUser());
-    		System.out.println("[CODENVY_PASSWORD]:  " + cred.getPass());
-    		System.out.println("[CODENVY_API_TOKEN]: " + cred.getToken());
-    		System.exit(0);
+    	if (display | configure) {
+    		CLICredentials cred = getCredentials(delegate.getUser(),
+                                                 delegate.getPassword(),
+                                                 delegate.getToken());
 
+            if (configure) {
+                
+                // Check for existence of configuration file.
+                File config = new File(SystemUtils.USER_HOME + "\\.codenvy\\config");
+                
+                boolean is_writeable = false;
+
+                try {
+
+                    if (!config.exists()) {
+                        is_writeable = config.getParentFile().mkdirs() & config.createNewFile() & config.canWrite();
+                    }
+                    
+                    // We have a valid configuration file.
+                    if (is_writeable) {
+
+                        // We write the file in a Properties format.
+                        Properties prop = new Properties();
+                        prop.setProperty(USER_NAME_NAME, cred.getUser());
+                        prop.setProperty(PASSWORD_NAME, cred.getPass());
+                        prop.setProperty(TOKEN_NAME, cred.getToken());
+                        
+                       //write the properties file out
+                       prop.store(new FileOutputStream(config), null);
+
+                    }
+             
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            
+            }
+    		
+            if (display) {
+                System.out.println(USER_NAME_NAME + ": " + cred.getUser());
+                System.out.println(PASSWORD_NAME + ":  " + cred.getPass());
+                System.out.println(TOKEN_NAME + ":     " + cred.getToken());
+                System.exit(0);
+            }
     	}
 
-    	/*
-    	if (outputFile != null) {
-    		try {
-	    		outputFile.createNewFile();
-
-	    		FileWriter writer = new FileWriter(outputFile);
-
-	    		factory_params.writeJSONString(writer);
-
-	    		writer.flush();
-	    		writer.close();
-
-	    	} catch (java.io.IOException e) {
-	    		e.printStackTrace();
-	    	}
-		} 
-		*/
     }
 
 }

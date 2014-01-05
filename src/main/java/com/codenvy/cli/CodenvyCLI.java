@@ -101,7 +101,18 @@ public class CodenvyCLI
  	    		break;
  	    	}
 
- 	    	case "auth": analyzeAndExecuteCommand(auth, jc);
+ 	    	case "auth": {
+
+                // For this command, if no parameters, then diplay Usage.  
+                // We should probably set the parameter to true as an alternative way.
+                if (args.length == 1) {
+                    showUsage(jc, auth);
+                } else {
+                    analyzeAndExecuteCommand(auth, jc);
+                }
+
+                break;
+            }
  	    }
      }
 
