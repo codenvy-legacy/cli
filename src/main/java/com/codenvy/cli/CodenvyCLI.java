@@ -29,6 +29,7 @@ public class CodenvyCLI
         CommandAuth auth = new CommandAuth();
 
         CommandRemoteProjectFactory remote_project_factory = new CommandRemoteProjectFactory();
+        CommandRemoteProjectInit remote_project_init = new CommandRemoteProjectInit();
         CommandRemoteTmpWorkspaceCreate remote_tmp_workspace_create = new CommandRemoteTmpWorkspaceCreate();
         CommandRemoteWorkspaceList remote_workspace_list = new CommandRemoteWorkspaceList();
 
@@ -37,6 +38,7 @@ public class CodenvyCLI
         jc.addCommand("remote", remote);
 
         jc.getCommands().get("remote").addCommand("proj:factory", remote_project_factory);
+        jc.getCommands().get("remote").addCommand("proj:init", remote_project_init);
         jc.getCommands().get("remote").addCommand("ws:list", remote_workspace_list);
         jc.getCommands().get("remote").addCommand("tmpws:create", remote_tmp_workspace_create);
 
@@ -94,6 +96,7 @@ public class CodenvyCLI
  	    		// We only get here if proper 2nd command exists.
  	    		switch (jc.getCommands().get("remote").getParsedCommand()) {
  	    			case "proj:factory": analyzeAndExecuteCommand(remote_project_factory, jc); break;
+                    case "proj:init": analyzeAndExecuteCommand(remote_project_init, jc); break;
  	    			case "ws:list": analyzeAndExecuteCommand(remote_workspace_list, jc); break;
  	    			case "tmpws:create": analyzeAndExecuteCommand(remote_tmp_workspace_create, jc); break;
  	    		}

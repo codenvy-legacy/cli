@@ -212,6 +212,8 @@ public class CommandRemoteProjectFactory implements CommandInterface {
     	 */ 
     	if (outputFile != null) {
     		try {
+
+    			// Likely will throw an exception if file you specified is in non-existant directory
 	    		outputFile.createNewFile();
 
 	    		FileWriter writer = new FileWriter(outputFile);

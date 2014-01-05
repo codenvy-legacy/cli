@@ -41,7 +41,7 @@ public class CodenvyCLIParameters implements CommandInterface {
     public boolean getVersion() { return version; }
 
     public String getUsageLongDescription() {
-    	return("This is the Codenvy CLI.  You can use this CLI to either interact with the local system or execute remote commands against a Codenvy cloud instance.  For more information on this CLI see http://docs.codenvy.com/cli.");
+    	return("This is the Codenvy CLI.  You can either interact with the local system or execute remote commands against a Codenvy cloud instance.  For more information see http://docs.codenvy.com/cli.");
     }
 
     public void execute() {}
