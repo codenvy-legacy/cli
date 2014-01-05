@@ -36,9 +36,9 @@ public class CodenvyCLI
         jc.addCommand("auth", auth);
         jc.addCommand("remote", remote);
 
-        jc.getCommands().get("remote").addCommand("project_factory", remote_project_factory);
-        jc.getCommands().get("remote").addCommand("workspace_list", remote_workspace_list);
-        jc.getCommands().get("remote").addCommand("tmp_workspace_create", remote_tmp_workspace_create);
+        jc.getCommands().get("remote").addCommand("proj:factory", remote_project_factory);
+        jc.getCommands().get("remote").addCommand("ws:list", remote_workspace_list);
+        jc.getCommands().get("remote").addCommand("tmpws:create", remote_tmp_workspace_create);
 
         // Do the parse of the command line parameters.
         try {
@@ -93,9 +93,9 @@ public class CodenvyCLI
 
  	    		// We only get here if proper 2nd command exists.
  	    		switch (jc.getCommands().get("remote").getParsedCommand()) {
- 	    			case "project_factory": analyzeAndExecuteCommand(remote_project_factory, jc); break;
- 	    			case "workspace_list": analyzeAndExecuteCommand(remote_workspace_list, jc); break;
- 	    			case "tmp_workspace_create": analyzeAndExecuteCommand(remote_tmp_workspace_create, jc); break;
+ 	    			case "proj:factory": analyzeAndExecuteCommand(remote_project_factory, jc); break;
+ 	    			case "ws:list": analyzeAndExecuteCommand(remote_workspace_list, jc); break;
+ 	    			case "tmpws:create": analyzeAndExecuteCommand(remote_tmp_workspace_create, jc); break;
  	    		}
  	    	
  	    		break;
@@ -233,10 +233,19 @@ public class CodenvyCLI
      }
 
      private static void showPrintVersion() {
+        System.out.println(" _____           _                       ");
+        System.out.println("/  __ \\         | |                      ");
+        System.out.println("| /  \\/ ___   __| | ___ _ ____   ___   _ ");
+        System.out.println("| |    / _ \\ / _` |/ _ \\ '_ \\ \\ / / | | |");
+        System.out.println("| \\__/\\ (_) | (_| |  __/ | | \\ V /| |_| |");
+        System.out.println(" \\____/\\___/ \\__,_|\\___|_| |_|\\_/  \\__, |");
+        System.out.println("                                    __/ |");
+        System.out.println("                                   |___/ ");
      	System.out.println(CLI_VERSION);
      	System.out.println(SystemUtils.OS_NAME);
      	System.out.println(SystemUtils.OS_ARCH);
      	System.out.println(SystemUtils.OS_VERSION);
+        System.out.println(SystemUtils.USER_HOME);
 
      	System.exit(0);
      }

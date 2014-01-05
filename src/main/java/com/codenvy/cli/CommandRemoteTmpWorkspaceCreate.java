@@ -42,7 +42,7 @@ import com.codenvy.commons.lang.IoUtil;
 public class CommandRemoteTmpWorkspaceCreate implements CommandInterface {
 
 	String protocol = "https";
-	String host = "api.github.com";
+	String host = "codenvy.com";
 	int port = -1;
 
     @Parameter(names = { "-h", "--help" }, description = "Prints this help")
@@ -59,7 +59,7 @@ public class CommandRemoteTmpWorkspaceCreate implements CommandInterface {
 
         try {
 
-            conn = (HttpURLConnection)new URL(protocol, host, port, "/users/tylerjewell").openConnection();
+            conn = (HttpURLConnection)new URL(protocol, host, port, "/api/factory").openConnection();
             conn.setRequestMethod("GET");
             conn.setDoOutput(true);
             conn.setConnectTimeout(5000);
