@@ -20,8 +20,19 @@ package com.codenvy.cli;
 import com.beust.jcommander.*;
 import com.beust.jcommander.converters.*;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.util.List;
 import java.util.ArrayList;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.*;
+
+import com.codenvy.commons.lang.IoUtil;
 
 /**
  * Set of parameters and help for 'codenvy remote tmp_workspace_create' command
@@ -29,6 +40,10 @@ import java.util.ArrayList;
  */ 
 @Parameters(commandDescription = "Creates a new temporary developer environment from valid Factory URL")
 public class CommandRemoteTmpWorkspaceCreate implements CommandInterface {
+
+	String protocol = "https";
+	String host = "api.github.com";
+	int port = -1;
 
     @Parameter(names = { "-h", "--help" }, description = "Prints this help")
 	private boolean help;
@@ -40,6 +55,41 @@ public class CommandRemoteTmpWorkspaceCreate implements CommandInterface {
 
     public void execute() {
     	System.out.println("not yet implemented");
+
+    	HttpURLConnection conn = null;
+
+        try {
+
+            conn = (HttpURLConnection)new URL(protocol, host, port, "/users/tylerjewell").openConnection();
+            conn.setRequestMethod("GET");
+            conn.setDoOutput(true);
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
+            conn.setInstanceFollowRedirects(false);
+
+            int responseCode = conn.getResponseCode();
+            System.out.println(responseCode);
+
+            if (responseCode / 100 != 2) {
+                InputStream errorStream = conn.getErrorStream();
+                String message = errorStream != null ? IoUtil.readAndCloseQuietly(errorStream) : "";
+                System.out.println(message);
+
+            }
+
+            InputStreamReader in = new InputStreamReader((InputStream) conn.getInputStream());
+			JSONParser parser = new JSONParser();
+   			JSONObject jsonObject = (JSONObject) parser.parse(in);
+   			System.out.println(jsonObject.toString());
+
+        } catch (IOException | ParseException e ) {
+            System.out.println(e.getLocalizedMessage());
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+
     }
 }
 

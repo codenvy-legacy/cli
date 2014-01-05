@@ -20,6 +20,11 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+     <parent>
+        <artifactId>maven-parent-pom</artifactId>
+        <groupId>com.codenvy</groupId>
+        <version>3.0.1</version>
+    </parent>
   <groupId>com.codenvy.cli</groupId>
   <artifactId>codenvy-cli</artifactId>
   <packaging>jar</packaging>
@@ -30,6 +35,7 @@
   <properties>
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
+    <codenvy-commons.version>0.12.0-SNAPSHOT</codenvy-commons.version>
   </properties>
   
   <dependencies>
@@ -58,6 +64,11 @@
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
         <version>20070829</version>
+      </dependency>
+      <dependency>
+        <groupId>com.codenvy.commons</groupId>
+        <artifactId>codenvy-commons-lang</artifactId>
+        <version>${codenvy-commons.version}</version>
       </dependency>
   </dependencies>
     <build>
