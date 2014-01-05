@@ -163,7 +163,11 @@ public class CodenvyCLI
      	sb.append("[<args>]");
      	sb.append("\n\n");
     
-       	// Display the available arguments for this command.
+        // Display the available arguments for this command.
+        // Step 1: Get the right command object.
+        // Step 2: Get a List of all the parameters for this object.
+        // Step 3: Sort the list alphabetically by name.
+        // Step 4: List the parameters in pretty print format.
      	sb.append("Available arguments:\n");
 
      	JCommander command = jc;
@@ -174,8 +178,16 @@ public class CodenvyCLI
      	if (level == 2)
      		command = map.get(parsedCommand).getCommands().get(subParsedCommand);
 
-     	// TODO: Would be nice to sort the list by alphabet.
      	List<ParameterDescription> list = command.getParameters();
+
+        java.util.Collections.sort(list,
+                                   new Comparator<ParameterDescription>() {
+                                       public int compare(ParameterDescription p1, ParameterDescription p2) {
+                                            int i = p1.getLongestName().compareTo(p2.getLongestName());
+                                            return i; 
+                                       }
+                                   });
+
      	for (ParameterDescription e : list) {
      		sb.append("   " + e.getNames());
 

@@ -54,7 +54,6 @@ public class CommandRemoteTmpWorkspaceCreate implements CommandInterface {
 	}
 
     public void execute() {
-    	System.out.println("not yet implemented");
 
     	HttpURLConnection conn = null;
 
