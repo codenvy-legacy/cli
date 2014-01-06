@@ -34,7 +34,7 @@ import java.util.*;
  * Set of codenvy remote proj:init command and parameters.
  *
  */ 
-@Parameters(separators = " ", commandDescription = "Initializes a new Codenvy project by creating .c5y file.")
+@Parameters(separators = " ", commandDescription = "Initializes a new Codenvy project by creating .c5y file")
 public class CommandRemoteProjectInit implements CommandInterface {
 
     @Parameter(names = { "-h", "--help" }, description = "Prints this help")
