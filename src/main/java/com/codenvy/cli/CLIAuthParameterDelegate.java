@@ -37,5 +37,9 @@ public class CLIAuthParameterDelegate {
 	private String token;
     public String getToken() { return token; }
 
+    @Parameter(names = { "--profile" }, description = "Property configuration profile to use")
+	private String profile;
+    public String getProfile() { return profile; }
+
 }
 
