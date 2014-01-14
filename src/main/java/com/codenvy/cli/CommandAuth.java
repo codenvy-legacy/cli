@@ -54,10 +54,7 @@ public class CommandAuth implements CommandInterface {
     private boolean newToken;
     public boolean getNewToken() { return newToken; }
 
-    @Parameter(names = { "--provider" }, description = "Domain of Codenvy cloud where remote commands will be executed.  Default is https://codenvy.com.")
-    private String provider;
-    public String getProvider() { return provider; }
-
+    public static final String PROVIDER_NAME = "CODENVY_PROVIDER_NAME";
     public static final String USER_NAME_NAME = "CODENVY_USER_NAME";
     public static final String PASSWORD_NAME = "CODENVY_PASSWORD";
     public static final String TOKEN_NAME = "CODENVY_TOKEN";
@@ -67,13 +64,15 @@ public class CommandAuth implements CommandInterface {
     // Step 1a: Check for profile configuration file, if specified.
     // Step 2: Check environment variables and use values to override.
     // Step 3: Check any parameters and use values to override.
-    public static CLICredentials getCredentials(String param_profile, 
+    public static CLICredentials getCredentials(String param_profile,
+                                                String param_provider, 
                                                 String param_user, 
                                                 String param_pass, 
                                                 String param_token) {
 
     	CLICredentials cred = new CLICredentials();
 
+        cred.setProvider(null);
     	cred.setUser(null);
     	cred.setPass(null);
     	cred.setToken(null);
@@ -104,25 +103,30 @@ public class CommandAuth implements CommandInterface {
     			e.printStackTrace();
         	}
 
+            cred.setProvider(prop.getProperty(PROVIDER_NAME));
         	cred.setUser(prop.getProperty(USER_NAME_NAME));
         	cred.setPass(prop.getProperty(PASSWORD_NAME));
         	cred.setToken(prop.getProperty(TOKEN_NAME));
     	}
 
     	// Check for environment variables.
+        String provider_name = System.getenv(PROVIDER_NAME);
     	String env_name = System.getenv(USER_NAME_NAME);
     	String env_pass = System.getenv(PASSWORD_NAME);
     	String env_token = System.getenv(TOKEN_NAME);
 
+        if (provider_name != null) cred.setProvider(provider_name);
     	if (env_name != null) cred.setUser(env_name);
     	if (env_pass != null) cred.setPass(env_pass);
     	if (env_token != null) cred.setToken(env_token);
 
         // Check for parameter overrides.
+        if (param_provider != null) cred.setProvider(param_provider);
         if (param_user != null) cred.setUser(param_user);
         if (param_pass != null) cred.setPass(param_pass);
         if (param_token != null) cred.setToken(param_token);
 
+        if (cred.getProvider() == null) cred.setProvider("");
         if (cred.getUser() == null) cred.setUser("");
         if (cred.getPass() == null) cred.setPass("");
         if (cred.getToken() == null) cred.setToken("");
@@ -154,8 +158,6 @@ public class CommandAuth implements CommandInterface {
 
         try {
 
-            System.out.println (config.exists());
-            
             if (!does_exist) {
                 does_exist = config.getParentFile().mkdirs() & 
                              config.createNewFile(); 
@@ -165,13 +167,12 @@ public class CommandAuth implements CommandInterface {
                 is_writeable = config.canWrite();
             }            
             
-            System.out.println (is_writeable);
-            
             // We have a valid configuration file.
             if (is_writeable) {
 
                 // We write the file in a Properties format.
                 Properties prop = new Properties();
+                prop.setProperty(PROVIDER_NAME, cred.getProvider());
                 prop.setProperty(USER_NAME_NAME, cred.getUser());
                 prop.setProperty(PASSWORD_NAME, cred.getPass());
                 prop.setProperty(TOKEN_NAME, cred.getToken());
@@ -206,6 +207,13 @@ public class CommandAuth implements CommandInterface {
         sb.append("loaded or set.  We store each profile in its own configuration file in the same\n");
         sb.append("location as the default configuration file.\n");
         sb.append("\n");
+        sb.append("The following environment variables are set as part of a profile, whether stored\n");
+        sb.append("in a configuration file, stored as an environment variable, or passed as a command\n");
+        sb.append("line parameter: CODENVY_PARAMETER_NAME, CODENVY_USER_NAME, CODENVY_PASSWORD, \n");
+        sb.append("and CODENVY_TOKEN. You should only need to pass the user name and password when\n");
+        sb.append("first getting a token.  For most other Codenvy functions, the CLI will use the\n");
+        sb.append("token associated with the profile to gain authorized access to the system.\n");
+        sb.append("\n");
         sb.append("Specifying the --newToken parameter will generate a new API token from a remote\n");
         sb.append("Codenvy installation.  We use REST API calls to generate the token.  You must\n");
         sb.append("provide user name and password credentials for the remote system to generate\n");
@@ -228,6 +236,7 @@ public class CommandAuth implements CommandInterface {
         // Step 4: Write out properties to the appropriate profile file.
     	if (display | configure) {
     		CLICredentials cred = getCredentials(delegate.getProfile(),
+                                                 delegate.getProvider(),
                                                  delegate.getUser(),
                                                  delegate.getPassword(),
                                                  delegate.getToken());
@@ -248,6 +257,7 @@ public class CommandAuth implements CommandInterface {
                     System.out.println(delegate.getProfile());
                 }
 
+                System.out.println(PROVIDER_NAME + ": " + cred.getProvider());
                 System.out.println(USER_NAME_NAME + ": " + cred.getUser());
                 System.out.println(PASSWORD_NAME + ":  " + cred.getPass());
                 System.out.println(TOKEN_NAME + ":     " + cred.getToken());

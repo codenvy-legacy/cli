@@ -22,14 +22,17 @@ package com.codenvy.cli;
  *
  */ 
 public class CLICredentials {
+	private String provider;
 	private String user;
 	private String pass;
 	private String token;
 
+	public String getProvider() { return provider; }
 	public String getUser() { return user; }
 	public String getPass() { return pass; }
 	public String getToken() { return token; }
 
+	public void setProvider(String p) { provider = p; }
 	public void setUser(String u) { user = u; }
 	public void setPass(String p) { pass = p; }
 	public void setToken(String t) { token = t; }

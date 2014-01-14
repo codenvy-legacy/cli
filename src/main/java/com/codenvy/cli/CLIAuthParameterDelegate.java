@@ -25,11 +25,13 @@ import com.beust.jcommander.*;
  */ 
 public class CLIAuthParameterDelegate {
 
+// TODO: Add the provider as part of this delegate?  If we do, then you will not be able to reuse a set of parameters against two different codenvy domains.
+
     @Parameter(names = { "-u", "--user" }, description = "User name in the form of email address")
 	private String user;
     public String getUser() { return user; }
 
-    @Parameter(names = { "-p", "--password" }, description = "Password for Codenvy account")
+    @Parameter(names = { "-p", "--password" }, description = "Password for a Codenvy account.", password = true, echoInput = true)
 	private String password;
     public String getPassword() { return password; }
 
@@ -40,6 +42,11 @@ public class CLIAuthParameterDelegate {
     @Parameter(names = { "--profile" }, description = "Property configuration profile to use")
 	private String profile;
     public String getProfile() { return profile; }
+
+    @Parameter(names = { "--provider" }, description = "Domain of Codenvy cloud where remote commands will be executed.  Default is https://codenvy.com.")
+    private String provider="https://codenvy.com";
+    public String getProvider() { return provider; }
+
 
 }
 
