@@ -35,11 +35,11 @@ import java.net.*;
 import com.codenvy.commons.lang.IoUtil;
 
 /**
- * Set of parameters and help for 'codenvy remote tmp_workspace_create' command
+ * Set of parameters and help for 'codenvy remote factory:invoke' command
  *
  */ 
 @Parameters(commandDescription = "Creates a new temporary developer environment from valid Factory URL")
-public class CommandRemoteTmpWorkspaceCreate implements CommandInterface {
+public class CommandRemoteFactoryInvoke implements CommandInterface {
 
 	String protocol = "https";
 	String host = "codenvy.com";

@@ -68,8 +68,6 @@ public class RESTAPIHelper {
         HttpURLConnection conn = null;
         JSONObject output_data = null;
 
-
-
         try {
 
             String rest_url = cred.getProvider() + API_NAME_PROPERTY_MAP.get(rest_resource).get("RestURL");

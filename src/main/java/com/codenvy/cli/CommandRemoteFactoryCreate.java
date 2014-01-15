@@ -31,11 +31,11 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Set of codenvy remote project_factory command and parameters.
+ * codenvy remote factory:create command and parameters.
  *
  */ 
 @Parameters(separators = " ", commandDescription = "Packages a Codenvy project into a .c5y file or Factory URL")
-public class CommandRemoteProjectFactory implements CommandInterface {
+public class CommandRemoteFactoryCreate implements CommandInterface {
 
     @Parameter(names = { "-h", "--help" }, description = "Prints this help")
 	private boolean help;

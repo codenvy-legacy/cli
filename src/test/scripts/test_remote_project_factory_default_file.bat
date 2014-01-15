@@ -1,1 +1,1 @@
-codenvy remote project_factory
+codenvy remote proj:factory
