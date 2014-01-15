@@ -22,11 +22,21 @@ import com.beust.jcommander.converters.*;
 
 import org.apache.commons.lang3.SystemUtils;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Properties;
 
 import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.*;
+
+import com.codenvy.commons.lang.IoUtil;
 
 /**
  * Set of command and CLI parameters for codenvy CLI function.
@@ -188,6 +198,23 @@ public class CommandAuth implements CommandInterface {
 
     }
 
+    // Helper method to display a set of credentials against a particular profile
+    public static void displayCredentials(String param_profile, 
+                                      CLICredentials cred) {
+        System.out.print("PROFILE: ");
+        if (param_profile == null) {
+            System.out.println("Default");
+        } else {
+            System.out.println(param_profile);
+        }
+
+        System.out.println(PROVIDER_NAME + ": " + cred.getProvider());
+        System.out.println(USER_NAME_NAME + ": " + cred.getUser());
+        System.out.println(PASSWORD_NAME + ":  " + cred.getPass());
+        System.out.println(TOKEN_NAME + ":     " + cred.getToken());
+    }
+
+
     public String getUsageLongDescription() {
 		StringBuilder sb = new StringBuilder();
         sb.append("Manages this client's local configuration for working with a remote Codenvy cloud.\n");
@@ -232,9 +259,10 @@ public class CommandAuth implements CommandInterface {
 
         // Step 1: Check to see if we are in display or configure mode.
         // Step 2: Find parameters for the specified profile.
-        // Step 3: If in configure mode, call authentication API to get Token
-        // Step 4: Write out properties to the appropriate profile file.
-    	if (display | configure) {
+        // Step 3: If the user has asked for a new token, call REST API to get it.
+        // Step 4: If in configure mode, write the parameters out to a config file
+        // Step 5: Display the parameters if that is the ask.
+    	if (display | configure | newToken) {
     		CLICredentials cred = getCredentials(delegate.getProfile(),
                                                  delegate.getProvider(),
                                                  delegate.getUser(),
@@ -242,7 +270,7 @@ public class CommandAuth implements CommandInterface {
                                                  delegate.getToken());
 
             if (newToken) {
-
+                cred.setToken(getNewToken(cred));
             }
 
             if (configure) {
@@ -250,19 +278,29 @@ public class CommandAuth implements CommandInterface {
             }
     		
             if (display) {
-                System.out.print("PROFILE: ");
-                if (delegate.getProfile() == null) {
-                    System.out.println("Default");
-                } else {
-                    System.out.println(delegate.getProfile());
-                }
-
-                System.out.println(PROVIDER_NAME + ": " + cred.getProvider());
-                System.out.println(USER_NAME_NAME + ": " + cred.getUser());
-                System.out.println(PASSWORD_NAME + ":  " + cred.getPass());
-                System.out.println(TOKEN_NAME + ":     " + cred.getToken());
+                displayCredentials(delegate.getProfile(), cred);
                 System.exit(0);
             }
     	}
+    }
+
+    private String getNewToken(CLICredentials cred) {
+
+        JSONObject api_return_data = null;
+        JSONObject api_input_data = new JSONObject();
+
+        // Format the appropriate input data for this REST command.
+        // Pass the input data into helper command, invoke REST command, and get response.
+        // Parse the response appropriately.
+        api_input_data.put("username", cred.getUser());
+        api_input_data.put("password", cred.getPass());
+        
+        api_return_data = RESTAPIHelper.callRESTAPIAndRetrieveResponse(cred, api_input_data, RESTAPIHelper.REST_API_AUTH_LOGIN_JSON);
+        
+        if (api_return_data == null)
+            return "";
+        else
+            return (String)api_return_data.get("token");
+
     }
 }
