@@ -40,8 +40,15 @@ public class CommandRemoteFactoryInvoke implements CommandInterface {
 	private boolean help;
     public boolean getHelp() { return help; }
 
+    @Parameter(names = { "--url" }, description = "The Factory URL to launch in a new browser session")
+    private String url = "https://codenvy.com";
+    public String getURL() { return url; }
+
     public String getUsageLongDescription() {
-		return("INSERT LONG DESCRIPTION");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Launches a new browser session and invokes a Factory URL.  The Factory URL is\n");
+        sb.append("provided by the --url option.\n");
+        return sb.toString();
 	}
 
     public void execute() {
@@ -56,7 +63,7 @@ public class CommandRemoteFactoryInvoke implements CommandInterface {
             }
 
             // open the default web browser for the HTML page
-            URI uri = new URI("https://codenvy.com/");
+            URI uri = new URI(url);
             Desktop.getDesktop().browse(uri);
 
         } catch (URISyntaxException e) {
@@ -70,4 +77,3 @@ public class CommandRemoteFactoryInvoke implements CommandInterface {
         }
     }
 }
-
