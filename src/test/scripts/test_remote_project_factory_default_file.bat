@@ -1,1 +1,0 @@
-codenvy remote proj:factory

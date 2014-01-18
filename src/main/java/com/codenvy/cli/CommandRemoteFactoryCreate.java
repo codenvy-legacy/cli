@@ -21,6 +21,7 @@ import com.beust.jcommander.*;
 import com.beust.jcommander.converters.*;
 
 import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -53,14 +54,14 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
     @Parameter(names = "--param", listConverter = JSONPairConverter.class, converter = JSONPairConverter.class, arity = 2, description = "Sets name/value pair.  First is name.  Second is value.  Can be used multiple times.")
     private List<JSONPair> params = new ArrayList<JSONPair>();
 
-    @Parameter(names = "--provider", description = "Domain name of Codenvy system where workspace will be created.  Default is http://codenvy.com.")
-    private String provider = "http://codenvy.com/";
-    
+    @ParametersDelegate
+	private CLIAuthParameterDelegate delegate = new CLIAuthParameterDelegate();
+
     public String getUsageLongDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Generates a Codenvy Factory from a remote Codenvy cloud.  A Codenvy Factory is a URL\n");
 		sb.append("that can be used to generate temporary workspaces with a pre-configured project in it.\n");
-		sb.append("Codenvy Factory URLs follow the format in the specification listed HERE.\n");
+		sb.append("The spec format is at http://docs.codenvy.com/user/creating-factories/.\n");
 		sb.append("\n");
 		sb.append("This command will first locate the configuration parameters for the Factory and will\n");
 		sb.append("then call a Codenvy REST API to generate the Factory URL with the parameters.  First,\n");
@@ -194,7 +195,7 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
     	 *         If not encoded, then build manually.
     	 */ 
     	if (!encoded) {
-	    	factory_url.append(provider+default_reference);
+	    	factory_url.append(delegate.getProvider() + default_reference);
 	    	Iterator json_iterator = factory_params.entrySet().iterator();
 	    	while (json_iterator.hasNext()) {
 	    		Map.Entry pairs = (Map.Entry)json_iterator.next();
@@ -203,8 +204,41 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
 	    		factory_url.append(pairs.getValue());
 	    		if (json_iterator.hasNext())
 	    			factory_url.append("&");
-	    	}
-		}
+	    	} 
+	    } else {
+   		
+    		CLICredentials cred = CommandAuth.getCredentials(delegate.getProfile(),
+                                                             delegate.getProvider(),
+                                                             delegate.getUser(),
+                                                             delegate.getPassword(),
+                                                             delegate.getToken());
+
+		        JSONObject api_return_data = null;
+	        JSONObject api_input_data = factory_params;
+
+    		// Format the appropriate input data for this REST command.
+    		// Pass the input data into helper command, invoke REST command, and get response.
+    		// Parse the response appropriately.
+	        api_return_data = RESTAPIHelper.callRESTAPIAndRetrieveResponse(cred, api_input_data, RESTAPIHelper.REST_API_FACTORY_MULTI_PART);
+
+    		if (api_return_data == null)
+        		factory_url.append("");
+    		else {
+        		JSONArray list_of_urls = (JSONArray) api_return_data.get("links");
+				Iterator<JSONObject> it = list_of_urls.iterator();
+			
+				while (it.hasNext()) {
+
+					JSONObject link = (JSONObject) it.next();
+
+					if (link.get("rel").equals("create-project")) {
+						factory_url.append(link.get("href"));
+					}
+
+				}
+    		}
+	    }
+		
 
 		/* 
     	 * STEP 5: Generate an output file with the contents if outputFile is set.

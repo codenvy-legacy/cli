@@ -52,9 +52,9 @@ public class CommandRemoteProjectInit implements CommandInterface {
 		sb.append("Initializes a new Codenvy project by creating a .c5y file.  This command does not\n");
 		sb.append("perform any validation of the parameters inserted into the file.  You can check\n");
 		sb.append("validation of the parameters by creating a Factory URL using\n");
-		sb.append("'remote proj:factory' to generate a Factory URL and then invoking\n");
-		sb.append("'remote tmpws:create' with that URL.  'remote proj:factory' can also be used to\n");
-		sb.append("generate a new .c5y file.\n"); 
+		sb.append("'remote factory:create --encoded' to generate a Factory URL and then invoking\n");
+		sb.append("'remote factory:invoke' with that URL.  'remote factory:create' can be used to\n");
+		sb.append("generate a new .c5y file also.\n"); 
 		sb.append("\n");
 		sb.append("Parameters passed on the command line with '--param' will be added to the newly\n");
 		sb.append("created .c5y file.\n");

@@ -52,6 +52,7 @@ public class RESTAPIHelper {
             put("RestURL", "/api/auth/login");
             put("RequestMethod", "POST");
             put("Content-Type", "application/json");
+            put("TokenRequired", "false");
         }});
 
         API_NAME_PROPERTY_MAP.put(REST_API_FACTORY_MULTI_PART, new HashMap<String, String>() {{
@@ -59,6 +60,7 @@ public class RESTAPIHelper {
             put("RequestMethod", "POST");
             put("Content-Type", "multipart/form-data;boundary="+MULTI_PART_BOUNDARY);
             put("Content-Disposition", "Content-Disposition: form-data; name=\"factoryUrl\"" + MULTI_PART_CRLF + MULTI_PART_CRLF);
+            put("TokenRequired", "true");
         }});
     }
 
@@ -67,13 +69,21 @@ public class RESTAPIHelper {
                                                             String rest_resource) {
         HttpURLConnection conn = null;
         JSONObject output_data = null;
+        DataOutputStream wr = null;
+        InputStream errorStream = null;
+        InputStreamReader in = null;
 
         try {
 
-            String rest_url = cred.getProvider() + API_NAME_PROPERTY_MAP.get(rest_resource).get("RestURL");
+            StringBuffer rest_url = new StringBuffer();
+            rest_url.append(cred.getProvider() + API_NAME_PROPERTY_MAP.get(rest_resource).get("RestURL"));
+
+            if (API_NAME_PROPERTY_MAP.get(rest_resource).get("TokenRequired") == "true") {
+                rest_url.append("?token=" + cred.getToken());
+            }
 
             // Set up the connection.
-            conn = (HttpURLConnection) new URL(rest_url).openConnection();
+            conn = (HttpURLConnection) new URL(rest_url.toString()).openConnection();
   
             conn.setRequestMethod(API_NAME_PROPERTY_MAP.get(rest_resource).get("RequestMethod"));
             conn.setDoOutput(true);
@@ -84,12 +94,21 @@ public class RESTAPIHelper {
             conn.setReadTimeout(5000);
             conn.setInstanceFollowRedirects(false);
             
-            DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+            wr = new DataOutputStream(conn.getOutputStream());
+
             if (API_NAME_PROPERTY_MAP.get(rest_resource).get("Content-Disposition") != null) {
+                wr.writeBytes(MULTI_PART_TWO_HYPHENS + MULTI_PART_BOUNDARY + MULTI_PART_CRLF);
                 wr.writeBytes(API_NAME_PROPERTY_MAP.get(rest_resource).get("Content-Disposition"));
+                wr.writeBytes(MULTI_PART_CRLF);
             }
             
             wr.writeBytes(input_data.toString());
+
+            if (API_NAME_PROPERTY_MAP.get(rest_resource).get("Content-Disposition") != null) {
+                wr.writeBytes(MULTI_PART_CRLF);
+                wr.writeBytes(MULTI_PART_TWO_HYPHENS + MULTI_PART_BOUNDARY + MULTI_PART_TWO_HYPHENS + MULTI_PART_CRLF);
+            }
+
             wr.flush();
             wr.close();
 
@@ -102,20 +121,21 @@ public class RESTAPIHelper {
                 System.out.println("\n");
                 System.out.println("Visit http://docs.codenvy.com/api/ for mapping of response codes.");
 
-                InputStream errorStream = conn.getErrorStream();
+                errorStream = conn.getErrorStream();
                 String message = errorStream != null ? readAndCloseQuietly(errorStream) : "";
                 System.out.println(message);
                 System.out.println("\n");
             } else {
-                InputStreamReader in = new InputStreamReader((InputStream) conn.getInputStream());
+                in = new InputStreamReader((InputStream) conn.getInputStream());
                 JSONParser parser = new JSONParser();
                 output_data = (JSONObject) parser.parse(in);
             }
 
-        } catch (UnknownHostException | javax.net.ssl.SSLHandshakeException e ) {
+        } catch (UnknownHostException | javax.net.ssl.SSLHandshakeException | java.net.SocketTimeoutException e ) {
 
             System.out.println("####################################################################");
             System.out.println("### Network issues.  We cannot reach the remote Codenvy host.    ###");
+            System.out.println("### Issues can be SSL handshake, Socket Timeout, or uknown host. ###");
             System.out.println("### Use 'codenvy auth -d' to see the profile configuration used. ###");
             System.out.println("####################################################################");
 
@@ -124,6 +144,24 @@ public class RESTAPIHelper {
         } finally {
             if (conn != null) {
                 conn.disconnect();
+            }
+
+            if (wr != null) {
+                try {
+                    wr.close();
+                } catch (IOException e) {}
+            }
+
+            if (errorStream != null) {
+                try {
+                    errorStream.close();
+                } catch (IOException e) {}
+            }
+
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {}
             }
         }
 

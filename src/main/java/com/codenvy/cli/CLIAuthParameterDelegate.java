@@ -31,7 +31,7 @@ public class CLIAuthParameterDelegate {
 	private String user;
     public String getUser() { return user; }
 
-    @Parameter(names = { "-p", "--password" }, description = "Password for a Codenvy account.", password = true, echoInput = true)
+    @Parameter(names = { "-p", "--password" }, description = "Password for a Codenvy account", password = true, echoInput = true)
 	private String password;
     public String getPassword() { return password; }
 
@@ -43,7 +43,7 @@ public class CLIAuthParameterDelegate {
 	private String profile;
     public String getProfile() { return profile; }
 
-    @Parameter(names = { "--provider" }, description = "Domain of Codenvy cloud where remote commands will be executed.  Default is https://codenvy.com.")
+    @Parameter(names = { "--provider" }, description = "Domain of Codenvy cloud where remote commands will be executed.  Default is https://codenvy.com")
     private String provider="https://codenvy.com";
     public String getProvider() { return provider; }
 

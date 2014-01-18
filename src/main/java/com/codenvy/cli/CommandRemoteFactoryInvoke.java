@@ -20,19 +20,10 @@ package com.codenvy.cli;
 import com.beust.jcommander.*;
 import com.beust.jcommander.converters.*;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import java.util.List;
-import java.util.ArrayList;
-
+import java.awt.Desktop;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.*;
-
-import com.codenvy.commons.lang.IoUtil;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Set of parameters and help for 'codenvy remote factory:invoke' command
@@ -54,41 +45,29 @@ public class CommandRemoteFactoryInvoke implements CommandInterface {
 	}
 
     public void execute() {
-
-    	HttpURLConnection conn = null;
-
         try {
 
-            conn = (HttpURLConnection)new URL(protocol, host, port, "/api/factory").openConnection();
-            conn.setRequestMethod("GET");
-            conn.setDoOutput(true);
-            conn.setConnectTimeout(5000);
-            conn.setReadTimeout(5000);
-            conn.setInstanceFollowRedirects(false);
-
-            int responseCode = conn.getResponseCode();
-            System.out.println(responseCode);
-
-            if (responseCode / 100 != 2) {
-                InputStream errorStream = conn.getErrorStream();
-                String message = errorStream != null ? IoUtil.readAndCloseQuietly(errorStream) : "";
-                System.out.println(message);
-
+            if (!Desktop.getDesktop().isDesktopSupported()) {
+                System.out.println("###########################################################################\n");
+                System.out.println("### The Codenvy CLI is unable to launch a browser on this client.       ###\n");
+                System.out.println("### You must manually copy your Factory or Worspace URL into a browser. ###\n");
+                System.out.println("###########################################################################\n");
+                System.exit(0);
             }
 
-            InputStreamReader in = new InputStreamReader((InputStream) conn.getInputStream());
-			JSONParser parser = new JSONParser();
-   			JSONObject jsonObject = (JSONObject) parser.parse(in);
-   			System.out.println(jsonObject.toString());
+            // open the default web browser for the HTML page
+            URI uri = new URI("https://codenvy.com/");
+            Desktop.getDesktop().browse(uri);
 
-        } catch (IOException | ParseException e ) {
-            System.out.println(e.getLocalizedMessage());
-        } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
+        } catch (URISyntaxException e) {
+            System.out.println("##############################################################\n");
+            System.out.println("### You have passed in an improperly formatted URL string. ###\n");
+            System.out.println("##############################################################\n");
+            System.exit(0);
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
     }
 }
 

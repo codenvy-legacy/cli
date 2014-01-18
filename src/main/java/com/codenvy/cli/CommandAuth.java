@@ -105,13 +105,16 @@ public class CommandAuth implements CommandInterface {
     	if (is_readable) {
 
     		Properties prop = new Properties();
- 
+            FileInputStream fis = null;
+
 	    	try {
-               //load a properties file
-    	       prop.load(new FileInputStream(config));
+                fis = new FileInputStream(config);
+                prop.load(fis);
 	    	} catch (IOException e) {
     			e.printStackTrace();
-        	}
+        	} finally {
+                try { fis.close(); } catch (IOException e) { e.printStackTrace(); }
+            }
 
             cred.setProvider(prop.getProperty(PROVIDER_NAME));
         	cred.setUser(prop.getProperty(USER_NAME_NAME));
@@ -164,15 +167,17 @@ public class CommandAuth implements CommandInterface {
 
         boolean does_exist = config.exists();        
         boolean is_writeable = false;
-
+        FileOutputStream fos = null;
 
         try {
 
             if (!does_exist) {
-                does_exist = config.getParentFile().mkdirs() & 
-                             config.createNewFile(); 
+                // Cannot put this in an &.
+                // The mkdirs() function will return false if directory already exists.
+                does_exist = config.getParentFile().mkdirs();
+                does_exist = config.createNewFile(); 
             }
-
+            
             if (does_exist) {
                 is_writeable = config.canWrite();
             }            
@@ -188,14 +193,16 @@ public class CommandAuth implements CommandInterface {
                 prop.setProperty(TOKEN_NAME, cred.getToken());
                 
                //write the properties file out
-               prop.store(new FileOutputStream(config), null);
+               fos = new FileOutputStream(config);
+               prop.store(fos, null);
 
             }
      
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+           try { fos.close(); } catch (IOException e) { e.printStackTrace(); }
         }
-
     }
 
     // Helper method to display a set of credentials against a particular profile
@@ -229,14 +236,14 @@ public class CommandAuth implements CommandInterface {
         sb.append("would look like C:\\Users\\USERNAME\\.codenvy\\config.  On Linux this would look\n");
         sb.append("like ~/.codenvy/config.\n");
         sb.append("\n");
-        sb.append("Codenvy support multiple profiles that can be stored to be used against different\n");
-        sb.append("Codenvy clouds.  Use the --profile option to specify which profile should be\n");
-        sb.append("loaded or set.  We store each profile in its own configuration file in the same\n");
-        sb.append("location as the default configuration file.\n");
+        sb.append("Codenvy supports multiple profiles that can be used against different Codenvy\n");
+        sb.append("clouds.  Use the --profile option to specify which profile should be loaded or\n");
+        sb.append("set.  We store each profile in its own configuration file in the same location\n");
+        sb.append("as the default configuration file.\n");
         sb.append("\n");
         sb.append("The following environment variables are set as part of a profile, whether stored\n");
         sb.append("in a configuration file, stored as an environment variable, or passed as a command\n");
-        sb.append("line parameter: CODENVY_PARAMETER_NAME, CODENVY_USER_NAME, CODENVY_PASSWORD, \n");
+        sb.append("line parameter: CODENVY_PROVIDER_NAME, CODENVY_USER_NAME, CODENVY_PASSWORD, \n");
         sb.append("and CODENVY_TOKEN. You should only need to pass the user name and password when\n");
         sb.append("first getting a token.  For most other Codenvy functions, the CLI will use the\n");
         sb.append("token associated with the profile to gain authorized access to the system.\n");
@@ -245,13 +252,36 @@ public class CommandAuth implements CommandInterface {
         sb.append("Codenvy installation.  We use REST API calls to generate the token.  You must\n");
         sb.append("provide user name and password credentials for the remote system to generate\n");
         sb.append("the token.  Tokens can expire with Codenvy, so check to make sure the stored\n");
-        sb.append("token is still valid when you use it on other calls.  If you specify this\n");
-        sb.append("parameter then the new generated token will take precedence over one used on\n");
-        sb.append("--token command line.  Use the --provider parameter to specify which remote\n");
-        sb.append("Codenvy environment to generate the token from.\n");
+        sb.append("token is still valid when you use it on other calls.  If you specify\n");
+        sb.append("--newToken then the newly generated token takes precedence over any stored\n");
+        sb.append("in a configuration file, environment variable, or command line parameter.\n");
+        sb.append("Use the --provider parameter to specify which remote Codenvy environment to\n");
+        sb.append("generate the token from.\n");
+        sb.append("\n");
+        sb.append("The speed to acquire a token and its expiration date varies.  Anonymous tokens\n");
+        sb.append("do not require a Codenvy user name / password. They have a short expiration\n");
+        sb.append("and take 1 minute to generate.  We force a delay to prevent DDOS attacks from\n");
+        sb.append("anonymous clients.  Named tokens are generated when you provide a valid user\n");
+        sb.append("name and password.  Named tokens are quick to generate and have multi day\n");
+        sb.append("expiration.\n");
         sb.append("\n");
         sb.append("Use the --display option to see how the CLI is loading your properties.  Use the\n");
-        sb.append("--configure option to take the parameters loaded and write them to your config file.\n");
+        sb.append("--configure option to write any loaded parameters to your config file.\n");
+        sb.append("\n");
+        sb.append("Example: Display loaded configuration.\n");
+        sb.append("  codenvy auth -d\n");
+        sb.append("\n");
+        sb.append("Example: Display configuration from the c2 profile.\n");
+        sb.append("  codenvy auth -d --profile c2\n");
+        sb.append("\n");
+        sb.append("Example: Set User Name parameter to john@codenvy.com and store in default profile.\n");
+        sb.append("  codenvy auth -u john@codenvy.com --configure\n");
+        sb.append("\n");
+        sb.append("Example: Set User Name to john@codenvy.com.  Set Password to krusty.  Generate a\n");
+        sb.append("         new token by talking to default Codenvy provider.  Store these items in\n");
+        sb.append("         c2 profile.\n");
+        sb.append("  codenvy auth -u john@codenvy.com -p --newToken --profile c2 --configure\n");
+       
 		return sb.toString();
 	}
 
