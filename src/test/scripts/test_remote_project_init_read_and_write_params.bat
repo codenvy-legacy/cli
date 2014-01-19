@@ -1,0 +1,1 @@
+codenvy remote proj:init --in src\test\scripts\angular1.c5y --param happy joy --out kk.c5y
