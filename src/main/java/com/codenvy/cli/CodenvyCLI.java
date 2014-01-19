@@ -31,6 +31,8 @@ public class CodenvyCLI
         CommandRemoteFactoryCreate remote_factory_create = new CommandRemoteFactoryCreate();
         CommandRemoteFactoryInvoke remote_factory_invoke = new CommandRemoteFactoryInvoke();
         CommandRemoteProjectInit remote_project_init = new CommandRemoteProjectInit();
+        CommandRemoteProjectCreate remote_project_create = new CommandRemoteProjectCreate();
+        CommandRemoteProjectOpen remote_project_open = new CommandRemoteProjectOpen();
         CommandRemoteWorkspaceList remote_workspace_list = new CommandRemoteWorkspaceList();
 
 
@@ -40,6 +42,8 @@ public class CodenvyCLI
         jc.getCommands().get("remote").addCommand("factory:create", remote_factory_create);
         jc.getCommands().get("remote").addCommand("factory:invoke", remote_factory_invoke);
         jc.getCommands().get("remote").addCommand("proj:init", remote_project_init);
+        jc.getCommands().get("remote").addCommand("proj:create", remote_project_create);
+        jc.getCommands().get("remote").addCommand("proj:open", remote_project_open);
         jc.getCommands().get("remote").addCommand("ws:list", remote_workspace_list);
 
         // Do the parse of the command line parameters.
@@ -98,6 +102,8 @@ public class CodenvyCLI
  	    			case "factory:create": analyzeAndExecuteCommand(remote_factory_create, jc); break;
                     case "factory:invoke": analyzeAndExecuteCommand(remote_factory_invoke, jc); break;
                     case "proj:init": analyzeAndExecuteCommand(remote_project_init, jc); break;
+                    case "proj:create": analyzeAndExecuteCommand(remote_project_create, jc); break;
+                    case "proj:open": analyzeAndExecuteCommand(remote_project_open, jc); break;
  	    			case "ws:list": analyzeAndExecuteCommand(remote_workspace_list, jc); break;
  	    		}
  	    	
