@@ -134,12 +134,12 @@ public class CodenvyCLI
             if (jc.getParsedCommand().equals(cv.command_name)) {
 
                 // We have a match.
-                // If the command requires parameters and has none, then print help.
-                // If there was a bad parameter, then print help
                 // If the help flag was explicitly set, then print help.
+                // If the command requires parameters and has none, then print help.
+                // If there was a bad parameter & there is no sub parsed command, then print help
                 if (cv.command_object.getHelp() || 
                    (cv.hasMandatoryParameters && (args.length == 1)) ||
-                   bad_parameter) {
+                   (bad_parameter && jc.getCommands().get(cv.command_name).getParsedCommand() == null)) {
                         showUsage(jc, cv.command_object);
                 }
 
