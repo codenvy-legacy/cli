@@ -16,15 +16,48 @@ public class CodenvyCLI
 	private static boolean bad_parameter = false;
 	private static boolean bad_command = false;
 
+    private static ServiceLoader<CommandInterface> cli_command_loader = ServiceLoader.load(CommandInterface.class);
+
     public static void main( String[] args )
     {
   
-        CodenvyCLIParameters cli = new CodenvyCLIParameters();
+        class CommandValue {
+            CommandInterface command_object;
+            String command_name;
+            String parent_command_name;
+            boolean hasSubCommands;
+            boolean hasMandatoryParameters;
+
+            public CommandValue (CommandInterface o, String a, String p, boolean b, boolean c ) {
+                command_object = o;
+                command_name = a;
+                parent_command_name = p;
+                hasSubCommands = b;
+                hasMandatoryParameters = c;
+            }
+
+        }
+
+        Map<String, CommandValue> command_config_map = new HashMap<String, CommandValue>();
+
+        // STEP 1: Pull out all of the commands in the Service Loader.
+        // STEP 2: Create a HashMap of the configuration options
+        for (CommandInterface ci : cli_command_loader) {
+            command_config_map.put(ci.getCommandName(), 
+                                   new CommandValue(ci,
+                                                    ci.getCommandName(),
+                                                    ci.getParentCommandName(),
+                                                    ci.hasSubCommands(),
+                                                    ci.hasMandatoryParameters()));
+        }
+
+        CommandCLI cli = new CommandCLI();
 
         // Setup the JCommander objects for parsing.
         JCommander jc = new JCommander(cli);
-        jc.setProgramName("codenvy");
+        jc.setProgramName(cli.getCommandName());
 
+/*
         CommandRemote remote = new CommandRemote();
         CommandAuth auth = new CommandAuth();
 
@@ -35,7 +68,29 @@ public class CodenvyCLI
         CommandRemoteProjectOpen remote_project_open = new CommandRemoteProjectOpen();
         CommandRemoteWorkspaceList remote_workspace_list = new CommandRemoteWorkspaceList();
 
+*/
 
+        // Add each command to the JCommander object.
+        // If the parent command is "codenvy", then it is a root command.
+        // Otherwise, add the command to its parent command.
+        for (CommandValue cv : command_config_map.values()) {
+            if (cv.parent_command_name.equals("codenvy")) {
+                jc.addCommand(cv.command_name, cv.command_object);
+
+                if (cv.hasSubCommands) {
+
+                    // After a first run through of tier 1 objects, then do tier 2
+                    for (CommandValue cv2 : command_config_map.values()) {
+                        if (cv2.parent_command_name.equals(cv.command_name)) {
+                            jc.getCommands().get(cv.command_name).addCommand(cv2.command_name, cv2.command_object);
+                        }
+                    }
+                }
+            }
+        }
+
+
+/*
         jc.addCommand("auth", auth);
         jc.addCommand("remote", remote);
 
@@ -45,6 +100,8 @@ public class CodenvyCLI
         jc.getCommands().get("remote").addCommand("proj:create", remote_project_create);
         jc.getCommands().get("remote").addCommand("proj:open", remote_project_open);
         jc.getCommands().get("remote").addCommand("ws:list", remote_workspace_list);
+
+*/
 
         // Do the parse of the command line parameters.
         try {
@@ -69,20 +126,74 @@ public class CodenvyCLI
 
  	    }
 
-       if (args.length == 0) 
-        	showUsage(jc, cli);
+        // If there are no arguments, or if the parsed command is null, or if they designated main help, then provide it.
+        if ((args.length == 0) ||
+            (jc.getParsedCommand() == null) ||
+            (cli.getHelp())) {
+                showUsage(jc, cli);
+        } 
+
+        // If there is a bad command provided, then also show help
+        // Provide the right help.  If the root level bad command, then provide root level help.
+        // If it's a bad subcommand, then provide subcommand help.
+        if (bad_command) {
+            // If the parsed command matches any key in the configuration map, then it's a subcommand.
+            // Otherwise, it's a bad main level command.
+            if (command_config_map.containsKey(jc.getParsedCommand())) {
+                showUsage(jc, command_config_map.get(jc.getParsedCommand()).command_object);
+            } else {
+                showUsage(jc, cli);
+            }
+        }
 
 
        if (cli.getVersion()) {
        		showPrintVersion();
        }
 
-
+/*
  	    // If no proper command, or help flag, or proper non-remote subcommand and bad command
     	if ((jc.getParsedCommand() == null) ||
     		cli.getHelp() ||
     		(jc.getParsedCommand() != "remote" && bad_command))
     			{ showUsage(jc, cli); }
+*/
+
+
+        // Execute each command, or show help if there is a more elaborate error.
+        for (CommandValue cv : command_config_map.values()) {
+            if (jc.getParsedCommand().equals(cv.command_name)) {
+
+                // We have a match.
+                // If the -h flag was set, then print help
+                // If the command requires parameters and has none, then print help.
+                if (cv.command_object.getHelp()) {
+                    showUsage(jc, cv.command_object);
+                }
+
+                // Execute the command or show help.
+                analyzeAndExecuteCommand(jc, cv.command_object);
+
+                // If the command object has sub commands, then we need to perform the same function.
+                if (cv.hasSubCommands) {
+
+                    if (jc.getCommands().get(cv.command_name).getParsedCommand() == null) {
+                        showUsage(jc, cv.command_object);
+                    }
+
+
+                    // After a first run through of tier 1 objects, then do tier 2
+                    for (CommandValue cv2 : command_config_map.values()) {
+                        if (cv2.parent_command_name.equals(cv.command_name) &&
+                            jc.getCommands().get(cv.command_name).getParsedCommand().equals(cv2.command_name)) {
+                                analyzeAndExecuteCommand(jc, cv2.command_object);
+                        }
+                    }
+                }
+            }
+        }
+
+/*
 
     	// We have a valid first command.
     	// If remote & no 2nd or improper 2nd command, then print remote help.
@@ -92,7 +203,7 @@ public class CodenvyCLI
  	    	case "remote": {
  	    	
  	    		if (jc.getCommands().get("remote").getParsedCommand() == null ||
- 	    			remote.getHelp() ||
+  	    			remote.getHelp() ||
  	    			bad_command) { 
  	    				showUsage(jc, remote);
  	    			}
@@ -123,9 +234,11 @@ public class CodenvyCLI
                 break;
             }
  	    }
+
+        */
      }
 
-     private static void analyzeAndExecuteCommand(CommandInterface obj, JCommander jc) {
+     private static void analyzeAndExecuteCommand(JCommander jc, CommandInterface obj) {
    		if (obj.getHelp() || bad_parameter) {
    			showUsage(jc, obj);
    		} else {

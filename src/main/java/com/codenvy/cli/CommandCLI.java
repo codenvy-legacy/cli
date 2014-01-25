@@ -27,7 +27,7 @@ import java.util.ArrayList;
  * Set of command and CLI parameters for codenvy CLI function.
  *
  */ 
-public class CodenvyCLIParameters implements CommandInterface {
+public class CommandCLI implements CommandInterface {
     @Parameter(description = "Unused Parameters")
     private List<String> unused = new ArrayList<String>();
 
@@ -39,6 +39,22 @@ public class CodenvyCLIParameters implements CommandInterface {
 
     public boolean getHelp() { return help; }
     public boolean getVersion() { return version; }
+
+     public boolean hasSubCommands() {
+        return true;
+    }
+
+    public boolean hasMandatoryParameters() {
+        return true;
+    }
+
+   public String getCommandName(){
+        return "codenvy";
+    }
+
+    public String getParentCommandName(){
+        return null;
+    }
 
     public String getUsageLongDescription() {
     	return("This is the Codenvy CLI.  You can either interact with the local system or execute remote commands against a Codenvy cloud instance.  For more information see http://docs.codenvy.com/cli.");

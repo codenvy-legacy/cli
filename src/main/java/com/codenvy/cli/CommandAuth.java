@@ -222,6 +222,22 @@ public class CommandAuth implements CommandInterface {
     }
 
 
+    public boolean hasSubCommands() {
+        return false;
+    }
+
+    public boolean hasMandatoryParameters() {
+        return true;
+    }
+
+    public String getCommandName(){
+        return "auth";
+    }
+
+    public String getParentCommandName(){
+        return "codenvy";
+    }
+
     public String getUsageLongDescription() {
 		StringBuilder sb = new StringBuilder();
         sb.append("Manages this client's local configuration for working with a remote Codenvy cloud.\n");

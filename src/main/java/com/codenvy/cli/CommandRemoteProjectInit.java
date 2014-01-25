@@ -44,6 +44,22 @@ public class CommandRemoteProjectInit implements CommandInterface {
     @ParametersDelegate
 	private JSONFileParameterDelegate json_delegate = new JSONFileParameterDelegate();
 
+    public boolean hasSubCommands() {
+        return false;
+    }
+
+    public boolean hasMandatoryParameters() {
+        return false;
+    }
+
+    public String getCommandName(){
+        return "proj:init";
+    }
+
+    public String getParentCommandName(){
+        return "remote";
+    }
+
     public String getUsageLongDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Initializes a new Codenvy project by creating a .c5y file.  This command does not\n");

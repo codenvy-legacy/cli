@@ -34,6 +34,22 @@ public class CommandRemoteWorkspaceList implements CommandInterface {
 	private boolean help;
     public boolean getHelp() { return help; }
 
+    public boolean hasSubCommands() {
+        return false;
+    }
+
+    public boolean hasMandatoryParameters() {
+        return false;
+    }
+
+    public String getCommandName(){
+        return "ws:list";
+    }
+
+    public String getParentCommandName(){
+        return "remote";
+    }
+
     public String getUsageLongDescription() {
 		return("INSERT LONG DESCRIPTION FOR HELP");
 	}

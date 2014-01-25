@@ -32,6 +32,22 @@ public class CommandRemote implements CommandInterface {
 	private boolean help;
     public boolean getHelp() { return help; }
 
+    public boolean hasSubCommands() {
+        return true;
+    }
+
+    public boolean hasMandatoryParameters() {
+        return true;
+    }
+
+    public String getCommandName(){
+        return "remote";
+    }
+
+    public String getParentCommandName(){
+        return "codenvy";
+    }
+
     public String getUsageLongDescription() {
 		return("The remote subcommand is used to interact with a remote Codenvy system.");
 	}

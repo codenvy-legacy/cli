@@ -35,6 +35,22 @@ public class CommandRemoteProjectOpen implements CommandInterface {
     private String url = "https://codenvy.com";
     public String getURL() { return url; }
 
+    public boolean hasSubCommands() {
+        return false;
+    }
+
+    public boolean hasMandatoryParameters() {
+        return true;
+    }
+
+    public String getCommandName(){
+        return "proj:open";
+    }
+    
+    public String getParentCommandName(){
+        return "remote";
+    }
+
     public String getUsageLongDescription() {
         StringBuilder sb = new StringBuilder();
         sb.append("Launches a new browser session and opens a Project URL. The Project URL is\n");

@@ -19,6 +19,10 @@ package com.codenvy.cli;
 
 interface CommandInterface {
 	boolean getHelp();
+	boolean hasSubCommands();
+	boolean hasMandatoryParameters();
    	void execute();
+   	public String getCommandName();
+   	public String getParentCommandName();
    	public String getUsageLongDescription();
  }

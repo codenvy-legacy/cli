@@ -54,6 +54,22 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
     @ParametersDelegate
 	private CLIAuthParameterDelegate delegate = new CLIAuthParameterDelegate();
 
+    public boolean hasSubCommands() {
+        return false;
+    }
+
+    public boolean hasMandatoryParameters() {
+        return true;
+    }
+
+    public String getCommandName(){
+        return "factory:create";
+    }
+
+    public String getParentCommandName(){
+        return "remote";
+    }
+
     public String getUsageLongDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Generates a Codenvy Factory.  A Codenvy Factory is a URL that, when invoked, creates\n");

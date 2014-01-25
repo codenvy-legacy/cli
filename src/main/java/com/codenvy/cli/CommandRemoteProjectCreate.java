@@ -54,6 +54,22 @@ public class CommandRemoteProjectCreate implements CommandInterface {
     @ParametersDelegate
 	private CLIAuthParameterDelegate delegate = new CLIAuthParameterDelegate();
 
+    public boolean hasSubCommands() {
+        return false;
+    }
+
+    public boolean hasMandatoryParameters() {
+        return true;
+    }
+
+    public String getCommandName(){
+        return "proj:create";
+    }
+
+    public String getParentCommandName(){
+        return "remote";
+    }
+
     public String getUsageLongDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Generates a Codenvy Project.  A Codenvy Project is a set of files bound to an IDE,\n");
