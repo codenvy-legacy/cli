@@ -95,7 +95,8 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
 		sb.append("\n");
         sb.append("  The angular.c5y file would be formatted with JSON:\n");
 		sb.append("\n");
-		sb.append("  \"v\":\"1.1\",\n");
+        sb.append("  {\n");
+		sb.append("     \"v\":\"1.1\",\n");
 		sb.append("     \"vcs\":\"git\",\n");
 		sb.append("     \"vcsurl\":\"http://codenvy.com/git/04/0f/7f/workspacegcpv6cdxy1q34n1i/Sample-AngularJS\",\n");
 		sb.append("     \"idcommit\":\"37a21ef422e7995cbab615431f0f63991a9b314a\",\n");

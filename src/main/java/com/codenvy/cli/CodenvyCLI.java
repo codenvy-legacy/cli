@@ -41,7 +41,7 @@ public class CodenvyCLI
         Map<String, CommandValue> command_config_map = new HashMap<String, CommandValue>();
 
         // STEP 1: Pull out all of the commands in the Service Loader.
-        // STEP 2: Create a HashMap of the configuration options
+        // STEP 2: Create a HashMap of each loaded command & its configuration options
         for (CommandInterface ci : cli_command_loader) {
             command_config_map.put(ci.getCommandName(), 
                                    new CommandValue(ci,
@@ -57,18 +57,6 @@ public class CodenvyCLI
         JCommander jc = new JCommander(cli);
         jc.setProgramName(cli.getCommandName());
 
-/*
-        CommandRemote remote = new CommandRemote();
-        CommandAuth auth = new CommandAuth();
-
-        CommandRemoteFactoryCreate remote_factory_create = new CommandRemoteFactoryCreate();
-        CommandRemoteFactoryInvoke remote_factory_invoke = new CommandRemoteFactoryInvoke();
-        CommandRemoteProjectInit remote_project_init = new CommandRemoteProjectInit();
-        CommandRemoteProjectCreate remote_project_create = new CommandRemoteProjectCreate();
-        CommandRemoteProjectOpen remote_project_open = new CommandRemoteProjectOpen();
-        CommandRemoteWorkspaceList remote_workspace_list = new CommandRemoteWorkspaceList();
-
-*/
 
         // Add each command to the JCommander object.
         // If the parent command is "codenvy", then it is a root command.
@@ -80,6 +68,8 @@ public class CodenvyCLI
                 if (cv.hasSubCommands) {
 
                     // After a first run through of tier 1 objects, then do tier 2
+                    // We are running through the same list
+                    // If the new object's parent matches the name of the outer command, then we have an embedded match
                     for (CommandValue cv2 : command_config_map.values()) {
                         if (cv2.parent_command_name.equals(cv.command_name)) {
                             jc.getCommands().get(cv.command_name).addCommand(cv2.command_name, cv2.command_object);
@@ -89,19 +79,6 @@ public class CodenvyCLI
             }
         }
 
-
-/*
-        jc.addCommand("auth", auth);
-        jc.addCommand("remote", remote);
-
-        jc.getCommands().get("remote").addCommand("factory:create", remote_factory_create);
-        jc.getCommands().get("remote").addCommand("factory:invoke", remote_factory_invoke);
-        jc.getCommands().get("remote").addCommand("proj:init", remote_project_init);
-        jc.getCommands().get("remote").addCommand("proj:create", remote_project_create);
-        jc.getCommands().get("remote").addCommand("proj:open", remote_project_open);
-        jc.getCommands().get("remote").addCommand("ws:list", remote_workspace_list);
-
-*/
 
         // Do the parse of the command line parameters.
         try {
@@ -151,28 +128,23 @@ public class CodenvyCLI
        		showPrintVersion();
        }
 
-/*
- 	    // If no proper command, or help flag, or proper non-remote subcommand and bad command
-    	if ((jc.getParsedCommand() == null) ||
-    		cli.getHelp() ||
-    		(jc.getParsedCommand() != "remote" && bad_command))
-    			{ showUsage(jc, cli); }
-*/
-
 
         // Execute each command, or show help if there is a more elaborate error.
         for (CommandValue cv : command_config_map.values()) {
             if (jc.getParsedCommand().equals(cv.command_name)) {
 
                 // We have a match.
-                // If the -h flag was set, then print help
                 // If the command requires parameters and has none, then print help.
-                if (cv.command_object.getHelp()) {
-                    showUsage(jc, cv.command_object);
+                // If there was a bad parameter, then print help
+                // If the help flag was explicitly set, then print help.
+                if (cv.command_object.getHelp() || 
+                   (cv.hasMandatoryParameters && (args.length == 1)) ||
+                   bad_parameter) {
+                        showUsage(jc, cv.command_object);
                 }
 
-                // Execute the command or show help.
-                analyzeAndExecuteCommand(jc, cv.command_object);
+                // Execute the command
+                cv.command_object.execute();
 
                 // If the command object has sub commands, then we need to perform the same function.
                 if (cv.hasSubCommands) {
@@ -186,66 +158,26 @@ public class CodenvyCLI
                     for (CommandValue cv2 : command_config_map.values()) {
                         if (cv2.parent_command_name.equals(cv.command_name) &&
                             jc.getCommands().get(cv.command_name).getParsedCommand().equals(cv2.command_name)) {
-                                analyzeAndExecuteCommand(jc, cv2.command_object);
+
+                                // We have a match on the subcommand.
+                                // If there was a bad parameter, then print help.
+                                // If there was a help flag set, then print help.
+                                // If the command requires a parameter and there is none, then print help.
+                                if (cv2.command_object.getHelp() ||
+                                   (cv2.hasMandatoryParameters && (args.length == 2)) ||
+                                    bad_parameter) {
+                                        showUsage(jc, cv2.command_object);
+                                }
+
+                                cv2.command_object.execute();
                         }
                     }
                 }
             }
         }
-
-/*
-
-    	// We have a valid first command.
-    	// If remote & no 2nd or improper 2nd command, then print remote help.
-    	// If bad parameters, print command-specific help.
-    	// Otherwise, valid command - execute it.
-    	switch (jc.getParsedCommand()) {
- 	    	case "remote": {
- 	    	
- 	    		if (jc.getCommands().get("remote").getParsedCommand() == null ||
-  	    			remote.getHelp() ||
- 	    			bad_command) { 
- 	    				showUsage(jc, remote);
- 	    			}
-
- 	    		// We only get here if proper 2nd command exists.
- 	    		switch (jc.getCommands().get("remote").getParsedCommand()) {
- 	    			case "factory:create": analyzeAndExecuteCommand(remote_factory_create, jc); break;
-                    case "factory:invoke": analyzeAndExecuteCommand(remote_factory_invoke, jc); break;
-                    case "proj:init": analyzeAndExecuteCommand(remote_project_init, jc); break;
-                    case "proj:create": analyzeAndExecuteCommand(remote_project_create, jc); break;
-                    case "proj:open": analyzeAndExecuteCommand(remote_project_open, jc); break;
- 	    			case "ws:list": analyzeAndExecuteCommand(remote_workspace_list, jc); break;
- 	    		}
- 	    	
- 	    		break;
- 	    	}
-
- 	    	case "auth": {
-
-                // For this command, if no parameters, then diplay Usage.  
-                // We should probably set the parameter to true as an alternative way.
-                if (args.length == 1) {
-                    showUsage(jc, auth);
-                } else {
-                    analyzeAndExecuteCommand(auth, jc);
-                }
-
-                break;
-            }
- 	    }
-
-        */
      }
 
-     private static void analyzeAndExecuteCommand(JCommander jc, CommandInterface obj) {
-   		if (obj.getHelp() || bad_parameter) {
-   			showUsage(jc, obj);
-   		} else {
-   			obj.execute(); 
-   		}
-     }
-
+     
      // Will show the pretty format usage.
      // Navigates JCommander object to determine what to print.
      // All help comments are embedded with JCommander properties.
@@ -337,23 +269,28 @@ public class CodenvyCLI
      	if (parsedCommand == "remote") 
      		sub_map = map.get(parsedCommand).getCommands();
 
+        // Sort the sub_map
+        List<String> subcommand_list = new ArrayList<String>(sub_map.keySet());
+        java.util.Collections.sort(subcommand_list);
+
      	if (level == 0 || (level == 1 && parsedCommand == "remote")) {
      		sb.append("\nAvailable subcommands:\n");
      		
-     		for (Map.Entry<String,JCommander> entry : sub_map.entrySet()) {
-     			sb.append("   " + entry.getKey());
-     			for (int i = 0; i < (COMMAND_OFFSET-entry.getKey().length()-4); i++)
-     				sb.append(" ");
+            for (String s : subcommand_list) {
+                sb.append("   " + s);
+                for (int i = 0; i < (COMMAND_OFFSET-s.length()-4); i++)
+                    sb.append(" ");
 
-     			// Tricky.  Not obvious answer here.
-     			// If this is the main command, use the main JCommander object.
-     			// If this is a remote subcommand, then get the remote JCommander object
-     			JCommander obj = jc;
-     			if (parsedCommand == "remote") 
-     				obj = map.get("remote");
+                // Tricky.  Not obvious answer here.
+                // If this is the main command, use the main JCommander object.
+                // If this is a remote subcommand, then get the remote JCommander object
+                JCommander obj = jc;
+                if (parsedCommand == "remote") 
+                    obj = map.get("remote");
 
-     			sb.append(obj.getCommandDescription(entry.getKey()) + "\n");
-     		}
+                sb.append(obj.getCommandDescription(s) + "\n");
+
+            }
 
      		sb.append("\nFor help on a subcommand run 'codenvy ");
      		if (parsedCommand == "remote") sb.append("remote ");
