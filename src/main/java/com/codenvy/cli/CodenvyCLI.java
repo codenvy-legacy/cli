@@ -3,7 +3,9 @@ package com.codenvy.cli;
 import com.beust.jcommander.*;
 import com.codenvy.cli.*;
 import org.apache.commons.lang3.SystemUtils;
+import java.io.IOException;
 import java.lang.StringBuilder;
+import java.net.URL;
 import java.util.*;
 
 public class CodenvyCLI 
@@ -26,8 +28,6 @@ public class CodenvyCLI
 
     }
 
-
-	private static double CLI_VERSION = 0.1;
 
 	private static final int PARAMETER_OFFSET = 25;
 	private static final int COMMAND_OFFSET = 29;
@@ -109,6 +109,10 @@ public class CodenvyCLI
 
  	    }
 
+        if (cli.getVersion()) {
+            showPrintVersion();
+        }
+
         // If there are no arguments, or if the parsed command is null, or if they designated main help, then provide it.
         if ((args.length == 0) ||
             (jc.getParsedCommand() == null) ||
@@ -128,12 +132,6 @@ public class CodenvyCLI
                 showUsage(jc, cli);
             }
         }
-
-
-       if (cli.getVersion()) {
-       		showPrintVersion();
-       }
-
 
         // Execute each command, or show help if there is a more elaborate error.
         for (CommandValue cv : command_config_map.values()) {
@@ -326,11 +324,28 @@ public class CodenvyCLI
         System.out.println(" \\____/\\___/ \\__,_|\\___|_| |_|\\_/  \\__, |");
         System.out.println("                                    __/ |");
         System.out.println("                                   |___/ ");
-     	System.out.println(CLI_VERSION);
      	System.out.println(SystemUtils.OS_NAME);
      	System.out.println(SystemUtils.OS_ARCH);
      	System.out.println(SystemUtils.OS_VERSION);
         System.out.println(SystemUtils.USER_HOME);
+
+        URL url = null;
+        try {
+            Properties props = new Properties();
+ 
+            // Get hold of the path to the properties file
+            // (Maven will make sure it's on the class path)
+            url = CodenvyCLI.class.getClassLoader().getResource("app.properties");
+             
+            // Load the file
+            props.load(url.openStream());
+             
+            // Accessing values
+            System.out.println(props.getProperty("application.version"));
+
+        } catch (IOException e) {
+            System.out.println("### Problem with gaining access to ClassLoader properties for this app. ###");
+        } 
 
      	System.exit(0);
      }

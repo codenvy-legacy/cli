@@ -20,22 +20,20 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-     <parent>
-        <artifactId>maven-parent-pom</artifactId>
-        <groupId>com.codenvy</groupId>
-        <version>3.0.1</version>
-    </parent>
+  <parent>
+    <artifactId>maven-parent-pom</artifactId>
+    <groupId>com.codenvy</groupId>
+    <version>3.0.1</version>
+  </parent>
   <groupId>com.codenvy.cli</groupId>
   <artifactId>codenvy-cli</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
   <name>Codenvy Commons :: CLI</name>
   <url>http://maven.apache.org</url>
-
   <properties>
     <codenvy-commons.version>0.14.0-SNAPSHOT</codenvy-commons.version>
   </properties>
-  
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -54,61 +52,104 @@
       <version>3.1</version>
     </dependency>
     <dependency>
-        <groupId>com.googlecode.json-simple</groupId>
-        <artifactId>json-simple</artifactId>
-        <version>1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.json</groupId>
-        <artifactId>json</artifactId>
-        <version>20070829</version>
-      </dependency>
-      <dependency>
-        <groupId>com.codenvy.commons</groupId>
-        <artifactId>codenvy-commons-lang</artifactId>
-        <version>${codenvy-commons.version}</version>
-      </dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20070829</version>
+    </dependency>
+    <dependency>
+      <groupId>com.codenvy.commons</groupId>
+      <artifactId>codenvy-commons-lang</artifactId>
+      <version>${codenvy-commons.version}</version>
+    </dependency>
   </dependencies>
-    <build>
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <outputDirectory>target/classes</outputDirectory>
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>com.codenvy.cli.CodenvyCLI</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <finalName>${project.artifactId}-${project.version}</finalName>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <outputDirectory>target/classes</outputDirectory>
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>com.codenvy.cli.CodenvyCLI</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <finalName>${project.artifactId}-${project.version}</finalName>
+          <createDependencyReducedPom>false</createDependencyReducedPom>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <version>1.5.2</version>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <file>src/main/codenvy.bat</file>
+          <outputFile>codenvy.bat
+                 </outputFile>
+          <regex>false</regex>
+          <token>$JAR_FILE$</token>
+          <value>target\${project.artifactId}-${project.version}.jar</value>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <version>1.5.2</version>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <file>src/main/codenvy.nuspec</file>
+          <outputFile>codenvy.nuspec
+                 </outputFile>
+          <regex>false</regex>
+          <token>$JAR_FILE$</token>
+          <value>target\${project.artifactId}-${project.version}.jar</value>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
