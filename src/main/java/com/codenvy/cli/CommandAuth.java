@@ -301,6 +301,18 @@ public class CommandAuth implements CommandInterface {
 		return sb.toString();
 	}
 
+    public String getUsageDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Usage: codenvy auth <args>");
+        return sb.toString();
+    }
+
+    public String getHelpDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("");
+        return sb.toString();
+    }
+
     public void execute() {
 
         // Step 1: Check to see if we are in display or configure mode.

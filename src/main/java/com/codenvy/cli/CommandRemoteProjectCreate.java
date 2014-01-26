@@ -59,7 +59,7 @@ public class CommandRemoteProjectCreate implements CommandInterface {
     }
 
     public boolean hasMandatoryParameters() {
-        return true;
+        return false;
     }
 
     public String getCommandName(){
@@ -92,6 +92,17 @@ public class CommandRemoteProjectCreate implements CommandInterface {
 		return sb.toString();
 	}
 
+    public String getUsageDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Usage: codenvy remote proj:create [<args>]");
+        return sb.toString();
+    }
+
+    public String getHelpDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("");
+        return sb.toString();
+    }
 
 	// Create a new project with a set of parameters.
 	// 1) Load (override) any parameters in file specified by --in

@@ -25,4 +25,6 @@ interface CommandInterface {
    	public String getCommandName();
    	public String getParentCommandName();
    	public String getUsageLongDescription();
+    public String getUsageDescription();
+    public String getHelpDescription();
  }

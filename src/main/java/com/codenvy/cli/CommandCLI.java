@@ -60,6 +60,18 @@ public class CommandCLI implements CommandInterface {
     	return("This is the Codenvy CLI.  You can either interact with the local system or execute remote commands against a Codenvy cloud instance.  For more information see http://docs.codenvy.com/cli.");
     }
 
+    public String getUsageDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Usage: codenvy <subcommand> <args>");
+        return sb.toString();
+    }
+
+    public String getHelpDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("For help on a subcommand run 'codenvy COMMAND --help'");
+        return sb.toString();
+    }
+
     public void execute() {}
 
     public void showNotYetImplemented() { System.out.println("This command is not yet implemented."); }

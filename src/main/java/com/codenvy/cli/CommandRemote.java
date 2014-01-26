@@ -52,6 +52,18 @@ public class CommandRemote implements CommandInterface {
 		return("The remote subcommand is used to interact with a remote Codenvy system.");
 	}
 
+    public String getUsageDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Usage: codenvy remote <subcommand> <args>");
+        return sb.toString();
+    }
+
+    public String getHelpDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("For help on a subcommand run 'codenvy remote COMMAND --help'");
+        return sb.toString();
+    }
+
     public void execute() {
 	}
 }

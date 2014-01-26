@@ -77,6 +77,17 @@ public class CommandRemoteProjectInit implements CommandInterface {
 		return sb.toString();
 	}
 
+    public String getUsageDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Usage: codenvy remote proj:init [<args>]");
+        return sb.toString();
+    }
+
+    public String getHelpDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("");
+        return sb.toString();
+    }
 
 	// Create a valid Factory URL with a set of parameters.
 	// 1) Look for parameters in default.c5y in local directory.

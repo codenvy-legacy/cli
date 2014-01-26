@@ -54,6 +54,18 @@ public class CommandRemoteWorkspaceList implements CommandInterface {
 		return("INSERT LONG DESCRIPTION FOR HELP");
 	}
     
+    public String getUsageDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Usage: codenvy remote ws:list [<args>]");
+        return sb.toString();
+    }
+
+    public String getHelpDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("");
+        return sb.toString();
+    }
+
     public void execute() {
     	System.out.println("not yet implemented");
     }

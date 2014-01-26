@@ -59,6 +59,18 @@ public class CommandRemoteFactoryInvoke implements CommandInterface {
         return sb.toString();
 	}
 
+    public String getUsageDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Usage: codenvy remote factory:invoke [<args>] url_to_invoke");
+        return sb.toString();
+    }
+
+    public String getHelpDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("");
+        return sb.toString();
+    }
+
     public void execute() {
         BrowserHelper.launchNativeBrowserSession(url);
     }

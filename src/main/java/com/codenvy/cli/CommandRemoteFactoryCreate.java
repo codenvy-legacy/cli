@@ -59,7 +59,7 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
     }
 
     public boolean hasMandatoryParameters() {
-        return true;
+        return false;
     }
 
     public String getCommandName(){
@@ -123,6 +123,17 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
 		return sb.toString();
 	}
 
+    public String getUsageDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Usage: codenvy remote factory:create [<args>]");
+        return sb.toString();
+    }
+
+    public String getHelpDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("");
+        return sb.toString();
+    }
 
 	// Create a valid Factory URL with a set of parameters.
 	// 1) Load (override) any parameters in file specified by --in

@@ -180,11 +180,11 @@ public class CodenvyCLI
      
      // Will show the pretty format usage.
      // Navigates JCommander object to determine what to print.
-     // All help comments are embedded with JCommander properties.
-     // 1) Usage
-     // 2) Parameters for this command available.
-     // 3) Available subcommands, if any
-     // 4) How to get help on a subcommand, if any
+     // 1) Get long description from the command
+     // 2) Get usage line syntax from the command
+     // 3) Iterate through JCommander object to find any parameters, if any
+     // 4) Iterate through JCommander object to find any subcommands
+     // 5) Get additional help statement from the command
      private static void showUsage(JCommander jc, CommandInterface cci) {
      	
      	Map<String, JCommander> map = jc.getCommands();
@@ -203,29 +203,11 @@ public class CodenvyCLI
      			level++;
      	}
 
+
      	StringBuilder sb = new StringBuilder();
-     	sb.append("\n");
 		sb.append(cci.getUsageLongDescription());
 		sb.append("\n\n");
-     	sb.append("Usage: codenvy ");
-
-
-     	// Print out the primary usage line.
-     	// Include the context sensitive commands detected.
-
-     	if (level == 0) {
-     		sb.append("[<subcommand>] ");
-   
-     	} else if (level == 1) {
-     		sb.append(parsedCommand + " ");
-     		if (parsedCommand == "remote") sb.append("[<subcommand>] ");
-
-     	} else {
-
-     		sb.append("remote " + subParsedCommand + " ");
-       	}
-
-     	sb.append("[<args>]");
+        sb.append(cci.getUsageDescription());
      	sb.append("\n\n");
     
         // Display the available arguments for this command.
@@ -264,6 +246,7 @@ public class CodenvyCLI
 
 
      	// Display the available subcommands, if any.
+        // TODO: 
        	Map<String, JCommander> sub_map = map;
 
      	if (parsedCommand == "remote") 
@@ -291,12 +274,10 @@ public class CodenvyCLI
                 sb.append(obj.getCommandDescription(s) + "\n");
 
             }
-
-     		sb.append("\nFor help on a subcommand run 'codenvy ");
-     		if (parsedCommand == "remote") sb.append("remote ");
-     		sb.append("COMMAND --help'\n");
      	}
-     	
+
+        sb.append("\n");
+        sb.append(cci.getHelpDescription());
      	System.out.println(sb.toString());
     	System.exit(0); 	
 
