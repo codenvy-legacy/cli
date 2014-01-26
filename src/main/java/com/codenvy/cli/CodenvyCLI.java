@@ -8,6 +8,25 @@ import java.util.*;
 
 public class CodenvyCLI 
 {
+
+   static class CommandValue {
+        CommandInterface command_object;
+        String command_name;
+        String parent_command_name;
+        boolean hasSubCommands;
+        boolean hasMandatoryParameters;
+
+        public CommandValue (CommandInterface o, String a, String p, boolean b, boolean c ) {
+            command_object = o;
+            command_name = a;
+            parent_command_name = p;
+            hasSubCommands = b;
+            hasMandatoryParameters = c;
+        }
+
+    }
+
+
 	private static double CLI_VERSION = 0.1;
 
 	private static final int PARAMETER_OFFSET = 25;
@@ -16,29 +35,12 @@ public class CodenvyCLI
 	private static boolean bad_parameter = false;
 	private static boolean bad_command = false;
 
-    private static ServiceLoader<CommandInterface> cli_command_loader = ServiceLoader.load(CommandInterface.class);
+    private static ServiceLoader<CommandInterface> cli_command_loader;
+    private static Map<String, CommandValue> command_config_map;
 
-    public static void main( String[] args )
-    {
-  
-        class CommandValue {
-            CommandInterface command_object;
-            String command_name;
-            String parent_command_name;
-            boolean hasSubCommands;
-            boolean hasMandatoryParameters;
-
-            public CommandValue (CommandInterface o, String a, String p, boolean b, boolean c ) {
-                command_object = o;
-                command_name = a;
-                parent_command_name = p;
-                hasSubCommands = b;
-                hasMandatoryParameters = c;
-            }
-
-        }
-
-        Map<String, CommandValue> command_config_map = new HashMap<String, CommandValue>();
+    static {
+        cli_command_loader = ServiceLoader.load(CommandInterface.class);
+        command_config_map = new HashMap<String, CommandValue>();
 
         // STEP 1: Pull out all of the commands in the Service Loader.
         // STEP 2: Create a HashMap of each loaded command & its configuration options
@@ -50,7 +52,11 @@ public class CodenvyCLI
                                                     ci.hasSubCommands(),
                                                     ci.hasMandatoryParameters()));
         }
+    }
 
+
+    public static void main( String[] args ) {
+ 
         CommandCLI cli = new CommandCLI();
 
         // Setup the JCommander objects for parsing.
@@ -188,19 +194,27 @@ public class CodenvyCLI
      private static void showUsage(JCommander jc, CommandInterface cci) {
      	
      	Map<String, JCommander> map = jc.getCommands();
-     	String parsedCommand = jc.getParsedCommand();
-     	String subParsedCommand = null;
+     	String parsed_command = jc.getParsedCommand();
+     	String sub_parsed_command = null;
 
      	// The level of commands parsed.
      	// Level 0 = no commands passed in.
      	// Level 1 = remote, auth, install_simple, etc.
      	// Level 2 = any valid remote subcommand
  		int level = 0;
-     	if (parsedCommand != null) {
+     	if (parsed_command != null) {
      		level++;
-     		subParsedCommand = jc.getCommands().get("remote").getParsedCommand();
-     		if (subParsedCommand != null)
-     			level++;
+
+            for (CommandValue cv : command_config_map.values()) {
+                if (parsed_command.equals(cv.command_name)) {
+                    if (cv.hasSubCommands) {
+                        sub_parsed_command = jc.getCommands().get(cv.command_name).getParsedCommand();
+                        if (sub_parsed_command != null) {
+                            level++;
+                        }
+                    }
+                }
+            }
      	}
 
 
@@ -220,13 +234,12 @@ public class CodenvyCLI
      	JCommander command = jc;
 
      	if (level == 1)
-     		command = map.get(parsedCommand);
+     		command = map.get(parsed_command);
      	
      	if (level == 2)
-     		command = map.get(parsedCommand).getCommands().get(subParsedCommand);
+     		command = map.get(parsed_command).getCommands().get(sub_parsed_command);
 
      	List<ParameterDescription> list = command.getParameters();
-
         java.util.Collections.sort(list,
                                    new Comparator<ParameterDescription>() {
                                        public int compare(ParameterDescription p1, ParameterDescription p2) {
@@ -238,6 +251,7 @@ public class CodenvyCLI
      	for (ParameterDescription e : list) {
      		sb.append("   " + e.getNames());
 
+            // PARAMETER_OFFSET is for pretty printing
      		for (int i = 0; i< (PARAMETER_OFFSET-e.getNames().length()-4); i++)
      			sb.append(" ");
 
@@ -246,19 +260,32 @@ public class CodenvyCLI
 
 
      	// Display the available subcommands, if any.
-        // TODO: 
-       	Map<String, JCommander> sub_map = map;
+        // If level 0, then there are definitely subcommands, we will use the main map.
+        // If level 1, then we need to get a sub_map of JCommander objects.
+        Map<String, JCommander> sub_map = map;
+        boolean print_subcommands = false;
 
-     	if (parsedCommand == "remote") 
-     		sub_map = map.get(parsedCommand).getCommands();
+        if (level == 0)
+            print_subcommands = true;
 
-        // Sort the sub_map
-        List<String> subcommand_list = new ArrayList<String>(sub_map.keySet());
-        java.util.Collections.sort(subcommand_list);
+        if (parsed_command != null) {
+            for (CommandValue cv : command_config_map.values()) {
+                if (parsed_command.equals(cv.command_name)) {
+                    if (cv.hasSubCommands && (level == 1)) {
+                        print_subcommands = true;
+                        sub_map = map.get(parsed_command).getCommands();
+                    }
+                }
+            }
+        }
 
-     	if (level == 0 || (level == 1 && parsedCommand == "remote")) {
-     		sb.append("\nAvailable subcommands:\n");
-     		
+        if (print_subcommands) {
+            // Sort the sub_map
+            List<String> subcommand_list = new ArrayList<String>(sub_map.keySet());
+            java.util.Collections.sort(subcommand_list);
+
+            sb.append("\nAvailable subcommands:\n");
+                
             for (String s : subcommand_list) {
                 sb.append("   " + s);
                 for (int i = 0; i < (COMMAND_OFFSET-s.length()-4); i++)
@@ -268,13 +295,20 @@ public class CodenvyCLI
                 // If this is the main command, use the main JCommander object.
                 // If this is a remote subcommand, then get the remote JCommander object
                 JCommander obj = jc;
-                if (parsedCommand == "remote") 
-                    obj = map.get("remote");
+                if (parsed_command != null) {
+                    for (CommandValue cv : command_config_map.values()) {
+                        if (parsed_command.equals(cv.command_name)) {
+                            if (cv.hasSubCommands) {
+                                obj = map.get(parsed_command);
+                            }
+                        }
+                    }
+                }
 
                 sb.append(obj.getCommandDescription(s) + "\n");
 
             }
-     	}
+        }
 
         sb.append("\n");
         sb.append(cci.getHelpDescription());
