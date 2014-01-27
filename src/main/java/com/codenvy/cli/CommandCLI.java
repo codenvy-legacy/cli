@@ -74,6 +74,4 @@ public class CommandCLI implements CommandInterface {
 
     public void execute() {}
 
-    public void showNotYetImplemented() { System.out.println("This command is not yet implemented."); }
-
  }

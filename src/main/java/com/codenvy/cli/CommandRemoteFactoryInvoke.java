@@ -19,6 +19,7 @@ package com.codenvy.cli;
 
 import com.beust.jcommander.*;
 import com.beust.jcommander.converters.*;
+import java.util.*;
 
 /**
  * Set of parameters and help for 'codenvy remote factory:invoke' command
@@ -31,9 +32,9 @@ public class CommandRemoteFactoryInvoke implements CommandInterface {
 	private boolean help;
     public boolean getHelp() { return help; }
 
-    @Parameter(names = { "--url" }, description = "The Factory URL to launch in a new browser session")
-    private String url = "https://codenvy.com";
-    public String getURL() { return url; }
+    @Parameter(description = "The Factory URL to launch in a new browser session")
+    private List<String> url = new ArrayList<String>(Arrays.asList("https://codenvy.com"));
+    public String getURL() { return url.get(1); }
 
     public boolean hasSubCommands() {
         return false;
@@ -54,8 +55,8 @@ public class CommandRemoteFactoryInvoke implements CommandInterface {
     public String getUsageLongDescription() {
         StringBuilder sb = new StringBuilder();
         sb.append("Launches a new browser session and invokes a Factory URL.  The Factory URL is\n");
-        sb.append("provided by the --url option.  There is no type checking of parameters in the\n");
-        sb.append("URL.  If no URL provided, will launch codenvy.com.\n");
+        sb.append("provided by a default argument. There is no type checking of parameters in the\n");
+        sb.append("URL.\n");
         return sb.toString();
 	}
 
@@ -72,6 +73,6 @@ public class CommandRemoteFactoryInvoke implements CommandInterface {
     }
 
     public void execute() {
-        BrowserHelper.launchNativeBrowserSession(url);
+        BrowserHelper.launchNativeBrowserSession(url.get(1));
     }
 }

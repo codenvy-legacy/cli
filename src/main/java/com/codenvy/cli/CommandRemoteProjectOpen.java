@@ -20,6 +20,8 @@ package com.codenvy.cli;
 import com.beust.jcommander.*;
 import com.beust.jcommander.converters.*;
 
+import java.util.*;
+
 /**
  * Set of parameters and help for 'codenvy remote project:open' command
  *
@@ -31,9 +33,9 @@ public class CommandRemoteProjectOpen implements CommandInterface {
 	private boolean help;
     public boolean getHelp() { return help; }
 
-    @Parameter(names = { "--url" }, description = "The Project URL to launch in a new browser session")
-    private String url = "https://codenvy.com";
-    public String getURL() { return url; }
+    @Parameter(description = "The Project URL to launch in a new browser session")
+    private List<String> url = new ArrayList<String>(Arrays.asList("https://codenvy.com"));
+    public String getURL() { return url.get(1); }
 
     public boolean hasSubCommands() {
         return false;
@@ -54,7 +56,7 @@ public class CommandRemoteProjectOpen implements CommandInterface {
     public String getUsageLongDescription() {
         StringBuilder sb = new StringBuilder();
         sb.append("Launches a new browser session and opens a Project URL. The Project URL is\n");
-        sb.append("provided by the --url option.  If no URL provided, will launch codenvy.com.\n");
+        sb.append("provided by a default option.\n");
         return sb.toString();
 	}
 
@@ -71,6 +73,6 @@ public class CommandRemoteProjectOpen implements CommandInterface {
     }
 
     public void execute() {
-        BrowserHelper.launchNativeBrowserSession(url);
+        BrowserHelper.launchNativeBrowserSession(url.get(1));
     }
 }

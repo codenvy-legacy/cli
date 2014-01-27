@@ -49,7 +49,7 @@ public class CommandRemoteProjectInit implements CommandInterface {
     }
 
     public boolean hasMandatoryParameters() {
-        return false;
+        return true;
     }
 
     public String getCommandName(){
@@ -79,7 +79,7 @@ public class CommandRemoteProjectInit implements CommandInterface {
 
     public String getUsageDescription() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Usage: codenvy remote proj:init [<args>]");
+        sb.append("Usage: codenvy remote proj:init <args>");
         return sb.toString();
     }
 

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.StringBuilder;
 import java.net.URL;
 import java.util.*;
+import java.io.*;
 
 public class CodenvyCLI 
 {
@@ -28,6 +29,28 @@ public class CodenvyCLI
 
     }
 
+    static class CommandMap {
+        String command_name;
+        JCommander command_jc;
+        List<CommandMap> subcommands;
+        CommandMap parent_command;
+        List<ParameterDescription> parameters;
+        CommandValue command_object;
+
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Loaded Command:   " + command_name + "\n");
+            if (parent_command != null) {
+                sb.append("Parent:           " + parent_command.command_name + "\n");
+            } else {
+                sb.append("Parent:           " + "NONE" + "\n");
+            }
+
+            sb.append("Children:         " + subcommands + "\n");
+            sb.append("Parameters:       " + parameters + "\n");
+            return sb.toString();
+        }
+    }
 
 	private static final int PARAMETER_OFFSET = 25;
 	private static final int COMMAND_OFFSET = 29;
@@ -37,10 +60,15 @@ public class CodenvyCLI
 
     private static ServiceLoader<CommandInterface> cli_command_loader;
     private static Map<String, CommandValue> command_config_map;
+    private static Map<String, CommandMap> command_map;
+    private static JCommander jc;
 
+    // Load all of the commands dynamically through CI.
+    // Create a simple holding object for some of the information needed later.
     static {
         cli_command_loader = ServiceLoader.load(CommandInterface.class);
         command_config_map = new HashMap<String, CommandValue>();
+        command_map = new HashMap<String, CommandMap>();
 
         // STEP 1: Pull out all of the commands in the Service Loader.
         // STEP 2: Create a HashMap of each loaded command & its configuration options
@@ -55,12 +83,36 @@ public class CodenvyCLI
     }
 
 
+    // Load the Parsed Command Linked Map
+    public static void loadCommandMap(String command, JCommander jci) {
+        CommandMap parsed_command_map = new CommandMap();        
+        parsed_command_map.command_name = command;
+        parsed_command_map.command_jc = jci;
+        parsed_command_map.parent_command = null;
+        parsed_command_map.command_object = command_config_map.get(command);
+        parsed_command_map.subcommands = new ArrayList<CommandMap>();
+        parsed_command_map.parameters = new ArrayList<ParameterDescription>();
+
+
+        // Get all of the subcommands.
+        for (CommandValue cv : command_config_map.values()) {
+            if ((cv.parent_command_name != null) && cv.parent_command_name.equals(command)) {
+                loadCommandMap(cv.command_name, jci.getCommands().get(cv.command_name));
+            }
+        }
+
+        // Get all of the parameters for this command.
+        parsed_command_map.parameters = jci.getParameters();
+        command_map.put(parsed_command_map.command_name, parsed_command_map);
+    }
+
+
     public static void main( String[] args ) {
- 
+   
         CommandCLI cli = new CommandCLI();
 
         // Setup the JCommander objects for parsing.
-        JCommander jc = new JCommander(cli);
+        jc = new JCommander(cli);
         jc.setProgramName(cli.getCommandName());
 
 
@@ -68,7 +120,7 @@ public class CodenvyCLI
         // If the parent command is "codenvy", then it is a root command.
         // Otherwise, add the command to its parent command.
         for (CommandValue cv : command_config_map.values()) {
-            if (cv.parent_command_name.equals("codenvy")) {
+            if ((cv.parent_command_name != null) && cv.parent_command_name.equals("codenvy")) {
                 jc.addCommand(cv.command_name, cv.command_object);
 
                 if (cv.hasSubCommands) {
@@ -77,7 +129,7 @@ public class CodenvyCLI
                     // We are running through the same list
                     // If the new object's parent matches the name of the outer command, then we have an embedded match
                     for (CommandValue cv2 : command_config_map.values()) {
-                        if (cv2.parent_command_name.equals(cv.command_name)) {
+                        if ((cv2.parent_command_name != null) && cv2.parent_command_name.equals(cv.command_name)) {
                             jc.getCommands().get(cv.command_name).addCommand(cv2.command_name, cv2.command_object);
                         }
                     }
@@ -113,72 +165,60 @@ public class CodenvyCLI
             showPrintVersion();
         }
 
-        // If there are no arguments, or if the parsed command is null, or if they designated main help, then provide it.
-        if ((args.length == 0) ||
-            (jc.getParsedCommand() == null) ||
-            (cli.getHelp())) {
-                showUsage(jc, cli);
-        } 
+        // Loads properties of each command into hashmap.
+        loadCommandMap("codenvy", jc);
 
-        // If there is a bad command provided, then also show help
-        // Provide the right help.  If the root level bad command, then provide root level help.
-        // If it's a bad subcommand, then provide subcommand help.
-        if (bad_command) {
-            // If the parsed command matches any key in the configuration map, then it's a subcommand.
-            // Otherwise, it's a bad main level command.
-            if (command_config_map.containsKey(jc.getParsedCommand())) {
-                showUsage(jc, command_config_map.get(jc.getParsedCommand()).command_object);
-            } else {
-                showUsage(jc, cli);
-            }
-        }
-
-        // Execute each command, or show help if there is a more elaborate error.
+        // After initial map created, then update parent and children links appropriately.
         for (CommandValue cv : command_config_map.values()) {
-            if (jc.getParsedCommand().equals(cv.command_name)) {
-
-                // We have a match.
-                // If the help flag was explicitly set, then print help.
-                // If the command requires parameters and has none, then print help.
-                // If there was a bad parameter & there is no sub parsed command, then print help
-                if (cv.command_object.getHelp() || 
-                   (cv.hasMandatoryParameters && (args.length == 1)) ||
-                   (bad_parameter && jc.getCommands().get(cv.command_name).getParsedCommand() == null)) {
-                        showUsage(jc, cv.command_object);
-                }
-
-                // Execute the command
-                cv.command_object.execute();
-
-                // If the command object has sub commands, then we need to perform the same function.
+            if (cv.command_name != null) {
+                CommandMap map = command_map.get(cv.command_name);
+                map.parent_command = command_map.get(cv.parent_command_name);
                 if (cv.hasSubCommands) {
-
-                    if (jc.getCommands().get(cv.command_name).getParsedCommand() == null) {
-                        showUsage(jc, cv.command_object);
-                    }
-
-
-                    // After a first run through of tier 1 objects, then do tier 2
                     for (CommandValue cv2 : command_config_map.values()) {
-                        if (cv2.parent_command_name.equals(cv.command_name) &&
-                            jc.getCommands().get(cv.command_name).getParsedCommand().equals(cv2.command_name)) {
-
-                                // We have a match on the subcommand.
-                                // If there was a bad parameter, then print help.
-                                // If there was a help flag set, then print help.
-                                // If the command requires a parameter and there is none, then print help.
-                                if (cv2.command_object.getHelp() ||
-                                   (cv2.hasMandatoryParameters && (args.length == 2)) ||
-                                    bad_parameter) {
-                                        showUsage(jc, cv2.command_object);
-                                }
-
-                                cv2.command_object.execute();
+                        if ((cv2.command_name != null) && (cv2.parent_command_name != null) && cv2.parent_command_name.equals(cv.command_name)) {
+                            map.subcommands.add(command_map.get(cv2.command_name));
                         }
                     }
-                }
+                } 
+                command_map.put(cv.command_name, map);
             }
         }
+
+        // Determine which command was effectively loaded and should be the "centered" discussion point.
+        String loaded_parsed_command = null;
+        if (jc.getParsedCommand() == null) {
+           loaded_parsed_command = "codenvy";
+        } else {
+            loaded_parsed_command = jc.getParsedCommand();
+            if (command_map.get(loaded_parsed_command).command_object.hasSubCommands) {
+                String sub_parsed_command = jc.getCommands().get(loaded_parsed_command).getParsedCommand();
+                if (sub_parsed_command != null) {
+                    loaded_parsed_command = sub_parsed_command;
+                }
+            }   
+        }
+
+        CommandMap parsed_command = command_map.get(loaded_parsed_command);
+        int depth = 0;
+        CommandMap loop_command = parsed_command;
+        while (loop_command.parent_command != null) {
+            depth++;
+            loop_command = loop_command.parent_command;
+        }
+
+        // If there are no arguments, or if the parsed command is null, or if they designated main help, then provide it.
+        if ((args.length == 0) ||
+            (cli.getHelp()) ||
+            bad_command ||
+            bad_parameter ||
+            parsed_command.command_object.command_object.getHelp() ||
+            (parsed_command.command_object.command_object.hasMandatoryParameters() && args.length == depth)) {
+              showUsage(loaded_parsed_command);
+        }
+
+        // Execute the command
+        parsed_command.command_object.command_object.execute();
+
      }
 
      
@@ -189,56 +229,19 @@ public class CodenvyCLI
      // 3) Iterate through JCommander object to find any parameters, if any
      // 4) Iterate through JCommander object to find any subcommands
      // 5) Get additional help statement from the command
-     private static void showUsage(JCommander jc, CommandInterface cci) {
-     	
-     	Map<String, JCommander> map = jc.getCommands();
-     	String parsed_command = jc.getParsedCommand();
-     	String sub_parsed_command = null;
+     private static void showUsage(String command_name) {
 
-     	// The level of commands parsed.
-     	// Level 0 = no commands passed in.
-     	// Level 1 = remote, auth, install_simple, etc.
-     	// Level 2 = any valid remote subcommand
- 		int level = 0;
-     	if (parsed_command != null) {
-     		level++;
+        StringBuilder sb = new StringBuilder();
+        CommandMap command = command_map.get(command_name);
+        sb.append(command.command_object.command_object.getUsageLongDescription());
+        sb.append("\n\n");
+        sb.append(command.command_object.command_object.getUsageDescription());
+        sb.append("\n\n");
 
-            for (CommandValue cv : command_config_map.values()) {
-                if (parsed_command.equals(cv.command_name)) {
-                    if (cv.hasSubCommands) {
-                        sub_parsed_command = jc.getCommands().get(cv.command_name).getParsedCommand();
-                        if (sub_parsed_command != null) {
-                            level++;
-                        }
-                    }
-                }
-            }
-     	}
+        // List all of the arguments, sorted for this command.    
+        sb.append("Available arguments:\n");
 
-
-     	StringBuilder sb = new StringBuilder();
-		sb.append(cci.getUsageLongDescription());
-		sb.append("\n\n");
-        sb.append(cci.getUsageDescription());
-     	sb.append("\n\n");
-    
-        // Display the available arguments for this command.
-        // Step 1: Get the right command object.
-        // Step 2: Get a List of all the parameters for this object.
-        // Step 3: Sort the list alphabetically by name.
-        // Step 4: List the parameters in pretty print format.
-     	sb.append("Available arguments:\n");
-
-     	JCommander command = jc;
-
-     	if (level == 1)
-     		command = map.get(parsed_command);
-     	
-     	if (level == 2)
-     		command = map.get(parsed_command).getCommands().get(sub_parsed_command);
-
-     	List<ParameterDescription> list = command.getParameters();
-        java.util.Collections.sort(list,
+        java.util.Collections.sort(command.parameters,
                                    new Comparator<ParameterDescription>() {
                                        public int compare(ParameterDescription p1, ParameterDescription p2) {
                                             int i = p1.getLongestName().compareTo(p2.getLongestName());
@@ -246,74 +249,48 @@ public class CodenvyCLI
                                        }
                                    });
 
-     	for (ParameterDescription e : list) {
-     		sb.append("   " + e.getNames());
+        for (ParameterDescription e : command.parameters) {
+            sb.append("   " + e.getNames());
 
             // PARAMETER_OFFSET is for pretty printing
-     		for (int i = 0; i< (PARAMETER_OFFSET-e.getNames().length()-4); i++)
-     			sb.append(" ");
+            for (int i = 0; i< (PARAMETER_OFFSET-e.getNames().length()-4); i++)
+                sb.append(" ");
 
-     		sb.append(e.getDescription()+ "\n");
-     	}
-
-
-     	// Display the available subcommands, if any.
-        // If level 0, then there are definitely subcommands, we will use the main map.
-        // If level 1, then we need to get a sub_map of JCommander objects.
-        Map<String, JCommander> sub_map = map;
-        boolean print_subcommands = false;
-
-        if (level == 0)
-            print_subcommands = true;
-
-        if (parsed_command != null) {
-            for (CommandValue cv : command_config_map.values()) {
-                if (parsed_command.equals(cv.command_name)) {
-                    if (cv.hasSubCommands && (level == 1)) {
-                        print_subcommands = true;
-                        sub_map = map.get(parsed_command).getCommands();
-                    }
-                }
-            }
+            sb.append(e.getDescription()+ "\n");
         }
 
-        if (print_subcommands) {
-            // Sort the sub_map
-            List<String> subcommand_list = new ArrayList<String>(sub_map.keySet());
+
+        // Loop through all of the subcommands in our master map
+        // Pull out the command name for each subcommand
+        // Sort the resulting list
+        if (command.subcommands.size() > 0) {        
+            List<String> subcommand_list = new ArrayList<String>();
+            for (CommandMap cm : command.subcommands) {
+                subcommand_list.add(cm.command_name);
+            }
+
             java.util.Collections.sort(subcommand_list);
 
             sb.append("\nAvailable subcommands:\n");
                 
             for (String s : subcommand_list) {
                 sb.append("   " + s);
-                for (int i = 0; i < (COMMAND_OFFSET-s.length()-4); i++)
+                for (int i = 0; i < (COMMAND_OFFSET-s.length()-4); i++) {
                     sb.append(" ");
-
-                // Tricky.  Not obvious answer here.
-                // If this is the main command, use the main JCommander object.
-                // If this is a remote subcommand, then get the remote JCommander object
-                JCommander obj = jc;
-                if (parsed_command != null) {
-                    for (CommandValue cv : command_config_map.values()) {
-                        if (parsed_command.equals(cv.command_name)) {
-                            if (cv.hasSubCommands) {
-                                obj = map.get(parsed_command);
-                            }
-                        }
-                    }
                 }
 
-                sb.append(obj.getCommandDescription(s) + "\n");
-
+                // Get the parent JCommander object, and then do a command lookup on the parent to get the right description
+                sb.append(command_map.get(s).parent_command.command_jc.getCommandDescription(s) + "\n");
             }
         }
 
         sb.append("\n");
-        sb.append(cci.getHelpDescription());
-     	System.out.println(sb.toString());
-    	System.exit(0); 	
+        sb.append(command.command_object.command_object.getHelpDescription());
+        System.out.println(sb.toString());
+        System.exit(0);     
 
      }
+
 
      private static void showPrintVersion() {
         System.out.println(" _____           _                       ");
