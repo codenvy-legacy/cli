@@ -2,7 +2,6 @@ package com.codenvy.cli;
 
 import com.beust.jcommander.*;
 import com.codenvy.cli.*;
-import java.io.IOException;
 import java.lang.StringBuilder;
 import java.util.*;
 
@@ -32,6 +31,40 @@ public class CodenvyCLI
         }
     }
 
+    static class CommandMapHash extends HashMap<String, CommandMap> {
+        CommandMap root_node = null;
+
+        public void setRootNode(CommandMap root) {
+            root.parent_command = null;
+            root.subcommands = new ArrayList<CommandMap> ();
+            jc = new JCommander(root.command_object);
+            jc.setProgramName(root.command_name);
+            root.command_jc = jc;
+            root.parameters = jc.getParameters();
+
+            root_node = root;
+            put(root.command_name, root);
+        }
+
+        public CommandMap getRootNode() {
+            return root_node;
+        }
+
+        public void addChild(CommandMap parent, CommandMap child) {
+            child.parent_command = parent;
+            child.subcommands = new ArrayList<CommandMap> ();
+            parent.subcommands.add(child);
+
+            parent.command_jc.addCommand(child.command_name, child.command_object);
+            child.command_jc = parent.command_jc.getCommands().get(child.command_name);
+            child.parameters = child.command_jc.getParameters();
+
+            // Find the JCommander object.  Recursively loop
+            put(child.command_name, child);
+        }
+
+    }
+
 	private static final int PARAMETER_OFFSET = 25;
 	private static final int COMMAND_OFFSET = 29;
 
@@ -39,86 +72,47 @@ public class CodenvyCLI
 	private static boolean bad_command = false;
 
     private static ServiceLoader<CommandInterface> cli_command_loader;
-    private static Map<String, CommandMap> command_map;
+    private static Map<String, CommandMap> shadow;
     private static JCommander jc;
+    private static Map<String, CommandMap> loaded;
+    private static CommandMapHash command_map;
 
+
+    public static void findAndAddChildrenCommands(CommandMap parent) {
+        for (CommandInterface ci : cli_command_loader) {
+            if ((ci.getParentCommandName() != null) && (ci.getParentCommandName() == parent.command_name)) {
+                CommandMap child_cm = loaded.get(ci.getCommandName());
+                command_map.addChild(parent, child_cm);
+                findAndAddChildrenCommands(child_cm);
+            }
+        }
+    }
 
     public static void main( String[] args ) {
    
         cli_command_loader = ServiceLoader.load(CommandInterface.class);
-        command_map = new HashMap<String, CommandMap>();
+        //command_map = new HashMap<String, CommandMap>();
 
-        // Load the static command_map with objects.
-        // It's essentially a tree set, but manually built up.
-        // On this first pass, load each object, create its JCommander peer, and load them into the map
-        // On the second pass, then discover the appropriate subcommands to create that list.
+        command_map = new CommandMapHash();
+        loaded = new HashMap<String, CommandMap>();
+
+        // Load all of the empty Command Objects
         for (CommandInterface ci : cli_command_loader) {
+            CommandMap cm = new CommandMap();
+            cm.command_name = ci.getCommandName();
+            cm.command_object = ci;
+            loaded.put(ci.getCommandName(), cm);
+
             if (ci.getParentCommandName() == null) {
-                jc = new JCommander(ci);
-                jc.setProgramName(ci.getCommandName());
-
-                CommandMap map_object = new CommandMap();
-                map_object.command_name = ci.getCommandName();
-                map_object.subcommands = new ArrayList<CommandMap>();
-                map_object.parent_command = null;
-                map_object.parameters = jc.getParameters();
-                map_object.command_jc = jc;
-                map_object.command_object = ci;
-
-                command_map.put(ci.getCommandName(), map_object);
-
-                for (CommandInterface ci2 : cli_command_loader) {        
-                     if ((ci2.getParentCommandName() != null) && (ci2.getParentCommandName().equals(ci.getCommandName()))) {
-                        jc.addCommand(ci2.getCommandName(), ci2);
-
-                        CommandMap map_object2 = new CommandMap();
-                        map_object2.command_name = ci2.getCommandName();
-                        map_object2.parent_command = map_object;
-                        map_object2.subcommands = new ArrayList<CommandMap>();
-                        map_object2.parameters = jc.getCommands().get(ci2.getCommandName()).getParameters();
-                        map_object2.command_jc = jc.getCommands().get(ci2.getCommandName());
-                        map_object2.command_object = ci2;
-
-                        command_map.put(ci2.getCommandName(), map_object2);
-
-                        if (ci2.hasSubCommands()) {
-                            for (CommandInterface ci3 : cli_command_loader) {        
-                                if ((ci3.getParentCommandName() != null) && (ci3.getParentCommandName().equals(ci2.getCommandName()))) {
-                                    jc.getCommands().get(ci2.getCommandName()).addCommand(ci3.getCommandName(), ci3);
-
-                                    CommandMap map_object3 = new CommandMap();
-                                    map_object3.command_name = ci3.getCommandName();
-                                    map_object3.parent_command = map_object2;
-                                    map_object3.subcommands = new ArrayList<CommandMap>();
-                                    map_object3.parameters = jc.getCommands().get(ci2.getCommandName()).getCommands().get(ci3.getCommandName()).getParameters();
-                                    map_object3.command_jc = jc.getCommands().get(ci2.getCommandName()).getCommands().get(ci3.getCommandName());
-                                    map_object3.command_object = ci3;
-
-                                    command_map.put(ci3.getCommandName(), map_object3);
-                                }
-                            }
-                        }
-                    }
-                }
+                command_map.setRootNode(cm);
             }
         }
 
-        // After initial map created, then update parent and children links appropriately.
-        // Second pass
-        for (CommandInterface ci : cli_command_loader) {
-            if (ci.getCommandName() != null) {
-                CommandMap map = command_map.get(ci.getCommandName());
-                if (ci.hasSubCommands()) {
-                    for (CommandInterface ci2 : cli_command_loader) {
-                        if ((ci2.getCommandName() != null) && (ci2.getParentCommandName() != null) && ci2.getParentCommandName().equals(ci.getCommandName())) {
-                            map.subcommands.add(command_map.get(ci2.getCommandName()));
-                        }
-                    }
-                } 
-                command_map.put(ci.getCommandName(), map);
-            }
-        }
-
+        // 1) Get root node.
+        // 2) Find all of its children in loaded commands.
+        // 3) Add the child to the parent
+        // 4) Repeat for each child iteratively.
+        findAndAddChildrenCommands(command_map.getRootNode());
 
         // Do the parse of the command line parameters.
         try {
@@ -144,6 +138,10 @@ public class CodenvyCLI
  	    }
 
         // Determine which command was effectively loaded and should be the "centered" discussion point.
+        // If you have a tiered set of commands: codenvy->remote->factory:create then JComander will 
+        // have multiple parsed commands.  getParsedCommand() will return true for "remote" and also 
+        // true if you get the remote JC and test "factory:create".  A simple iteration through to 
+        // see which parsed commands are returned is not sufficient.  
         int depth = 0;
         String loaded_parsed_command = null;
         if (jc.getParsedCommand() == null) {
