@@ -112,7 +112,8 @@ public class CommandRemoteProjectCreate implements CommandInterface {
 	// 4) If --out, then take the resulting URL and output parameters to specified file
 	// 5) If --launch, then open a browser session with the new URL
     public void execute() {
-
+            System.out.println("not yet implemented");
+            System.exit(0);
     	// Internal JSON Object to store / override parameters.
     	JSONObject factory_params = new JSONObject();
     	String project_url = null;
