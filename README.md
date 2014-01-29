@@ -17,7 +17,7 @@ Test your configuration by entering `codenvy` in the console window.  You should
 
 Getting Started Guide
 ---------------------
-To learn how to interact with remote Codenvy systems, create new projects, load them into the system, and analyze their behavior, view the [Getting Staryed Guide.] (http://docs.codenvy.com/cli)
+To learn how to interact with remote Codenvy systems, create new projects, load them into the system, and analyze their behavior, view the [Getting Started Guide.] (http://docs.codenvy.com/cli)
 
 Contributing to the CLI
 -----------------------
