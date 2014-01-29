@@ -91,8 +91,6 @@ public class CodenvyCLI
     public static void main( String[] args ) {
    
         cli_command_loader = ServiceLoader.load(CommandInterface.class);
-        //command_map = new HashMap<String, CommandMap>();
-
         command_map = new CommandMapHash();
         loaded = new HashMap<String, CommandMap>();
 
