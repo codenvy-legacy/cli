@@ -88,6 +88,7 @@ public class CommandCLI implements CommandInterface {
             System.out.println(SystemUtils.OS_ARCH);
             System.out.println(SystemUtils.OS_VERSION);
             System.out.println(SystemUtils.USER_HOME);
+            System.out.println(SystemUtils.JAVA_VERSION);
 
             URL url = null;
             try {

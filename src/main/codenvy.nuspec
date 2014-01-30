@@ -16,6 +16,6 @@
   </metadata>
   <files>
     <file src="codenvy.bat" target="" />
-    <file src="$JAR_FILE$" target="target" />
+    <file src="target\codenvy-cli-0.1-SNAPSHOT.jar" target="target" />
   </files>
 </package>
