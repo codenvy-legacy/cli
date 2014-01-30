@@ -1,4 +1,4 @@
 @echo off
-set JAVA_LOCATION="%JAVA_HOME%"
-cmd /c "%JAVA_LOCATION%\bin\java -jar target\codenvy-cli-0.1-SNAPSHOT.jar %*"
+set JAVA_HOME="%JAVA_HOME%"
+cmd /c "%JAVA_HOME%\bin\java -jar target\codenvy-cli-0.1-SNAPSHOT.jar %*"
 exit /b %errorlevel%
