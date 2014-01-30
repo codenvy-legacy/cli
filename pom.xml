@@ -124,7 +124,7 @@
               <outputFile>codenvy.bat</outputFile>
               <regex>false</regex>
               <token>$JAR_FILE$</token>
-              <value>target\${project.artifactId}-${project.version}.jar</value>
+              <value>${project.artifactId}-${project.version}.jar</value>
             </configuration>
           </execution>
           <execution>
@@ -138,7 +138,7 @@
               <outputFile>codenvy.sh</outputFile>
               <regex>false</regex>
               <token>$JAR_FILE$</token>
-              <value>target\${project.artifactId}-${project.version}.jar</value>
+              <value>${project.artifactId}-${project.version}.jar</value>
             </configuration>
           </execution>
         </executions>
