@@ -1,5 +1,6 @@
 package com.codenvy.cli;
 
+import org.apache.commons.lang3.SystemUtils;
 import com.beust.jcommander.*;
 import com.codenvy.cli.*;
 import java.lang.StringBuilder;
@@ -90,6 +91,12 @@ public class CodenvyCLI
 
     public static void main( String[] args ) {
    
+        String version = System.getProperty("java.version");
+        char minor = version.charAt(2);
+        if(minor < '7') {
+            throw new RuntimeException("JAVA 7 or higher is required.  Please upgrade your version of Java.");
+        }
+
         cli_command_loader = ServiceLoader.load(CommandInterface.class);
         command_map = new CommandMapHash();
         loaded = new HashMap<String, CommandMap>();
