@@ -135,7 +135,7 @@
             </goals>
             <configuration>
               <file>src/main/codenvy.sh</file>
-              <outputFile>codenvy.sh</outputFile>
+              <outputFile>codenvy</outputFile>
               <regex>false</regex>
               <token>$JAR_FILE$</token>
               <value>${project.artifactId}-${project.version}.jar</value>
