@@ -22,7 +22,7 @@ import com.beust.jcommander.converters.*;
 
 import org.apache.commons.lang3.SystemUtils;
 import java.io.IOException;
-import java.net.URL;
+import java.net.*;
 import java.util.*;
 
 /**
@@ -76,37 +76,59 @@ public class CommandCLI implements CommandInterface {
 
     public void execute() {
         if (getVersion()) {
-            System.out.println(" _____           _                       ");
-            System.out.println("/  __ \\         | |                      ");
-            System.out.println("| /  \\/ ___   __| | ___ _ ____   ___   _ ");
-            System.out.println("| |    / _ \\ / _` |/ _ \\ '_ \\ \\ / / | | |");
-            System.out.println("| \\__/\\ (_) | (_| |  __/ | | \\ V /| |_| |");
-            System.out.println(" \\____/\\___/ \\__,_|\\___|_| |_|\\_/  \\__, |");
-            System.out.println("                                    __/ |");
-            System.out.println("                                   |___/ ");
-            System.out.println(SystemUtils.OS_NAME);
-            System.out.println(SystemUtils.OS_ARCH);
-            System.out.println(SystemUtils.OS_VERSION);
-            System.out.println(SystemUtils.USER_HOME);
-            System.out.println(SystemUtils.JAVA_VERSION);
 
-            URL url = null;
             try {
+                InetAddress ip = InetAddress.getLocalHost();
+
+                NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+                byte[] mac = network.getHardwareAddress();
+ 
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < mac.length; i++) {
+                    sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));        
+                }
+
+                System.out.println(" _____           _                       ");
+                System.out.println("/  __ \\         | |                      ");
+                System.out.println("| /  \\/ ___   __| | ___ _ ____   ___   _ ");
+                System.out.println("| |    / _ \\ / _` |/ _ \\ '_ \\ \\ / / | | |");
+                System.out.println("| \\__/\\ (_) | (_| |  __/ | | \\ V /| |_| |");
+                System.out.println(" \\____/\\___/ \\__,_|\\___|_| |_|\\_/  \\__, |");
+                System.out.println("                                    __/ |");
+                System.out.println("                                   |___/ ");
+                System.out.println("");
+                System.out.println("");
+                System.out.println("");
+                System.out.println("              Welcome to Codenvy");
+                System.out.println("-----------------------------------------------");
+                System.out.println("");
+                System.out.println("           IP Address: " + ip.getHostAddress());
+                System.out.println("          MAC Address: " + sb.toString());
+                System.out.println("             Hostname: " + ip.getHostName());
+                System.out.println("");
+                System.out.println("     Operating System: " + SystemUtils.OS_NAME);
+                System.out.println("      OS Architecture: " + SystemUtils.OS_ARCH);
+                System.out.println("           OS Version: " + SystemUtils.OS_VERSION);
+                System.out.println("        User Home DIR: " + SystemUtils.USER_HOME);
+                System.out.println("         Java Version: " + SystemUtils.JAVA_VERSION);
+
                 Properties props = new Properties();
      
                 // Get hold of the path to the properties file
                 // (Maven will make sure it's on the class path)
-                url = CodenvyCLI.class.getClassLoader().getResource("app.properties");
+                URL url = CodenvyCLI.class.getClassLoader().getResource("app.properties");
                  
                 // Load the file
                 props.load(url.openStream());
                  
                 // Accessing values
-                System.out.println(props.getProperty("application.version"));
+                System.out.println("          CLI Version: " + props.getProperty("application.version"));
 
+            } catch (UnknownHostException e) {
+                System.out.println("### Problem with your IP address and network lookup. ###");                
             } catch (IOException e) {
                 System.out.println("### Problem with gaining access to ClassLoader properties for this app. ###");
-            } 
+            }
 
             System.exit(0);
          }

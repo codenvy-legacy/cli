@@ -22,10 +22,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.net.*;
 import java.util.*;
 
 /**
@@ -64,21 +68,80 @@ public class JSONFileHelper {
 
 
 
-    public static JSONObject readJSONFileAndOverride(File input_file, JSONObject append_to) {
+    public static JSONObject readJSONFileAndOverride(String input_file, JSONObject append_to) {
 
     	if (input_file != null) {
 
-	    	boolean is_readable = input_file.exists() & input_file.canRead();
+    		File working_file = null;
+			Reader reader = null;
+			boolean is_url = false;
+    		URL url = null;
+    		boolean is_readable = false;
+
+    		try {
+	    		// Need to figure out if this is a local File or a URL.
+	    		url = new URL(input_file);
+	    		is_url = true;
+
+			} catch (MalformedURLException e) {
+				// If here, then it is probably a local file.
+				working_file = new File(input_file);
+
+				try {
+					reader = new FileReader(working_file);
+				} catch (Exception ex) {
+		    		System.out.println("###########################################");
+		    		System.out.println("### The in file specified is not valid. ###");
+		    		System.out.println("###########################################");
+		    		System.exit(0);
+
+				}
+			} 
+
+			if (is_url) {
+				boolean is_exists = false;
+
+			    try {
+	      			HttpURLConnection.setFollowRedirects(false);
+				    HttpURLConnection con = (HttpURLConnection) new URL(input_file).openConnection();
+	      			con.setRequestMethod("HEAD");
+	      			is_exists = (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+	    		} catch (Exception e) {
+	    			System.out.println("#############################################################");
+	    			System.out.println("### Could not connect to URL input file.  Does not exist. ###");
+	    			System.out.println("#############################################################");
+	    			System.exit(0);
+	    		} 
+
+	    		if (is_exists) {
+	    			try {
+						reader = new BufferedReader(new InputStreamReader(url.openStream()));
+						is_readable = true;
+	    			} catch (Exception e) {
+			    		System.out.println("###########################################");
+			    		System.out.println("### The in file specified is not valid. ###");
+			    		System.out.println("###########################################");
+			    		System.exit(0);
+	    			}
+
+	    		} else {
+	    			System.out.println("#############################################################");
+	    			System.out.println("### Could not connect to URL input file.  Does not exist. ###");
+	    			System.out.println("#############################################################");
+	    			System.exit(0);
+	    		}
+			} else {
+	    		is_readable = working_file.exists() & working_file.canRead();
+	    	}
+
 
 	    	// We have a valid input file.
 	    	// Load it, read in each parameter one at a time into map.
 	    	if (is_readable) {
 				JSONParser parser = new JSONParser();
     			JSONObject jsonObject = new JSONObject();
-				FileReader reader = null;
 
     			try {
-    				reader = new FileReader(input_file);
         			JSONObject input_factory_params = (JSONObject) parser.parse(reader);
 
 			    	Iterator input_iterator = input_factory_params.entrySet().iterator();
@@ -103,6 +166,10 @@ public class JSONFileHelper {
 	                	} catch (IOException e) {}
 	            	}
 			    }
+	    	} else {
+	    		System.out.println("###########################################");
+	    		System.out.println("### The in file specified is not valid. ###");
+	    		System.out.println("###########################################");
 	    	}
 		}
 

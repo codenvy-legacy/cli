@@ -31,10 +31,12 @@ import java.util.ArrayList;
  */ 
 public class JSONFileParameterDelegate {
 
-    @Parameter(names = "--in", converter = FileConverter.class, description = ".c5y JSON file with Codenvy project parameters to import.")
-    private File inputFile;
-    public File getInputFile() { return inputFile; }
-
+    @Parameter(names = "--in", description = ".c5y JSON file with Codenvy project parameters to import.")
+//    private File inputFile;
+//    public File getInputFile() { return inputFile; }
+    private String inputFile;
+    public String getInputFile() { return inputFile; }
+    
     @Parameter(names = "--out", converter = FileConverter.class, description = "If set, writes all loaded Codenvy project parameters into .c5y file")
     private File outputFile;
     public File getOutputFile() { return outputFile; }
