@@ -1,6 +1,7 @@
 com.codenvy.cli.CommandCLI
 com.codenvy.cli.CommandAuth
 com.codenvy.cli.CommandRemote
+com.codenvy.cli.CommandRemoteAnalyticsList
 com.codenvy.cli.CommandRemoteFactoryCreate
 com.codenvy.cli.CommandRemoteFactoryInvoke
 com.codenvy.cli.CommandRemoteProjectInit

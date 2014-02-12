@@ -32,10 +32,10 @@ public class BrowserHelper {
         try {
 
             if (!Desktop.getDesktop().isDesktopSupported()) {
-                System.out.println("###########################################################################\n");
-                System.out.println("### The Codenvy CLI is unable to launch a browser on this client.       ###\n");
-                System.out.println("### You must manually copy your Factory or Worspace URL into a browser. ###\n");
-                System.out.println("###########################################################################\n");
+                System.out.println("###########################################################################");
+                System.out.println("### The Codenvy CLI is unable to launch a browser on this client.       ###");
+                System.out.println("### You must manually copy your Factory or Worspace URL into a browser. ###");
+                System.out.println("###########################################################################");
                 System.exit(0);
             }
 
@@ -44,9 +44,10 @@ public class BrowserHelper {
             Desktop.getDesktop().browse(uri);
 
         } catch (URISyntaxException e) {
-            System.out.println("##############################################################\n");
-            System.out.println("### You have passed in an improperly formatted URL string. ###\n");
-            System.out.println("##############################################################\n");
+            System.out.println(e);
+            System.out.println("##############################################################");
+            System.out.println("### You have passed in an improperly formatted URL string. ###");
+            System.out.println("##############################################################");
             System.exit(0);
 
         } catch (IOException e) {

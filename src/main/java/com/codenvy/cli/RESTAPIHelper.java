@@ -41,6 +41,7 @@ public class RESTAPIHelper {
     public static final String REST_API_AUTH_LOGIN_JSON = "1";
     public static final String REST_API_FACTORY_JSON = "2";
     public static final String REST_API_FACTORY_MULTI_PART = "3";
+    public static final String REST_API_ANALYTICS_JSON = "4";
 
     private static final String MULTI_PART_CRLF = "\r\n";
     private static final String MULTI_PART_TWO_HYPHENS = "--";
@@ -61,6 +62,13 @@ public class RESTAPIHelper {
             put("Content-Type", "multipart/form-data;boundary="+MULTI_PART_BOUNDARY);
             put("Content-Disposition", "Content-Disposition: form-data; name=\"factoryUrl\"" + MULTI_PART_CRLF + MULTI_PART_CRLF);
             put("TokenRequired", "true");
+        }});
+
+        API_NAME_PROPERTY_MAP.put(REST_API_ANALYTICS_JSON, new HashMap<String, String>() {{
+            put("RestURL", "/api/analytics/metricinfo");
+            put("RequestMethod", "GET");
+            put("Content-Type", "application/json");
+            put("TokenRequired", "false");
         }});
     }
 
@@ -93,24 +101,29 @@ public class RESTAPIHelper {
             conn.setConnectTimeout(5000);
             conn.setReadTimeout(5000);
             conn.setInstanceFollowRedirects(false);
-            
-            wr = new DataOutputStream(conn.getOutputStream());
 
-            if (API_NAME_PROPERTY_MAP.get(rest_resource).get("Content-Disposition") != null) {
-                wr.writeBytes(MULTI_PART_TWO_HYPHENS + MULTI_PART_BOUNDARY + MULTI_PART_CRLF);
-                wr.writeBytes(API_NAME_PROPERTY_MAP.get(rest_resource).get("Content-Disposition"));
-                wr.writeBytes(MULTI_PART_CRLF);
+            // If a GET METHOD, then we do not need to write any data to the output stream.
+            if (API_NAME_PROPERTY_MAP.get(rest_resource).get("RequestMethod") != "GET") {
+                wr = new DataOutputStream(conn.getOutputStream());
+
+                if (API_NAME_PROPERTY_MAP.get(rest_resource).get("Content-Disposition") != null) {
+                    wr.writeBytes(MULTI_PART_TWO_HYPHENS + MULTI_PART_BOUNDARY + MULTI_PART_CRLF);
+                    wr.writeBytes(API_NAME_PROPERTY_MAP.get(rest_resource).get("Content-Disposition"));
+                    wr.writeBytes(MULTI_PART_CRLF);
+                }
+                
+                if (input_data != null) {
+                    wr.writeBytes(input_data.toString());
+                }
+
+                if (API_NAME_PROPERTY_MAP.get(rest_resource).get("Content-Disposition") != null) {
+                    wr.writeBytes(MULTI_PART_CRLF);
+                    wr.writeBytes(MULTI_PART_TWO_HYPHENS + MULTI_PART_BOUNDARY + MULTI_PART_TWO_HYPHENS + MULTI_PART_CRLF);
+                }
+
+                wr.flush();
+                wr.close();
             }
-            
-            wr.writeBytes(input_data.toString());
-
-            if (API_NAME_PROPERTY_MAP.get(rest_resource).get("Content-Disposition") != null) {
-                wr.writeBytes(MULTI_PART_CRLF);
-                wr.writeBytes(MULTI_PART_TWO_HYPHENS + MULTI_PART_BOUNDARY + MULTI_PART_TWO_HYPHENS + MULTI_PART_CRLF);
-            }
-
-            wr.flush();
-            wr.close();
 
             int responseCode = conn.getResponseCode();
 
@@ -118,12 +131,12 @@ public class RESTAPIHelper {
                 System.out.println("#######################################################");
                 System.out.println("### Unexpected REST API response code received: " + responseCode + " ###");
                 System.out.println("#######################################################");
-                System.out.println("\n");
-                System.out.println("Visit http://docs.codenvy.com/api/ for mapping of response codes.");
+                System.out.println("\nVisit http://docs.codenvy.com/api/ for mapping of response codes.");
+                System.out.println("-----------------------------------------------------------------");
 
                 errorStream = conn.getErrorStream();
                 String message = errorStream != null ? readAndCloseQuietly(errorStream) : "";
-                System.out.println(message);
+                System.out.println("\n" + "Response Error: " + message);
                 System.out.println("\n");
             } else {
                 in = new InputStreamReader((InputStream) conn.getInputStream());

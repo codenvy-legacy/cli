@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -172,9 +173,10 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
 
 	    	while (json_iterator.hasNext()) {
 	    		Map.Entry pairs = (Map.Entry)json_iterator.next();
-	    		factory_url.append(pairs.getKey());
+	    		factory_url.append(URLEncoder.encode(pairs.getKey().toString()));
 	    		factory_url.append("=");
-	    		factory_url.append(pairs.getValue());
+                factory_url.append(pairs.getValue().toString());
+	    		//factory_url.append(URLEncoder.encode(pairs.getValue().toString()));
 	    		if (json_iterator.hasNext())
 	    			factory_url.append("&");
 	    	}
