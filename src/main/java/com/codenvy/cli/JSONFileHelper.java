@@ -23,13 +23,17 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.*;
+import java.nio.file.*;
 import java.util.*;
 
 /**
@@ -37,6 +41,85 @@ import java.util.*;
  *
  */ 
 public class JSONFileHelper {
+
+    public static byte[] readImageFile(String input_file) {
+
+    	if (input_file != null) {
+
+			boolean is_url = false;
+    		URL url = null;
+    		boolean is_readable = false;
+
+    		try {
+	    		// Need to figure out if this is a local File or a URL.
+	    		// Start by checking to see if URL
+	    		url = new URL(input_file);
+
+			} catch (MalformedURLException e) {
+
+				// 
+				// If you get here, then not a valid URL, must be a file.
+				// Read the file and return
+    			try {
+   				    Path path = Paths.get((String)input_file);
+                    return Files.readAllBytes(path);
+
+				} catch (IOException ex) {
+					System.out.println(ex);
+		    		System.out.println("###################################################");
+		    		System.out.println("### We could not read the image file specified. ###");
+		    		System.out.println("###################################################");
+		    		return null;
+				}
+			}
+		
+			// 
+			// If here, then not a file, read from URL
+			boolean is_exists = false;
+
+		    try {
+      			HttpURLConnection.setFollowRedirects(false);
+			    HttpURLConnection con = (HttpURLConnection) new URL(input_file).openConnection();
+      			con.setRequestMethod("HEAD");
+      			is_exists = (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+    		} catch (Exception e) {} 
+
+    		// 
+    		// NO FILE
+    		// URL FILE - Open stream and pull file contents in
+    		if (is_exists) {
+    			try {
+					ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+					int nRead;
+					byte[] data = new byte[16384];
+					InputStream is = url.openStream();
+
+					while ((nRead = is.read(data, 0, data.length)) != -1) {
+					  buffer.write(data, 0, nRead);
+					}
+
+					buffer.flush();
+					return buffer.toByteArray();
+
+				} catch (Exception e) {
+		    		System.out.println("##############################################");
+		    		System.out.println("### The image file specified is not valid. ###");
+		    		System.out.println("##############################################");
+    			}
+
+    		} else {
+    			System.out.println("#############################################################");
+    			System.out.println("### Could not connect to URL image file.  Does not exist. ###");
+    			System.out.println("#############################################################");
+    		}
+
+			return null;
+		}
+
+		return null;
+	}
+
 
     public static JSONObject loadJSONFromFileAndParams(JSONFileParameterDelegate json_delegate) {
 
@@ -106,12 +189,7 @@ public class JSONFileHelper {
 				    HttpURLConnection con = (HttpURLConnection) new URL(input_file).openConnection();
 	      			con.setRequestMethod("HEAD");
 	      			is_exists = (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-	    		} catch (Exception e) {
-	    			System.out.println("#############################################################");
-	    			System.out.println("### Could not connect to URL input file.  Does not exist. ###");
-	    			System.out.println("#############################################################");
-	    			System.exit(0);
-	    		} 
+	    		} catch (Exception e) {} 
 
 	    		if (is_exists) {
 	    			try {

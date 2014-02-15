@@ -49,6 +49,9 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
     @Parameter(names = "--encoded", description = "If set, will create hashed Codenvy URL")
     private boolean encoded = false;
     
+    @Parameter(names = "--rel", description = "Returns a specific Factory reference")
+    private String rel = "create-project";
+
     @ParametersDelegate
 	private JSONFileParameterDelegate json_delegate = new JSONFileParameterDelegate();
 
@@ -87,6 +90,12 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
 		sb.append("can be generated without a token.  Non-encoded URLs are generated automatically\n");
 		sb.append("without making any REST calls to a Codenvy provider.\n");
 		sb.append("\n");
+        sb.append("If --rel is specified with --encoded, then will return the URL object for the rel\n");
+        sb.append("specified.  The default 'rel' is 'create-project' which returns a Factory URL that\n");
+        sb.append("can be used by any user.  Codenvy stores images, scripts and other assets tied to\n");
+        sb.append("an encoded factory.  This parameter returns different results.  Valid values include\n");
+        sb.append("'image', 'self', 'accepted', 'snippet/html', 'snippet/markdown', and 'snippet/url'.\n");
+        sb.append("\n");
 		sb.append("If '--launch' is specified, then we will launch that new URL into a new Browser\n");
 		sb.append("session using the preferred local browser.  You can also use 'codenvy remote\n");
 		sb.append("factory:invoke' to launch the URL.\n");			
@@ -206,8 +215,7 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
 				while (it.hasNext()) {
 
 					JSONObject link = (JSONObject) it.next();
-
-					if (link.get("rel").equals("create-project")) {
+					if (link.get("rel").equals(rel)) {
 						factory_url.append(link.get("href"));
 					}
 

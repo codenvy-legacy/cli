@@ -208,7 +208,7 @@ public class CommandAuth implements CommandInterface {
     // Helper method to display a set of credentials against a particular profile
     public static void displayCredentials(String param_profile, 
                                       CLICredentials cred) {
-        System.out.print("PROFILE: ");
+        System.out.print("PROFILE:               ");
         if (param_profile == null) {
             System.out.println("Default");
         } else {
@@ -216,9 +216,9 @@ public class CommandAuth implements CommandInterface {
         }
 
         System.out.println(PROVIDER_NAME + ": " + cred.getProvider());
-        System.out.println(USER_NAME_NAME + ": " + cred.getUser());
-        System.out.println(PASSWORD_NAME + ":  " + cred.getPass());
-        System.out.println(TOKEN_NAME + ":     " + cred.getToken());
+        System.out.println(USER_NAME_NAME + ":     " + cred.getUser());
+        System.out.println(PASSWORD_NAME + ":      " + cred.getPass());
+        System.out.println(TOKEN_NAME + ":         " + cred.getToken());
     }
 
 

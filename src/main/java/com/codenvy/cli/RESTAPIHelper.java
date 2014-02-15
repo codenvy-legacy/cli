@@ -60,7 +60,8 @@ public class RESTAPIHelper {
             put("RestURL", "/api/factory");
             put("RequestMethod", "POST");
             put("Content-Type", "multipart/form-data;boundary="+MULTI_PART_BOUNDARY);
-            put("Content-Disposition", "Content-Disposition: form-data; name=\"factoryUrl\"" + MULTI_PART_CRLF + MULTI_PART_CRLF);
+            put("Content-Disposition", "Content-Disposition: form-data; name=\"factoryUrl\"" + MULTI_PART_CRLF + "Content-Type: application/json" + MULTI_PART_CRLF);
+            put("Image-Disposition","Content-Disposition: form-data; name=\"image\"; filename=\"spring.jpg\"" + MULTI_PART_CRLF + "Content-Type: image/jpeg" + MULTI_PART_CRLF);
             put("TokenRequired", "true");
         }});
 
@@ -97,6 +98,7 @@ public class RESTAPIHelper {
             conn.setDoOutput(true);
             conn.setDoInput(true);
             conn.setRequestProperty("Content-Type", API_NAME_PROPERTY_MAP.get(rest_resource).get("Content-Type")); 
+            //conn.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");
             conn.setRequestProperty("charset", "utf-8");
             conn.setConnectTimeout(5000);
             conn.setReadTimeout(5000);
@@ -117,6 +119,29 @@ public class RESTAPIHelper {
                 }
 
                 if (API_NAME_PROPERTY_MAP.get(rest_resource).get("Content-Disposition") != null) {
+                    wr.writeBytes(MULTI_PART_CRLF);
+                    wr.writeBytes(MULTI_PART_TWO_HYPHENS + MULTI_PART_BOUNDARY + MULTI_PART_CRLF);
+                }
+
+                if (input_data.get("image") != null) {
+                    
+                    wr.writeBytes(API_NAME_PROPERTY_MAP.get(rest_resource).get("Image-Disposition"));
+                    wr.writeBytes(MULTI_PART_CRLF);
+
+                    // Pull file here
+                    try {
+                        //Path path = Paths.get((String)input_data.get("image"));
+                        byte[] b = JSONFileHelper.readImageFile((String)input_data.get("image"));
+                        wr.write(b, 0, b.length); 
+
+                    } catch (IOException e) {
+                        System.out.println(e);
+                        System.out.println("###################################################");
+                        System.out.println("### We could not read the image file specified. ###");
+                        System.out.println("###################################################");
+                  
+                    } 
+
                     wr.writeBytes(MULTI_PART_CRLF);
                     wr.writeBytes(MULTI_PART_TWO_HYPHENS + MULTI_PART_BOUNDARY + MULTI_PART_TWO_HYPHENS + MULTI_PART_CRLF);
                 }
