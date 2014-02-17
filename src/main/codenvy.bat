@@ -1,5 +1,6 @@
 @echo off
 SETLOCAL
 set JAVA_HOME="%JAVA_HOME%"
-cmd /c "%JAVA_HOME%\bin\java -jar target\$JAR_FILE$ %*"
+set CLI_HOME="c:\codenvy\cli"
+cmd /c "%JAVA_HOME%\bin\java -jar %CLI_HOME%\target\$JAR_FILE$ %*"
 exit /b %errorlevel%
