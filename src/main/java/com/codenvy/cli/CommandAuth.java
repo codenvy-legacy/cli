@@ -41,7 +41,7 @@ import java.net.*;
  * Set of command and CLI parameters for codenvy CLI function.
  *
  */ 
-@Parameters(commandDescription = "configure this client to access Codenvy REST APIs")
+@Parameters(commandDescription = "Configure this client to access Codenvy REST APIs")
 public class CommandAuth implements CommandInterface {
 
     @Parameter(names = { "-h", "--help" }, description = "Prints this help")

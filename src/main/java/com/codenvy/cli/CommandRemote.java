@@ -25,7 +25,7 @@ import com.beust.jcommander.converters.*;
  * Set of commands and parameters for 'codenvy remote'.
  *
  */ 
-@Parameters(commandDescription = "commands on remote clouds: codenvy.com or Codenvy Enterprise")
+@Parameters(commandDescription = "Commands on remote clouds: codenvy.com or Codenvy Enterprise")
 public class CommandRemote implements CommandInterface {
 
     @Parameter(names = { "-h", "--help" }, description = "Prints this help")

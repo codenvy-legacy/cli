@@ -67,7 +67,7 @@ public class CodenvyCLI
     }
 
 	private static final int PARAMETER_OFFSET = 25;
-	private static final int COMMAND_OFFSET = 29;
+	private static final int COMMAND_OFFSET = 25;
 
 	private static boolean bad_parameter = false;
 	private static boolean bad_command = false;
