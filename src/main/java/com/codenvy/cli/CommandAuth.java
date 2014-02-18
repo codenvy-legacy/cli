@@ -92,7 +92,7 @@ public class CommandAuth implements CommandInterface {
 
     	// If param_profile is null, then use default config
         // If param_profile is !null, then use profile name for config
-        String config_file_name = SystemUtils.USER_HOME + "\\.codenvy\\";
+        String config_file_name = SystemUtils.USER_HOME + "/.codenvy/";
 
         File config;
         if (param_profile == null) {
@@ -160,7 +160,7 @@ public class CommandAuth implements CommandInterface {
 
         // If param_profile is null, then use default config
         // If param_profile is !null, then use profile name for config
-        String config_file_name = SystemUtils.USER_HOME + "\\.codenvy\\";
+        String config_file_name = SystemUtils.USER_HOME + "/.codenvy/";
 
         File config;
         if (param_profile == null) {
@@ -178,12 +178,12 @@ public class CommandAuth implements CommandInterface {
         try {
 
             if (!does_exist) {
-
+/*
         Path config_file = Paths.get(config_file_name);
         Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxrwxrwx");
         FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
         Files.setPosixFilePermissions(config_file, perms);
-
+*/
 
                 // Cannot put this in an &.
                 // The mkdirs() function will return false if directory already exists.
@@ -211,7 +211,10 @@ public class CommandAuth implements CommandInterface {
 
             }
      
-        } catch (Exception e) {
+        } catch (IOException e) {
+            System.out.println("############################################################################");
+            System.out.println("### Write issue.  CLI may not have write permission to ~/.codenvy/config ###");
+            System.out.println("############################################################################");
             e.printStackTrace();
         } finally {
            try { fos.close(); } catch (IOException e) { e.printStackTrace(); }
