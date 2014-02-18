@@ -49,7 +49,7 @@ public class CommandAuth implements CommandInterface {
 	private boolean help;
     public boolean getHelp() { return help; }
 
-    @Parameter(names = { "--configure" }, description = "Writes loaded properties to a profile configuration file")
+    @Parameter(names = { "--save" }, description = "Writes loaded properties to a profile configuration file")
     private boolean configure;
     public boolean getConfigure() { return configure; }
 
@@ -282,7 +282,7 @@ public class CommandAuth implements CommandInterface {
         sb.append("expiration.\n");
         sb.append("\n");
         sb.append("Use the --display option to see how the CLI is loading your properties.  Use the\n");
-        sb.append("--configure option to write any loaded parameters to your config file.\n");
+        sb.append("--save option to write any loaded parameters to your config file.\n");
         sb.append("\n");
         sb.append("Example: Display loaded configuration.\n");
         sb.append("  codenvy auth -d\n");
@@ -291,12 +291,12 @@ public class CommandAuth implements CommandInterface {
         sb.append("  codenvy auth -d --profile c2\n");
         sb.append("\n");
         sb.append("Example: Set User Name parameter to john@codenvy.com and store in default profile.\n");
-        sb.append("  codenvy auth -u john@codenvy.com --configure\n");
+        sb.append("  codenvy auth -u john@codenvy.com --save\n");
         sb.append("\n");
         sb.append("Example: Set User Name to john@codenvy.com.  Set Password to krusty.  Generate a\n");
         sb.append("         new token by talking to default Codenvy provider.  Store these items in\n");
         sb.append("         c2 profile.\n");
-        sb.append("  codenvy auth -u john@codenvy.com -p --newToken --profile c2 --configure\n");
+        sb.append("  codenvy auth -u john@codenvy.com -p --newToken --profile c2 --save\n");
        
 		return sb.toString();
 	}

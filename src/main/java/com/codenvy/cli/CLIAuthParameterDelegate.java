@@ -43,7 +43,7 @@ public class CLIAuthParameterDelegate {
 	private String profile;
     public String getProfile() { return profile; }
 
-    @Parameter(names = { "--provider" }, description = "Domain of Codenvy cloud where remote commands will be executed.  Default is https://codenvy.com")
+    @Parameter(names = { "--provider" }, description = "Domain where remote commands executed.  Default is https://codenvy.com")
     private String provider="https://codenvy.com";
     public String getProvider() { return provider; }
 
