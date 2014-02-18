@@ -36,7 +36,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
 
-import com.codenvy.commons.lang.IoUtil;
 
 /**
  * Set of command and CLI parameters for codenvy CLI function.
