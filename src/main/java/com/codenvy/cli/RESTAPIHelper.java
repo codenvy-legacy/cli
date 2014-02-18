@@ -120,10 +120,12 @@ public class RESTAPIHelper {
 
                 if (API_NAME_PROPERTY_MAP.get(rest_resource).get("Content-Disposition") != null) {
                     wr.writeBytes(MULTI_PART_CRLF);
-                    wr.writeBytes(MULTI_PART_TWO_HYPHENS + MULTI_PART_BOUNDARY + MULTI_PART_CRLF);
+                    wr.writeBytes(MULTI_PART_TWO_HYPHENS + MULTI_PART_BOUNDARY);
                 }
 
-                if (input_data.get("image") != null) {
+                if (input_data.get("image") == null) {
+                    wr.writeBytes(MULTI_PART_TWO_HYPHENS + MULTI_PART_CRLF);
+                } else {
                     
                     wr.writeBytes(API_NAME_PROPERTY_MAP.get(rest_resource).get("Image-Disposition"));
                     wr.writeBytes(MULTI_PART_CRLF);
