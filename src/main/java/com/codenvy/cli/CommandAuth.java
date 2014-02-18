@@ -29,11 +29,15 @@ import org.json.simple.parser.ParseException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Set;
 
 import java.io.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import java.nio.file.*;
+import java.nio.file.attribute.*;
 import java.net.*;
 
 
@@ -88,14 +92,16 @@ public class CommandAuth implements CommandInterface {
 
     	// If param_profile is null, then use default config
         // If param_profile is !null, then use profile name for config
+        String config_file_name = SystemUtils.USER_HOME + "\\.codenvy\\";
+
         File config;
         if (param_profile == null) {
-            config = new File(SystemUtils.USER_HOME + 
-                              "\\.codenvy\\config");
+            config_file_name = config_file_name + "config";
         } else {
-            config = new File (SystemUtils.USER_HOME +
-                               "\\.codenvy\\" + param_profile);
+            config_file_name = config_file_name + param_profile;
         }
+  
+        config = new File(config_file_name);
 
     	boolean is_readable = config.exists() & config.canRead();
 
@@ -154,15 +160,16 @@ public class CommandAuth implements CommandInterface {
 
         // If param_profile is null, then use default config
         // If param_profile is !null, then use profile name for config
-        File config;
+        String config_file_name = SystemUtils.USER_HOME + "\\.codenvy\\";
 
+        File config;
         if (param_profile == null) {
-            config = new File(SystemUtils.USER_HOME + 
-                              "\\.codenvy\\config");
+            config_file_name = config_file_name + "config";
         } else {
-            config = new File(SystemUtils.USER_HOME +
-                              "\\.codenvy\\" + param_profile);
+            config_file_name = config_file_name + param_profile;
         }
+
+        config = new File(config_file_name);
 
         boolean does_exist = config.exists();        
         boolean is_writeable = false;
@@ -171,6 +178,13 @@ public class CommandAuth implements CommandInterface {
         try {
 
             if (!does_exist) {
+
+        Path config_file = Paths.get(config_file_name);
+        Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxrwxrwx");
+        FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
+        Files.setPosixFilePermissions(config_file, perms);
+
+
                 // Cannot put this in an &.
                 // The mkdirs() function will return false if directory already exists.
                 does_exist = config.getParentFile().mkdirs();
@@ -197,7 +211,7 @@ public class CommandAuth implements CommandInterface {
 
             }
      
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
            try { fos.close(); } catch (IOException e) { e.printStackTrace(); }
