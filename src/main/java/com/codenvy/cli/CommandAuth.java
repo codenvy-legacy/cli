@@ -282,9 +282,8 @@ public class CommandAuth implements CommandInterface {
         sb.append("When a configuration property is specified in multiple ways, the precedence from\n");
         sb.append("highest to lowest is: Command Line, Environment Variable, Configuration File.\n");
         sb.append("\n");
-        sb.append("The default config file is stored at YOUR_HOME\\.codenvy\\config. On Windows this\n");
-        sb.append("would look like C:\\Users\\USERNAME\\.codenvy\\config.  On Linux this would look\n");
-        sb.append("like ~/.codenvy/config.\n");
+        sb.append("The default config file is stored at CLI_HOME/conf/config where CLI_HOME is the\n");
+        sb.append("directory where the CLI has been installed into.\n");
         sb.append("\n");
         sb.append("Codenvy supports multiple profiles that can be used against different Codenvy\n");
         sb.append("clouds.  Use the --profile option to specify which profile should be loaded or\n");
@@ -330,7 +329,7 @@ public class CommandAuth implements CommandInterface {
         sb.append("Example: Set User Name to john@codenvy.com.  Set Password to krusty.  Generate a\n");
         sb.append("         new token by talking to default Codenvy provider.  Store these items in\n");
         sb.append("         c2 profile.\n");
-        sb.append("  codenvy auth -u john@codenvy.com -p --newToken --profile c2 --save\n");
+        sb.append("  codenvy auth -u john@codenvy.com -p krusty --newToken --profile c2 --save\n");
        
 		return sb.toString();
 	}
