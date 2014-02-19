@@ -86,7 +86,7 @@ public class CommandCLI implements CommandInterface {
  
                 CodeSource codeSource = CodenvyCLI.class.getProtectionDomain().getCodeSource();
                 File jarFile = new File(codeSource.getLocation().toURI().getPath());
-                String jarDir = jarFile.getParentFile().getPath();
+                String cliDir = jarFile.getParentFile().getParentFile().getPath();
 
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < mac.length; i++) {
@@ -116,7 +116,7 @@ public class CommandCLI implements CommandInterface {
                 System.out.println("           OS Version: " + SystemUtils.OS_VERSION);
                 System.out.println("        User Home DIR: " + SystemUtils.USER_HOME);
                 System.out.println("         Java Version: " + SystemUtils.JAVA_VERSION);
-                System.out.println("      Codenvy CLI Dir: " + jarDir);
+                System.out.println("                CLI Dir: " + cliDir);
 
                 Properties props = new Properties();
      

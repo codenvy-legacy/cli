@@ -12,8 +12,9 @@
       <includes>
         <include>README*</include>
         <include>codenvy.bat</include>
-        <include>codenvy.sh</include>
+        <include>codenvy</include>
         <include>target/${project.artifactId}-${project.version}.jar</include>
+        <include>conf/config</include>
       </includes>
     </fileSet>
   </fileSets>

@@ -40,6 +40,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.net.*;
 
+import java.security.*;
 
 /**
  * Set of command and CLI parameters for codenvy CLI function.
@@ -92,7 +93,7 @@ public class CommandAuth implements CommandInterface {
 
     	// If param_profile is null, then use default config
         // If param_profile is !null, then use profile name for config
-        String config_file_name = SystemUtils.USER_HOME + "/.codenvy/";
+        String config_file_name = getCLIDir() + "/conf/";
 
         File config;
         if (param_profile == null) {
@@ -160,7 +161,7 @@ public class CommandAuth implements CommandInterface {
 
         // If param_profile is null, then use default config
         // If param_profile is !null, then use profile name for config
-        String config_file_name = SystemUtils.USER_HOME + "/.codenvy/";
+        String config_file_name = getCLIDir() + "/conf/";
 
         File config;
         if (param_profile == null) {
@@ -220,6 +221,23 @@ public class CommandAuth implements CommandInterface {
            try { fos.close(); } catch (IOException e) { e.printStackTrace(); }
         }
     }
+
+    public static String getCLIDir() {
+        CodeSource codeSource;
+        File jarFile;
+        String cliDir = null;
+
+        try {
+            codeSource = CodenvyCLI.class.getProtectionDomain().getCodeSource();
+            jarFile = new File(codeSource.getLocation().toURI().getPath());
+            cliDir = jarFile.getParentFile().getParentFile().getPath();
+        } catch (URISyntaxException e) {
+            System.out.println("### Problem with the files system and our JAR file. ###");                
+        }
+
+        return cliDir;
+    }
+
 
     // Helper method to display a set of credentials against a particular profile
     public static void displayCredentials(String param_profile, 
