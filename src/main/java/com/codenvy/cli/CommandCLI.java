@@ -21,8 +21,9 @@ import com.beust.jcommander.*;
 import com.beust.jcommander.converters.*;
 
 import org.apache.commons.lang3.SystemUtils;
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
+import java.security.*;
 import java.util.*;
 
 /**
@@ -83,6 +84,10 @@ public class CommandCLI implements CommandInterface {
                 NetworkInterface network = NetworkInterface.getByInetAddress(ip);
                 byte[] mac = network.getHardwareAddress();
  
+                CodeSource codeSource = CodenvyCLI.class.getProtectionDomain().getCodeSource();
+                File jarFile = new File(codeSource.getLocation().toURI().getPath());
+                String jarDir = jarFile.getParentFile().getPath();
+
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < mac.length; i++) {
                     sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));        
@@ -111,6 +116,7 @@ public class CommandCLI implements CommandInterface {
                 System.out.println("           OS Version: " + SystemUtils.OS_VERSION);
                 System.out.println("        User Home DIR: " + SystemUtils.USER_HOME);
                 System.out.println("         Java Version: " + SystemUtils.JAVA_VERSION);
+                System.out.println("      Codenvy CLI Dir: " + jarDir);
 
                 Properties props = new Properties();
      
@@ -126,6 +132,8 @@ public class CommandCLI implements CommandInterface {
 
             } catch (UnknownHostException e) {
                 System.out.println("### Problem with your IP address and network lookup. ###");                
+            } catch (URISyntaxException e) {
+                System.out.println("### Problem with the files system and our JAR file. ###");                
             } catch (IOException e) {
                 System.out.println("### Problem with gaining access to ClassLoader properties for this app. ###");
             }
