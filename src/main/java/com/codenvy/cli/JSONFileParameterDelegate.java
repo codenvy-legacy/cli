@@ -31,19 +31,36 @@ import java.util.ArrayList;
  */ 
 public class JSONFileParameterDelegate {
 
-    @Parameter(names = "--in", description = ".c5y JSON file with Codenvy project parameters to import.")
-//    private File inputFile;
-//    public File getInputFile() { return inputFile; }
-    private String inputFile;
+    @Parameter(names = "--in", description = ".json file with Codenvy project parameters to import.")
+    protected String inputFile;
     public String getInputFile() { return inputFile; }
     
-    @Parameter(names = "--out", converter = FileConverter.class, description = "If set, writes all loaded Codenvy project parameters into .c5y file")
-    private File outputFile;
+    @Parameter(names = "--out", converter = FileConverter.class, description = "Writes any loaded project parameters into designated file")
+    protected File outputFile;
     public File getOutputFile() { return outputFile; }
 
     @Parameter(names = "--param", listConverter = JSONPairConverter.class, converter = JSONPairConverter.class, arity = 2, description = "Sets name/value pair.  First is name.  Second is value.  Can be used multiple times.")
-    private List<JSONPair> params = new ArrayList<JSONPair>();
+    protected List<JSONPair> params = new ArrayList<JSONPair>();
     public List<JSONPair> getParams() { return params; }
+
+    public JSONFileParameterDelegate() {
+        super();
+    }
+
+    public JSONFileParameterDelegate(String i, File o, ArrayList<JSONPair> a) {
+        inputFile = i;
+        outputFile = o;
+        params = a;
+    }
+
+    public String toString() {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("JSON DELEGATE: INPUT FILE : " + inputFile + "\n");
+    	sb.append("JSON DELEGATE: OUTPUT FILE: " + outputFile  + "\n");
+    	sb.append("JSON DELEGATE: PARAMS: " + params  + "\n");
+
+    	return sb.toString();
+    }
 
 }
 

@@ -65,11 +65,11 @@ public class JSONFileHelper {
                     return Files.readAllBytes(path);
 
 				} catch (IOException ex) {
-					System.out.println(ex);
-		    		System.out.println("###################################################");
-		    		System.out.println("### We could not read the image file specified. ###");
-		    		System.out.println("###################################################");
-		    		return null;
+		    		System.out.println("###############################################################");
+		    		System.out.println("### We could not read the image file specified in the JSON. ###");
+		    		System.out.println("### We are not completing the operation - abandoning.       ###");
+		    		System.out.println("###############################################################");
+		    		System.exit(0);
 				}
 			}
 		
@@ -82,7 +82,13 @@ public class JSONFileHelper {
 			    HttpURLConnection con = (HttpURLConnection) new URL(input_file).openConnection();
       			con.setRequestMethod("HEAD");
       			is_exists = (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-    		} catch (Exception e) {} 
+    		} catch (Exception e) {
+	    		System.out.println("###############################################################");
+	    		System.out.println("### We could not read the image file specified in the JSON. ###");
+	    		System.out.println("### We are not completing the operation - abandoning.       ###");
+	    		System.out.println("###############################################################");
+	    		System.exit(0);
+    		} 
 
     		// 
     		// NO FILE

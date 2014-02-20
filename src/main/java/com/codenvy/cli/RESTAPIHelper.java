@@ -134,13 +134,18 @@ public class RESTAPIHelper {
                     try {
                         //Path path = Paths.get((String)input_data.get("image"));
                         byte[] b = JSONFileHelper.readImageFile((String)input_data.get("image"));
-                        wr.write(b, 0, b.length); 
+                        if (b != null) { 
+                            wr.write(b, 0, b.length); 
+                        } else {
+                            throw new IOException("The image file was not found.  Check your reference.");
+                        }
 
                     } catch (IOException e) {
-                        System.out.println(e);
-                        System.out.println("###################################################");
-                        System.out.println("### We could not read the image file specified. ###");
-                        System.out.println("###################################################");
+                        System.out.println("###############################################################");
+                        System.out.println("### We could not read the image file specified in the JSON. ###");
+                        System.out.println("### We are not completing the operation - abandoning.       ###");
+                        System.out.println("###############################################################");
+                        System.exit(0);
                   
                     } 
 

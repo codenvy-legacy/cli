@@ -45,18 +45,23 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
 
     @Parameter(names = "--launch", description = "If set, will launch a browser session with the URL")
     private boolean launch = false;
+    public void setLaunch(boolean l) { launch = l; }
 
     @Parameter(names = "--encoded", description = "If set, will create hashed Codenvy URL")
     private boolean encoded = false;
+    public void setEncoded(boolean e) { encoded = e; }
     
     @Parameter(names = "--rel", description = "Returns a specific Factory reference")
     private String rel = "create-project";
+    public void setRel(String s) { rel = s; }
 
     @ParametersDelegate
 	private JSONFileParameterDelegate json_delegate = new JSONFileParameterDelegate();
+    public void setJSONDelegate(JSONFileParameterDelegate j) { json_delegate = j; }
 
     @ParametersDelegate
 	private CLIAuthParameterDelegate delegate = new CLIAuthParameterDelegate();
+    public void setDelegate(CLIAuthParameterDelegate d) { delegate = d; }
 
     public boolean hasSubCommands() {
         return false;

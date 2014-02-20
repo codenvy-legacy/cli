@@ -124,20 +124,9 @@ public class CodenvyCLI
  	       jc.parse(args);
 
  	    } catch (MissingCommandException e) {
- 	    	// Happens only if user attempts invalid command w/ no general parameters.
- 	    	System.out.println();
- 	    	System.out.println("###########################################");
- 	    	System.out.println("#### You typed an invalid sub-command. ####");
- 	    	System.out.println("###########################################");
-
  	    	bad_command = true;
 
   	    } catch (ParameterException e) {
- 	    	System.out.println();
- 	    	System.out.println("#########################################");
- 	    	System.out.println("#### You typed an invalid parameter. ####");
- 	    	System.out.println("#########################################");
-
  	    	bad_parameter = true;
 
  	    }
@@ -165,13 +154,37 @@ public class CodenvyCLI
 
         CommandMap parsed_command = command_map.get(loaded_parsed_command);
 
+        // If there is a bad_command, then:
+        // Check to see if the parameters passed are files.
+        boolean valid_json_file = false;
+        if (bad_command && (loaded_parsed_command.equals("codenvy")) && args.length >= 1) {
+            CommandCLI object = (CommandCLI)parsed_command.command_object;
+            valid_json_file = object.executeShortcut(args);
+        }
+
         // If there are no arguments, or if the parsed command is null, or if they designated main help, then provide it.
-        if ((args.length == 0) ||
-            bad_command ||
-            bad_parameter ||
-            parsed_command.command_object.getHelp() ||
-            (parsed_command.command_object.hasMandatoryParameters() && args.length == depth)) {
-              showUsage(loaded_parsed_command);
+        if ((args.length == 0) || (parsed_command.command_object.getHelp()) || (parsed_command.command_object.hasMandatoryParameters() && args.length == depth)) {
+            showUsage(loaded_parsed_command); 
+        }
+
+        if (bad_command && !valid_json_file) {
+            // Happens only if user attempts invalid command w/ no general parameters.
+            System.out.println();
+            System.out.println("########################################################################");
+            System.out.println("#### You typed an invalid sub-command or passed in an invalid file. ####");
+            System.out.println("########################################################################");
+            System.out.println();
+
+            showUsage(loaded_parsed_command);
+        }
+
+        if (bad_parameter) {
+            System.out.println();
+            System.out.println("#########################################");
+            System.out.println("#### You typed an invalid parameter. ####");
+            System.out.println("#########################################");
+
+            showUsage(loaded_parsed_command);
         }
 
         // Execute the command

@@ -25,21 +25,27 @@ import java.io.*;
 import java.net.*;
 import java.security.*;
 import java.util.*;
+import java.io.Reader;
+import java.nio.file.*;
+import java.util.*;
 
 /**
  * Set of command and CLI parameters for codenvy CLI function.
  *
  */ 
 public class CommandCLI implements CommandInterface {
-    @Parameter(description = "Unused Parameters")
-    private List<String> unused = new ArrayList<String>();
-
-    @Parameter(names = { "-v", "--version" }, description = "Print the version and exit.")
+    @Parameter(names = { "-v", "--version" }, description = "Print the version and environment variables")
     private boolean version;
 
-    @Parameter(names = { "-h", "--help" }, description = "Print this help.")
+    @Parameter(names = { "-h", "--help" }, description = "Print this help")
     private boolean help;
 
+    @Parameter(names = "--launch", description = "If set, will launch a browser session with the URL")
+    private boolean launch = false;
+
+    @Parameter(names = "--encoded", description = "If set, will create hashed Codenvy URL")
+    private boolean encoded = false;
+    
     public boolean getHelp() { return help; }
     public boolean getVersion() { return version; }
 
@@ -60,12 +66,18 @@ public class CommandCLI implements CommandInterface {
     }
 
     public String getUsageLongDescription() {
-    	return("This is the Codenvy CLI.  You can either interact with the local system or execute remote commands against a Codenvy cloud instance.  For more information see http://docs.codenvy.com/cli.");
+    	StringBuilder sb = new StringBuilder();
+        sb.append("Codenvy CLI. For more information see http://docs.codenvy.com/cli.\n");
+        sb.append("\n");
+        sb.append("The CLI takes in commands and provides subcommands to execute various functions.\n");
+        sb.append("Entering 'codenvy some_json_file_or_url' is a shortcut for executing\n");
+        sb.append("'codenvy remote factory:create --in some_json_file_or_url --rel create-project'\n");
+        return sb.toString();
     }
 
     public String getUsageDescription() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Usage: codenvy <subcommand> <args>");
+        sb.append("Usage: codenvy [<subcommand> <args>] [json_file]");
         return sb.toString();
     }
 
@@ -140,5 +152,47 @@ public class CommandCLI implements CommandInterface {
 
             System.exit(0);
          }
+    }
+
+    public boolean executeShortcut(String[] args) {
+        // If valid files, run the default shortcut.
+        // If parameters that do not have *.json extension, return false.
+        // If parameters with *.json extension, but not valid file, return false.
+        CommandRemoteFactoryCreate obj = new CommandRemoteFactoryCreate();
+
+        File working_file = null;
+        String input_file = args[args.length-1];
+        Reader reader = null;
+        URL url = null;
+        
+        try {
+            // Need to figure out if this is a local File or a URL.
+            url = new URL(input_file);
+
+            // If here, then valid URL.
+        } catch (MalformedURLException e) {
+            
+            // If here, then it is not a valid URL.  Check to see if valid file.
+            working_file = new File(input_file);
+
+            try {
+                reader = new FileReader(working_file);
+                // If here then valid file
+
+            } catch (Exception ex) {
+                // If here, then not a valid file or URL.
+                return false;
+            }
+        }
+
+        // If here, valid input file string. 
+
+        obj.setLaunch (launch);
+        obj.setEncoded(encoded);
+        obj.setRel("create-project");
+        obj.setJSONDelegate(new JSONFileParameterDelegate(args[args.length-1], null, new ArrayList<JSONPair>()));
+        obj.execute();
+            
+        return true;       
     }
  }
