@@ -383,6 +383,14 @@ public class CommandAuth implements CommandInterface {
         // Format the appropriate input data for this REST command.
         // Pass the input data into helper command, invoke REST command, and get response.
         // Parse the response appropriately.
+      
+        if (cred.getUser() == null || cred.getUser().isEmpty() || cred.getPass() == null || cred.getPass().isEmpty()) {
+            System.out.println("###############################################################################");
+            System.out.println("### No user or password set.  You cannot generate a new token without this. ###");
+            System.out.println("###############################################################################");
+            System.exit(0);
+        }
+        
         api_input_data.put("username", cred.getUser());
         api_input_data.put("password", cred.getPass());
         
