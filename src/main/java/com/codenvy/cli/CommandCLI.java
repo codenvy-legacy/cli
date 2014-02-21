@@ -164,14 +164,13 @@ public class CommandCLI implements CommandInterface {
         String input_file = args[args.length-1];
         Reader reader = null;
         URL url = null;
-        
+   
         try {
             // Need to figure out if this is a local File or a URL.
-            url = new URL(input_file);
-
+           url = new URL(input_file);
+ 
             // If here, then valid URL.
         } catch (MalformedURLException e) {
-            
             // If here, then it is not a valid URL.  Check to see if valid file.
             working_file = new File(input_file);
 
@@ -186,7 +185,6 @@ public class CommandCLI implements CommandInterface {
         }
 
         // If here, valid input file string. 
-
         obj.setLaunch (launch);
         obj.setEncoded(encoded);
         obj.setRel("create-project");

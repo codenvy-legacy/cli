@@ -80,7 +80,6 @@ public class JSONFileHelper {
 		    try {
       			HttpURLConnection.setFollowRedirects(false);
 			    HttpURLConnection con = (HttpURLConnection) new URL(input_file).openConnection();
-      			con.setRequestMethod("HEAD");
       			is_exists = (con.getResponseCode() == HttpURLConnection.HTTP_OK);
     		} catch (Exception e) {
 	    		System.out.println("###############################################################");
@@ -195,7 +194,9 @@ public class JSONFileHelper {
 				    HttpURLConnection con = (HttpURLConnection) new URL(input_file).openConnection();
 	      			con.setRequestMethod("HEAD");
 	      			is_exists = (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-	    		} catch (Exception e) {} 
+	    		} catch (Exception e) {
+	      			System.out.println(e);
+	    		} 
 
 	    		if (is_exists) {
 	    			try {
@@ -209,9 +210,10 @@ public class JSONFileHelper {
 	    			}
 
 	    		} else {
-	    			System.out.println("#############################################################");
-	    			System.out.println("### Could not connect to URL input file.  Does not exist. ###");
-	    			System.out.println("#############################################################");
+	    			System.out.println("#########################################################");
+	    			System.out.println("### Could not connect to URL-based input file.        ###");
+	    			System.out.println("### Either the URL is invalid, or no file in the URL. ###");
+	    			System.out.println("#########################################################");
 	    			System.exit(0);
 	    		}
 			} else {
