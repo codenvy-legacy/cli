@@ -183,8 +183,10 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
     	if (!encoded) {
 
 	    	factory_url.append(delegate.getProvider() + default_reference);
+            factory_url.append(createJSONParamSet("", factory_params));
+            
+            /*
 	    	Iterator json_iterator = factory_params.entrySet().iterator();
-
 	    	while (json_iterator.hasNext()) {
 	    		Map.Entry pairs = (Map.Entry)json_iterator.next();
 
@@ -227,6 +229,7 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
 	    		if (json_iterator.hasNext())
 	    			factory_url.append("&");
 	    	}
+            */
 
 	    } else {
    		
@@ -278,6 +281,52 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
 
 	    System.out.println(factory_url.toString());
 
+    }
+
+    // Returns a new HTML Query String that matches the JSON object.
+    // Recursively parses inner JSON objects to create format of key.inner_key = inner_value.
+    // We did this to simplify the non-encoded URL format.
+    public static String createJSONParamSet(String in_key, JSONObject in_json) {
+
+        StringBuilder sb = new StringBuilder();
+
+        Iterator json_iterator = in_json.entrySet().iterator();
+        while (json_iterator.hasNext()) {
+            Map.Entry pairs = (Map.Entry)json_iterator.next();
+
+            // If the key / value pair is a JSON combination, then we have special creator.
+            String key = pairs.getKey().toString();
+            String value = pairs.getValue().toString();
+
+            if (value.charAt(0) == '{') {
+                // Convert the value into a JSON object.
+
+                JSONObject inner = null;
+                try{
+                    inner = (JSONObject) new JSONParser().parse(value);
+                } catch (ParseException e) {
+                    System.out.println("################################################################");
+                    System.out.println("### We found an error in your JSON formatting.               ###");
+                    System.out.println("### This error occurs on an inner JSON string in your file.  ###");
+                    System.out.println("################################################################");
+                }
+
+                sb.append(createJSONParamSet(key, inner));
+            } else {
+
+                sb.append(in_key);
+                if (in_key != "") sb.append(".");
+                sb.append(key);
+                sb.append("=");
+                sb.append(URLEncoder.encode(value));
+
+            }
+
+            if (json_iterator.hasNext())
+                sb.append("&");
+        }
+
+        return sb.toString();
     }
 }
 
