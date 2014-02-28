@@ -145,7 +145,7 @@ public class CommandAuth implements CommandInterface {
         if (param_pass != null) cred.setPass(param_pass);
         if (param_token != null) cred.setToken(param_token);
 
-        if (cred.getProvider() == null) cred.setProvider("");
+        if (cred.getProvider() == null) cred.setProvider("https://codenvy.com");
         if (cred.getUser() == null) cred.setUser("");
         if (cred.getPass() == null) cred.setPass("");
         if (cred.getToken() == null) cred.setToken("");

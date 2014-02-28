@@ -92,7 +92,8 @@ public class CommandRemoteAnalyticsList extends AbstractCommand {
         api_return_data = RESTAPIHelper.callRESTAPIAndRetrieveResponse(cred, api_input_data, RESTAPIHelper.REST_API_ANALYTICS_JSON);
 
         System.out.println(api_return_data);
-/*
+        
+        /*
         if (api_return_data == null)
         else {
             JSONArray list_of_urls = (JSONArray) api_return_data.get("links");

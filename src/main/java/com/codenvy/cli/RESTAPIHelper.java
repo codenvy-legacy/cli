@@ -69,7 +69,7 @@ public class RESTAPIHelper {
             put("RestURL", "/api/analytics/metricinfo");
             put("RequestMethod", "GET");
             put("Content-Type", "application/json");
-            put("TokenRequired", "false");
+            put("TokenRequired", "true");
         }});
     }
 
