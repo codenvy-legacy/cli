@@ -178,6 +178,14 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
     	StringBuilder factory_url = new StringBuilder();
 
 
+        // Found bug.  Need to get credentials whether this is encoded or not.
+        // If non-encoded, the URL of the system to call must come from Provider.
+        CLICredentials cred = CommandAuth.getCredentials(delegate.getProfile(),
+                                                         delegate.getProvider(),
+                                                         delegate.getUser(),
+                                                         delegate.getPassword(),
+                                                         delegate.getToken());
+
     	/*
     	 * STEP 1-2: Load any JSON parameters from default.c5y, file specified by --in, or parameters.
     	 */
@@ -191,7 +199,7 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
     	 */ 
     	if (!encoded) {
 
-	    	factory_url.append(delegate.getProvider() + default_reference);
+	    	factory_url.append(cred.getProvider() + default_reference);
             factory_url.append(createJSONParamSet("", factory_params));
             
             /*
@@ -242,12 +250,6 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
 
 	    } else {
    		
-    		CLICredentials cred = CommandAuth.getCredentials(delegate.getProfile(),
-                                                             delegate.getProvider(),
-                                                             delegate.getUser(),
-                                                             delegate.getPassword(),
-                                                             delegate.getToken());
-
 		    JSONObject api_return_data = null;
 	        JSONObject api_input_data = factory_params;
 

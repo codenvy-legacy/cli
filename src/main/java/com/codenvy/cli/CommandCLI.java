@@ -126,9 +126,9 @@ public class CommandCLI implements CommandInterface {
                 System.out.println("     Operating System: " + SystemUtils.OS_NAME);
                 System.out.println("      OS Architecture: " + SystemUtils.OS_ARCH);
                 System.out.println("           OS Version: " + SystemUtils.OS_VERSION);
-                System.out.println("        User Home DIR: " + SystemUtils.USER_HOME);
+                System.out.println("        User Home Dir: " + SystemUtils.USER_HOME);
                 System.out.println("         Java Version: " + SystemUtils.JAVA_VERSION);
-                System.out.println("                CLI Dir: " + cliDir);
+                System.out.println("              CLI Dir: " + cliDir);
 
                 Properties props = new Properties();
      
@@ -189,6 +189,7 @@ public class CommandCLI implements CommandInterface {
         obj.setEncoded(encoded);
         obj.setRel("create-project");
         obj.setJSONDelegate(new JSONFileParameterDelegate(args[args.length-1], null, new ArrayList<JSONPair>()));
+        obj.setDelegate(new CLIAuthParameterDelegate());
         obj.execute();
             
         return true;       

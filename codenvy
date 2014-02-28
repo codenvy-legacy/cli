@@ -1,3 +1,5 @@
 #!/bin/bash
-export CLI_HOME=~/codenvy/cli
+
+export CLI_HOME=$CLI_HOME
+
 $JAVA_HOME/bin/java -jar $CLI_HOME/target/codenvy-cli-0.1-SNAPSHOT.jar "$@"

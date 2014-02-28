@@ -25,8 +25,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Parameters and execution of 'codenvy remote analytics:list' command.
@@ -91,25 +94,31 @@ public class CommandRemoteAnalyticsList extends AbstractCommand {
         // Parse the response appropriately.
         api_return_data = RESTAPIHelper.callRESTAPIAndRetrieveResponse(cred, api_input_data, RESTAPIHelper.REST_API_ANALYTICS_JSON);
 
-        System.out.println(api_return_data);
-        
-        /*
-        if (api_return_data == null)
+        if (api_return_data == null) {
+            System.out.println("#####################################################################");
+            System.out.println("### There was a problem retrieving the list of metrics.  Exiting. ###");
+            System.out.println("#####################################################################");
+        }
         else {
-            JSONArray list_of_urls = (JSONArray) api_return_data.get("links");
-            Iterator<JSONObject> it = list_of_urls.iterator();
-        
+            JSONArray list_of_metrics = (JSONArray) api_return_data.get("metrics");
+            Iterator<JSONObject> it = list_of_metrics.iterator();
+            List<String> list = new ArrayList<String>();
+
             while (it.hasNext()) {
 
                 JSONObject link = (JSONObject) it.next();
+                list.add((String)link.get("name"));
+            }
 
-                if (link.get("rel").equals("create-project")) {
-                    factory_url.append(link.get("href"));
+            Collections.sort(list, new Comparator<String>(){
+                public int compare(String s1, String s2) {
+                    return s1.length() - s2.length();
                 }
+            });
 
+            for (String s : list) {
+                System.out.println(s);
             }
         }
-        */
-
     }
 }
