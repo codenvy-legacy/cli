@@ -25,11 +25,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * Parameters and execution of 'codenvy remote analytics:list' command.
@@ -41,6 +40,9 @@ public class CommandRemoteAnalyticsList extends AbstractCommand {
     @Parameter(names = { "-h", "--help" }, description = "Prints this help")
 	private boolean help;
     public boolean getHelp() { return help; }
+
+    @Parameter(names = { "-r", "--regex" }, description = "Applies a Perl regex filter to narrow list of returned metrics")
+    private String regex;
 
     @ParametersDelegate
     private CLIAuthParameterDelegate delegate = new CLIAuthParameterDelegate();
@@ -102,23 +104,101 @@ public class CommandRemoteAnalyticsList extends AbstractCommand {
         else {
             JSONArray list_of_metrics = (JSONArray) api_return_data.get("metrics");
             Iterator<JSONObject> it = list_of_metrics.iterator();
-            List<String> list = new ArrayList<String>();
+            HashMap<String, Object> list = new HashMap<String, Object>();
 
             while (it.hasNext()) {
-
                 JSONObject link = (JSONObject) it.next();
-                list.add((String)link.get("name"));
+                HashMap<String, Object> map = new HashMap<String, Object>();
+                map.put("Name",(String)link.get("name"));
+                map.put("Type",(String)link.get("type"));
+                map.put("Desc",(String)link.get("description"));
+                map.put("Roles",(JSONArray)link.get("rolesAllowed"));
+                list.put((String)link.get("name"), map);
             }
 
-            Collections.sort(list, new Comparator<String>(){
+
+            // Now execute display commands.
+            // First, apply any filters from regex
+            // Second, apply any sort to the list
+            // Third, apply any ordering algorith
+            // Finally, Print according to specs
+
+            List<String> matched_list = new ArrayList<String>();
+
+            if (regex != null) {
+
+                Pattern pattern = Pattern.compile(regex);
+
+                Iterator list_it = list.entrySet().iterator();
+                while (list_it.hasNext()) {
+                    Map.Entry pair = (Map.Entry)list_it.next();
+                    String key = (String)pair.getKey();
+
+                    Matcher matcher = pattern.matcher(key);
+                    if (matcher.find()) {
+                        matched_list.add(key);
+                    }
+
+                }
+
+            } else {
+                Iterator list_it = list.entrySet().iterator();
+                while (list_it.hasNext()) {
+                    Map.Entry pair = (Map.Entry)list_it.next();
+                    String key = (String)pair.getKey();
+                    matched_list.add(key);
+                }
+            }
+
+            Collections.sort(matched_list);
+            /*
+            // Apply sort algorithms to the matched algorithm
+            Collections.sort(matched_list, new Comparator<String>(){
                 public int compare(String s1, String s2) {
                     return s1.length() - s2.length();
                 }
             });
+            */
 
-            for (String s : list) {
-                System.out.println(s);
+            int NAME_OFFSET = 15;
+            int TYPE_OFFSET = 10;
+            int ROLE_OFFSET = 30;
+
+            // Apply print algorithms
+            StringBuilder sb = new StringBuilder();
+            sb.append("NAME");
+            for (int i = 0; i<NAME_OFFSET-4; i++) {
+                sb.append(" ");
             }
+            sb.append("TYPE");
+            for (int i = 0; i<TYPE_OFFSET-4; i++) {
+                sb.append(" ");
+            }
+
+            //sb.append("Roles");
+            sb.append("DESCRIPTION\n\n");
+
+            for (String s : matched_list) {
+                HashMap<String, Object> map = (HashMap<String, Object>)list.get(s);
+
+                sb.append(s);
+                for (int i = 0; i<(NAME_OFFSET-s.length()); i++) {
+                    sb.append(" ");
+                }
+                sb.append(map.get("Type"));
+                for (int i = 0; i<(TYPE_OFFSET-map.get("Type").toString().length()); i++) {
+                    sb.append(" ");
+                }
+/*                sb.append(map.get("Roles"));
+                for (int i = 0; i<(ROLE_OFFSET-map.get("Roles").toString().length()); i++) {
+                    sb.append(" ");
+                }
+*/
+                sb.append(map.get("Desc"));
+                sb.append("\n");
+            }
+
+            System.out.println(sb.toString());
         }
     }
 }
