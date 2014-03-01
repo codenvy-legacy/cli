@@ -84,10 +84,11 @@ public class JSONFileHelper {
 
 		    		System.out.println("################################################################");
 		    		System.out.println("### We could not read a file.  This is either a JSON file or ###");
-		    		System.out.println("### it could be an image file referenced in a JSON file.     ###");
+		    		System.out.println("### it could be an image referenced inside of a JSON file.   ###");
+			   		System.out.println("### We are not completing the operation - abandoning.        ###");
 		    		System.out.println("### File: " + input_file);
 		    		System.out.println("################################################################");
-	                return null;
+		    		System.exit(0);
 	            }
             }
         }
@@ -120,9 +121,11 @@ public class JSONFileHelper {
 
 			System.out.println("###########################################################################");
 			System.out.println("### You provided a file as a valid URL, but we got a connection error.  ###");
+	   		System.out.println("### We are not completing the operation - abandoning.                   ###");
 			System.out.println("### File: " + input_file);
 			System.out.println("### Response Code: " + con.getResponseCode());
 			System.out.println("###########################################################################");
+    		System.exit(0);
 
 		} catch (Exception e) {
 
@@ -131,9 +134,10 @@ public class JSONFileHelper {
     		System.out.println("### We could not read a file that you passed as a URL.  This ###");
     		System.out.println("### is either a JSON file or it could be an image file       ###");
     		System.out.println("### referenced in a factory JSON file.                       ###");
+	   		System.out.println("### We are not completing the operation - abandoning.        ###");
 			System.out.println("### File: " + input_file);
     		System.out.println("################################################################");
-			return null;
+    		System.exit(0);
 		} 
 
 		return null;
@@ -156,6 +160,7 @@ public class JSONFileHelper {
 	    		System.out.println("###############################################################");
 	    		System.out.println("### Error reading an image file referenced in your JSON.    ###");
 	    		System.out.println("### We are not completing the operation - abandoning.       ###");
+	    		System.out.println("### File: " + map.get("Name"));
 	    		System.out.println("###############################################################");
 	    		System.exit(0);
 			}
@@ -224,108 +229,85 @@ public class JSONFileHelper {
 
     public static JSONObject readJSONFileAndOverride(String input_file, JSONObject append_to) {
 
-    	if (input_file != null) {
+    	HashMap<String, String> map = detectFile(input_file);
+		Reader reader = null;
+		File working_file = null;
+		boolean is_readable = false;
 
-    		File working_file = null;
-			Reader reader = null;
-			boolean is_url = false;
-    		URL url = null;
-    		boolean is_readable = false;
+    	if (map == null) {
+    		return null;
+    	}
 
-    		try {
-	    		// Need to figure out if this is a local File or a URL.
-	    		url = new URL(input_file);
-	    		is_url = true;
-
-			} catch (MalformedURLException e) {
-				// If here, then it is probably a local file.
-				working_file = new File(input_file);
-
-				try {
-					reader = new FileReader(working_file);
-				} catch (Exception ex) {
-		    		System.out.println("###########################################");
-		    		System.out.println("### The in file specified is not valid. ###");
-		    		System.out.println("###########################################");
-		    		System.exit(0);
-
-				}
-			} 
-
-			if (is_url) {
-				boolean is_exists = false;
-
-			    try {
-	      			HttpURLConnection.setFollowRedirects(false);
-				    HttpURLConnection con = (HttpURLConnection) new URL(input_file).openConnection();
-	      			con.setRequestMethod("HEAD");
-	      			is_exists = (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-	    		} catch (Exception e) {
-	      			System.out.println(e);
-	    		} 
-
-	    		if (is_exists) {
-	    			try {
-						reader = new BufferedReader(new InputStreamReader(url.openStream()));
-						is_readable = true;
-	    			} catch (Exception e) {
-			    		System.out.println("###########################################");
-			    		System.out.println("### The in file specified is not valid. ###");
-			    		System.out.println("###########################################");
-			    		System.exit(0);
-	    			}
-
-	    		} else {
-	    			System.out.println("#########################################################");
-	    			System.out.println("### Could not connect to URL-based input file.        ###");
-	    			System.out.println("### Either the URL is invalid, or no file in the URL. ###");
-	    			System.out.println("#########################################################");
-	    			System.exit(0);
-	    		}
-			} else {
+    	if (map.get("Type").equals("File")) {
+			try {
+				working_file = new File(map.get("Name"));
+				reader = new FileReader(working_file);
 	    		is_readable = working_file.exists() & working_file.canRead();
-	    	}
+			} catch (Exception ex) {
+	    		System.out.println("#########################################################");
+	    		System.out.println("### Error reading a JSON file you referenced.         ###");
+	    		System.out.println("### We are not completing the operation - abandoning. ###");
+	    		System.out.println("### File: " + map.get("Name"));
+	    		System.out.println("#########################################################");
+	    		System.exit(0);
+			}
 
+    	} else {
 
-	    	// We have a valid input file.
-	    	// Load it, read in each parameter one at a time into map.
-	    	if (is_readable) {
-				JSONParser parser = new JSONParser();
-    			JSONObject jsonObject = new JSONObject();
+			try {
+				reader = new BufferedReader(new InputStreamReader((new URL(map.get("Name"))).openStream()));
+				is_readable = true;
+			} catch (Exception e) {
+				System.out.println("#########################################################");
+	    		System.out.println("### Error reading a JSON file referenced as a URL.    ###");
+	    		System.out.println("### We are not completing the operation - abandoning. ###");
+	    		System.out.println("### File: " + map.get("Name"));
+	    		System.out.println("#########################################################");
+	    		System.exit(0);
+			}
+    	}
 
-    			try {
-        			JSONObject input_factory_params = (JSONObject) parser.parse(reader);
+    	// If here, we have a valid reader.  If the file is readable.
+    	// We have a valid input file.
+    	// Load it, read in each parameter one at a time into map.
+    	if (!is_readable) {
+			System.out.println("#########################################################");
+    		System.out.println("### We ran into problems reading your JSON file.      ###");
+    		System.out.println("### We are not completing the operation - abandoning. ###");
+    		System.out.println("### File: " + map.get("Name"));
+    		System.out.println("#########################################################");
+    		System.exit(0);
+    	}
 
-			    	Iterator input_iterator = input_factory_params.entrySet().iterator();
-	    			while (input_iterator.hasNext()) {
-	    				Map.Entry pairs = (Map.Entry)input_iterator.next();
-	    				append_to.put(pairs.getKey(), pairs.getValue());
-	    			}
-        		} catch (IOException e) {
-				    e.printStackTrace();
-				} catch (ParseException ex) {
-			        System.out.println("################################################");
-			        System.out.println("#### You have provided an invalid JSON file ####");
-			        System.out.println("################################################");
-			    } catch (RuntimeException e) {
-			        e.printStackTrace();
-			    } catch (Exception e) {
-			        e.printStackTrace();
-				} finally {
-    	            if (reader != null) {
-                	   	try {
-	                    	reader.close();
-	                	} catch (IOException e) {}
-	            	}
-			    }
-	    	} else {
-	    		System.out.println("###########################################");
-	    		System.out.println("### The in file specified is not valid. ###");
-	    		System.out.println("###########################################");
-	    	}
-		}
+		JSONParser parser = new JSONParser();
+		JSONObject jsonObject = new JSONObject();
+
+		try {
+			JSONObject input_factory_params = (JSONObject) parser.parse(reader);
+
+	    	Iterator input_iterator = input_factory_params.entrySet().iterator();
+			while (input_iterator.hasNext()) {
+				Map.Entry pairs = (Map.Entry)input_iterator.next();
+				append_to.put(pairs.getKey(), pairs.getValue());
+			}
+		} catch (Exception e) {
+			System.out.println("###########################################################");
+    		System.out.println("### We ran into problems reading / parsing a JSON file. ###");
+    		System.out.println("### The likely issue is a JSON format syntax issue.     ###");
+    		System.out.println("### We are not completing the operation - abandoning.   ###");
+    		System.out.println("### File: " + map.get("Name"));
+    		System.out.println("###########################################################");
+    		System.exit(0);    		
+		} finally {
+            if (reader != null) {
+        	   	try {
+                	reader.close();
+            	} catch (IOException e) {}
+        	}
+	    }
 
 		return append_to;
+
 	}	
 
 		
