@@ -160,35 +160,21 @@ public class CommandCLI implements CommandInterface {
         // If parameters with *.json extension, but not valid file, return false.
         CommandRemoteFactoryCreate obj = new CommandRemoteFactoryCreate();
 
-        File working_file = null;
         String input_file = args[args.length-1];
-        Reader reader = null;
-        URL url = null;
-   
-        try {
-            // Need to figure out if this is a local File or a URL.
-           url = new URL(input_file);
  
-            // If here, then valid URL.
-        } catch (MalformedURLException e) {
-            // If here, then it is not a valid URL.  Check to see if valid file.
-            working_file = new File(input_file);
+        // Detects whether this file exists as a file or URL
+        // Returns null if any sort of issue
+        HashMap<String, String> file_type = JSONFileHelper.detectFile(input_file);
 
-            try {
-                reader = new FileReader(working_file);
-                // If here then valid file
-
-            } catch (Exception ex) {
-                // If here, then not a valid file or URL.
-                return false;
-            }
-        }
+        if (file_type == null) {
+            return false;
+        } 
 
         // If here, valid input file string. 
         obj.setLaunch (launch);
         obj.setEncoded(encoded);
         obj.setRel("create-project");
-        obj.setJSONDelegate(new JSONFileParameterDelegate(args[args.length-1], null, new ArrayList<JSONPair>()));
+        obj.setJSONDelegate(new JSONFileParameterDelegate(file_type.get("Name"), null, new ArrayList<JSONPair>()));
         obj.setDelegate(new CLIAuthParameterDelegate());
         obj.execute();
             

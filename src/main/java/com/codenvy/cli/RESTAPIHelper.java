@@ -136,17 +136,15 @@ public class RESTAPIHelper {
                         byte[] b = JSONFileHelper.readImageFile((String)input_data.get("image"));
                         if (b != null) { 
                             wr.write(b, 0, b.length); 
-                        } else {
-                            throw new IOException("The image file was not found.  Check your reference.");
-                        }
+                        } 
 
                     } catch (IOException e) {
-                        System.out.println("###############################################################");
-                        System.out.println("### We could not read the image file specified in the JSON. ###");
-                        System.out.println("### We are not completing the operation - abandoning.       ###");
-                        System.out.println("###############################################################");
+                        System.out.println("##################################################################");
+                        System.out.println("### We were able to read your image file, but not able to      ###");
+                        System.out.println("### write it successfully on the wire to send to the API call. ###");
+                        System.out.println("### We are not completing the operation - abandoning.          ###");
+                        System.out.println("##################################################################");
                         System.exit(0);
-                  
                     } 
 
                     wr.writeBytes(MULTI_PART_CRLF);

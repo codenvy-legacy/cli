@@ -42,86 +42,152 @@ import java.util.*;
  */ 
 public class JSONFileHelper {
 
+	public static HashMap<String, String> detectFile(String input_file) {
+		HashMap<String, String> map = new HashMap<String, String>();
+        Reader reader = null;
+        URL url = null;
+        File working_file = null;
+        String alternate_input_file = null;
+
+        if (input_file == null)
+        	return null;
+
+        try {
+
+            // Need to figure out if this is a local File or a URL.
+           url = new URL(input_file);
+ 
+            // If here, then valid URL.
+        } catch (MalformedURLException e) {
+            // If here, then it is not a valid URL.
+            // Test for file
+
+            try {
+
+                reader = new FileReader(new File(input_file));
+                // If here then valid file
+
+                map.put("Type", "File");
+                map.put("Name", input_file);
+                return map;
+
+            } catch (Exception ex1) {
+            	// Ok, if we get here, then it is not a file or simple URL.
+            	// Check to see if it is a URL without the protocol.
+	            try {
+
+	            	alternate_input_file = "http://" + input_file;
+	            	url = new URL(alternate_input_file);
+
+	            } catch (MalformedURLException ex) {
+	                // If here, then not a valid file or URL.
+
+		    		System.out.println("################################################################");
+		    		System.out.println("### We could not read a file.  This is either a JSON file or ###");
+		    		System.out.println("### it could be an image file referenced in a JSON file.     ###");
+		    		System.out.println("### File: " + input_file);
+		    		System.out.println("################################################################");
+	                return null;
+	            }
+            }
+        }
+
+        // If for some reason we get here, then we have a valid URL format.
+        // Time to test the URL to see if the file is there and present.
+		boolean is_exists = false;
+
+	    try {
+	    	HttpURLConnection con = null;
+  			HttpURLConnection.setFollowRedirects(false);
+
+	        map.put("Type", "URL");
+
+  			if (alternate_input_file == null) {
+			    con = (HttpURLConnection) new URL(input_file).openConnection();
+			    map.put("Name", input_file);
+  			} else {
+			    con = (HttpURLConnection) new URL(alternate_input_file).openConnection();  				
+			    map.put("Name", alternate_input_file);
+  			}
+
+  			is_exists = (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+
+			// If we get here, then we have a valid URL, and it was readable.
+			if (is_exists)
+				return map;
+
+			// If we get here, then we have a vlaid URL, but it was not readable.
+
+			System.out.println("###########################################################################");
+			System.out.println("### You provided a file as a valid URL, but we got a connection error.  ###");
+			System.out.println("### File: " + input_file);
+			System.out.println("### Response Code: " + con.getResponseCode());
+			System.out.println("###########################################################################");
+
+		} catch (Exception e) {
+
+			// If here, we have a valid URL, but it is not readable for some unknown reason.
+    		System.out.println("################################################################");
+    		System.out.println("### We could not read a file that you passed as a URL.  This ###");
+    		System.out.println("### is either a JSON file or it could be an image file       ###");
+    		System.out.println("### referenced in a factory JSON file.                       ###");
+			System.out.println("### File: " + input_file);
+    		System.out.println("################################################################");
+			return null;
+		} 
+
+		return null;
+	}
+	
+
     public static byte[] readImageFile(String input_file) {
 
-    	if (input_file != null) {
+    	HashMap<String, String> map = detectFile(input_file);
 
-			boolean is_url = false;
-    		URL url = null;
-    		boolean is_readable = false;
+    	if (map == null) {
+    		return null;
+    	}
 
-    		try {
-	    		// Need to figure out if this is a local File or a URL.
-	    		// Start by checking to see if URL
-	    		url = new URL(input_file);
-
-			} catch (MalformedURLException e) {
-
-				// 
-				// If you get here, then not a valid URL, must be a file.
-				// Read the file and return
-    			try {
-   				    Path path = Paths.get((String)input_file);
-                    return Files.readAllBytes(path);
-
-				} catch (IOException ex) {
-		    		System.out.println("###############################################################");
-		    		System.out.println("### We could not read the image file specified in the JSON. ###");
-		    		System.out.println("### We are not completing the operation - abandoning.       ###");
-		    		System.out.println("###############################################################");
-		    		System.exit(0);
-				}
-			}
-		
-			// 
-			// If here, then not a file, read from URL
-			boolean is_exists = false;
-
-		    try {
-      			HttpURLConnection.setFollowRedirects(false);
-			    HttpURLConnection con = (HttpURLConnection) new URL(input_file).openConnection();
-      			is_exists = (con.getResponseCode() == HttpURLConnection.HTTP_OK);
-    		} catch (Exception e) {
+    	if (map.get("Type").equals("File")) {
+			try {
+			    Path path = Paths.get((String)map.get("Name"));
+                return Files.readAllBytes(path);
+			} catch (IOException ex) {
 	    		System.out.println("###############################################################");
-	    		System.out.println("### We could not read the image file specified in the JSON. ###");
+	    		System.out.println("### Error reading an image file referenced in your JSON.    ###");
 	    		System.out.println("### We are not completing the operation - abandoning.       ###");
 	    		System.out.println("###############################################################");
 	    		System.exit(0);
-    		} 
+			}
 
-    		// 
-    		// NO FILE
-    		// URL FILE - Open stream and pull file contents in
-    		if (is_exists) {
-    			try {
-					ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    	} else {
 
-					int nRead;
-					byte[] data = new byte[16384];
-					InputStream is = url.openStream();
+			try {
+				ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-					while ((nRead = is.read(data, 0, data.length)) != -1) {
-					  buffer.write(data, 0, nRead);
-					}
+				int nRead;
+				byte[] data = new byte[16384];
+				InputStream is = (new URL(map.get("Name"))).openStream();
 
-					buffer.flush();
-					return buffer.toByteArray();
+				while ((nRead = is.read(data, 0, data.length)) != -1) {
+				  buffer.write(data, 0, nRead);
+				}
 
-				} catch (Exception e) {
-		    		System.out.println("##############################################");
-		    		System.out.println("### The image file specified is not valid. ###");
-		    		System.out.println("##############################################");
-    			}
+				buffer.flush();
+				return buffer.toByteArray();
 
-    		} else {
-    			System.out.println("#############################################################");
-    			System.out.println("### Could not connect to URL image file.  Does not exist. ###");
-    			System.out.println("#############################################################");
-    		}
+			} catch (Exception e) {
+	    		System.out.println("################################################################");
+	    		System.out.println("### We could connect to the image referenced via URL, but we ###");
+	    		System.out.println("### could not successfully read its contents.                ###");
+	    		System.out.println("### We are not completing the operation - abandoning.        ###");
+	    		System.out.println("### File: " + map.get("Name"));
+	    		System.out.println("################################################################");
+	    		System.exit(0);
+			}
+    	}
 
-			return null;
-		}
-
+		// Should never get here.
 		return null;
 	}
 

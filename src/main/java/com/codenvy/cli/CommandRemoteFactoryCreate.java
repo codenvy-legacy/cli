@@ -200,53 +200,7 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
     	if (!encoded) {
 
 	    	factory_url.append(cred.getProvider() + default_reference);
-            factory_url.append(createJSONParamSet("", factory_params));
-            
-            /*
-	    	Iterator json_iterator = factory_params.entrySet().iterator();
-	    	while (json_iterator.hasNext()) {
-	    		Map.Entry pairs = (Map.Entry)json_iterator.next();
-
-                // If the key / value pair is a JSON combination, then we have special creator.
-                String key = pairs.getKey().toString();
-                String value = pairs.getValue().toString();
-
-                if (value.charAt(0) == '{') {
-                    // Convert the value into a JSON object.
-
-                    JSONObject inner = null;
-                    try{
-                        inner = (JSONObject) new JSONParser().parse(value);
-                    } catch (ParseException e) {
-                        System.out.println("###############################################################################");
-                        System.out.println("### We found an error in your JSON.  Expected JSON format and got an error. ###");
-                        System.out.println("###############################################################################");
-                    }
-                    Iterator json_inner_iterator = inner.entrySet().iterator();
-
-                    while (json_inner_iterator.hasNext()) {
-                        Map.Entry inner_pairs = (Map.Entry)json_inner_iterator.next();
-                        String inner_key = inner_pairs.getKey().toString();
-                        String inner_value = inner_pairs.getValue().toString();
-
-                        factory_url.append(URLEncoder.encode(key + "." + inner_key));
-                        factory_url.append("=");
-                        factory_url.append(URLEncoder.encode(inner_value));
-
-                        if (json_inner_iterator.hasNext())
-                            factory_url.append("&");
-                    }
-                } else {
-
-                    factory_url.append(URLEncoder.encode(key));
-                    factory_url.append("=");
-                    factory_url.append(URLEncoder.encode(value));
-                }
-
-	    		if (json_iterator.hasNext())
-	    			factory_url.append("&");
-	    	}
-            */
+            factory_url.append(createJSONParamSet("", factory_params));  
 
 	    } else {
    		
