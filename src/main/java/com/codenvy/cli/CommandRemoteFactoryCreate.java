@@ -36,7 +36,7 @@ import java.util.*;
  * codenvy remote factory:create command and parameters.
  *
  */ 
-@Parameters(separators = " ", commandDescription = "Packages a Codenvy project into a .c5y file or Factory URL")
+@Parameters(separators = " ", commandDescription = "Packages a Codenvy project into a JSON file or Factory URL")
 public class CommandRemoteFactoryCreate implements CommandInterface {
 
     @Parameter(names = { "-h", "--help" }, description = "Prints this help")
