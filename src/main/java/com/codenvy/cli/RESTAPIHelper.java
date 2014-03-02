@@ -29,6 +29,7 @@ import java.net.*;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Helper methods for interacting with Codenvy REST APIs
@@ -42,6 +43,7 @@ public class RESTAPIHelper {
     public static final String REST_API_FACTORY_JSON = "2";
     public static final String REST_API_FACTORY_MULTI_PART = "3";
     public static final String REST_API_ANALYTICS_JSON = "4";
+    public static final String REST_API_ANALYTICS_METRIC_JSON = "5";
 
     private static final String MULTI_PART_CRLF = "\r\n";
     private static final String MULTI_PART_TWO_HYPHENS = "--";
@@ -71,6 +73,14 @@ public class RESTAPIHelper {
             put("Content-Type", "application/json");
             put("TokenRequired", "true");
         }});
+
+        API_NAME_PROPERTY_MAP.put(REST_API_ANALYTICS_METRIC_JSON, new HashMap<String, String>() {{
+            put("RestURL", "/api/analytics/metric");
+            put("RequestMethod", "GET");
+            put("Content-Type", "application/json");
+            put("TokenRequired", "true");
+            put("ExtraPath", "true");
+        }});
     }
 
     public static JSONObject callRESTAPIAndRetrieveResponse(CLICredentials cred,
@@ -87,8 +97,28 @@ public class RESTAPIHelper {
             StringBuffer rest_url = new StringBuffer();
             rest_url.append(cred.getProvider() + API_NAME_PROPERTY_MAP.get(rest_resource).get("RestURL"));
 
+            // On certain GET operations, we need to append an extra path to the URL
+            // We will have the "ExtraPath" parameter passed in to indicate what that path should be
+            if (API_NAME_PROPERTY_MAP.get(rest_resource).get("ExtraPath") == "true") {
+                rest_url.append("/" + input_data.get("ExtraPath"));
+                input_data.remove("ExtraPath");
+            }
+
             if (API_NAME_PROPERTY_MAP.get(rest_resource).get("TokenRequired") == "true") {
                 rest_url.append("?token=" + cred.getToken());
+            }
+
+            // If it is a GET RESOURCE, then we may need to modify the REST URL
+            if ((API_NAME_PROPERTY_MAP.get(rest_resource).get("RequestMethod") == "GET") && (input_data != null)) {
+                // GET OPERATION - CHECK TO SEE IF INPUT PARAMETERS TO ADD TO QUERY STRING
+                Iterator it = input_data.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry pairs = (Map.Entry)it.next();
+                    rest_url.append(pairs.getKey() + " = " + pairs.getValue());
+                    if (it.hasNext()) {
+                        rest_url.append("&");
+                    }
+                }
             }
 
             // Set up the connection.
@@ -153,7 +183,7 @@ public class RESTAPIHelper {
 
                 wr.flush();
                 wr.close();
-            }
+            } 
 
             int responseCode = conn.getResponseCode();
 
