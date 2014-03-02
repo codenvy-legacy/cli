@@ -44,6 +44,15 @@ public class CommandRemoteAnalyticsList extends AbstractCommand {
     @Parameter(names = { "-r", "--regex" }, description = "Applies a Perl regex filter to narrow list of returned metrics")
     private String regex;
 
+    @Parameter(names = { "-i", "--title" }, description = "Include title and header row; defaults to false")
+    private boolean title = false;
+
+    @Parameter(names = { "-y", "--type" }, description = "Include type of metric; defaults to false")
+    private boolean type = false;
+
+    @Parameter(names = { "-d", "--desc" }, description = "Include description of metric; defaults to false")
+    private boolean description = false;
+
     @ParametersDelegate
     private CLIAuthParameterDelegate delegate = new CLIAuthParameterDelegate();
 
@@ -64,7 +73,25 @@ public class CommandRemoteAnalyticsList extends AbstractCommand {
     }
 
     public String getUsageLongDescription() {
-		return("INSERT LONG DESCRIPTION FOR HELP");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Generates a list of metrics that can be queried from the underlying analytics system.\n");
+        sb.append("The analytics system collects events across the system from actual usage and then \n");
+        sb.append("correlates them into a data warehouse of statistics. Aggregation occurs a couple\n");
+        sb.append("times each day.\n");
+        sb.append("\n");
+        sb.append("Metrics in the system can be complex types. As of Codenvy 2.11, there were 130\n");
+        sb.append("metrics that can be pulled depending upon access rights. Use 'codenvy remote\n");
+        sb.append("analytics:metric' to see the value of a single metric.\n");
+        sb.append("\n");
+        sb.append("To filter the list of returned metrics, you can pass in a regular expresssion with\n");
+        sb.append("--regex.  Cheat sheet:\n");
+        sb.append("http://www.cheatography.com/davechild/cheat-sheets/regular-expressions/\n");
+        sb.append("\n");
+        sb.append("\n\n");
+        sb.append("Example: Generate all metrics with \"users_\" in the name\n");
+        sb.append("  codenvy remote analytics:list --regex users_[a..z]\n");
+        sb.append("\n");
+        return sb.toString();
 	}
     
     public String getUsageDescription() {
@@ -105,7 +132,8 @@ public class CommandRemoteAnalyticsList extends AbstractCommand {
             JSONArray list_of_metrics = (JSONArray) api_return_data.get("metrics");
             Iterator<JSONObject> it = list_of_metrics.iterator();
             HashMap<String, Object> list = new HashMap<String, Object>();
-
+            int max_metric_length = 0;
+            
             while (it.hasNext()) {
                 JSONObject link = (JSONObject) it.next();
                 HashMap<String, Object> map = new HashMap<String, Object>();
@@ -114,6 +142,10 @@ public class CommandRemoteAnalyticsList extends AbstractCommand {
                 map.put("Desc",(String)link.get("description"));
                 map.put("Roles",(JSONArray)link.get("rolesAllowed"));
                 list.put((String)link.get("name"), map);
+
+                if (((String)link.get("name")).length() > max_metric_length) {
+                    max_metric_length = ((String)link.get("name")).length();
+                }
             }
 
 
@@ -160,23 +192,32 @@ public class CommandRemoteAnalyticsList extends AbstractCommand {
             });
             */
 
-            int NAME_OFFSET = 15;
+            int NAME_OFFSET = max_metric_length + 2;
             int TYPE_OFFSET = 10;
             int ROLE_OFFSET = 30;
 
+
             // Apply print algorithms
             StringBuilder sb = new StringBuilder();
-            sb.append("NAME");
-            for (int i = 0; i<NAME_OFFSET-4; i++) {
-                sb.append(" ");
-            }
-            sb.append("TYPE");
-            for (int i = 0; i<TYPE_OFFSET-4; i++) {
-                sb.append(" ");
-            }
 
-            //sb.append("Roles");
-            sb.append("DESCRIPTION\n\n");
+            if (title) {             
+                sb.append("NAME");
+                for (int i = 0; i<NAME_OFFSET-4; i++) {
+                    sb.append(" ");
+                }
+
+                if (type) {
+                    sb.append("TYPE");
+                    for (int i = 0; i<TYPE_OFFSET-4; i++) {
+                        sb.append(" ");
+                    }                    
+                }
+
+                if (description) {
+                    //sb.append("Roles");
+                    sb.append("DESCRIPTION\n\n");                    
+                }
+            }
 
             for (String s : matched_list) {
                 HashMap<String, Object> map = (HashMap<String, Object>)list.get(s);
@@ -185,16 +226,23 @@ public class CommandRemoteAnalyticsList extends AbstractCommand {
                 for (int i = 0; i<(NAME_OFFSET-s.length()); i++) {
                     sb.append(" ");
                 }
-                sb.append(map.get("Type"));
-                for (int i = 0; i<(TYPE_OFFSET-map.get("Type").toString().length()); i++) {
-                    sb.append(" ");
+
+                if (type) {
+                    sb.append(map.get("Type"));
+                    for (int i = 0; i<(TYPE_OFFSET-map.get("Type").toString().length()); i++) {
+                        sb.append(" ");
+                    }                    
                 }
-/*                sb.append(map.get("Roles"));
+
+/*              sb.append(map.get("Roles"));
                 for (int i = 0; i<(ROLE_OFFSET-map.get("Roles").toString().length()); i++) {
                     sb.append(" ");
                 }
 */
-                sb.append(map.get("Desc"));
+                if (description) {
+                    sb.append(map.get("Desc"));
+                }
+                
                 sb.append("\n");
             }
 
