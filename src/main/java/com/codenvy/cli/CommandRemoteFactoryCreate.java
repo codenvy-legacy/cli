@@ -263,7 +263,7 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
             String key = pairs.getKey().toString();
             String value = pairs.getValue().toString();
 
-            if (value.charAt(0) == '{') {
+            if ((!value.isEmpty()) && value.charAt(0) == '{') {
                 // Convert the value into a JSON object.
 
                 JSONObject inner = null;

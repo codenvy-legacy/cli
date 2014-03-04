@@ -44,7 +44,7 @@ public class CommandRemoteAnalyticsMetric extends AbstractCommand {
     @Parameter(names = { "-n", "--name" }, description = "The name of the metric to query; defaults to workspaces")
     private String name = "workspaces";
 
-    @Parameter(names = "--filter", arity = 2, description = "Applies a filter to the returned results.  First value is filter name.  Second is value.  Can be used multiple times.")
+    @Parameter(names = "--filter", arity = 2, description = "Applies a filter to the returned results.  First value is filter name.\n                        Second is value.  Can be used multiple times.")
     protected List<String> filters = new ArrayList<String>();
     public List<String> getFilters() { return filters; }
 
