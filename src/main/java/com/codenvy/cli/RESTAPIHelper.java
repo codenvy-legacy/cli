@@ -112,9 +112,13 @@ public class RESTAPIHelper {
             if ((API_NAME_PROPERTY_MAP.get(rest_resource).get("RequestMethod") == "GET") && (input_data != null)) {
                 // GET OPERATION - CHECK TO SEE IF INPUT PARAMETERS TO ADD TO QUERY STRING
                 Iterator it = input_data.entrySet().iterator();
+                if (it.hasNext()) {
+                    //First, append an &
+                    rest_url.append("&");
+                }
                 while (it.hasNext()) {
                     Map.Entry pairs = (Map.Entry)it.next();
-                    rest_url.append(pairs.getKey() + " = " + pairs.getValue());
+                    rest_url.append(pairs.getKey() + "=" + pairs.getValue());
                     if (it.hasNext()) {
                         rest_url.append("&");
                     }

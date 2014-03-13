@@ -8,4 +8,3 @@ com.codenvy.cli.CommandRemoteFactoryInvoke
 com.codenvy.cli.CommandRemoteProjectInit
 com.codenvy.cli.CommandRemoteProjectCreate
 com.codenvy.cli.CommandRemoteProjectOpen
-com.codenvy.cli.CommandRemoteWorkspaceList

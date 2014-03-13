@@ -32,7 +32,7 @@
   <name>Codenvy Commons :: CLI</name>
   <url>http://maven.apache.org</url>
   <properties>
-    <codenvy-commons.version>0.15.0-SNAPSHOT</codenvy-commons.version>
+    <codenvy-commons.version>0.16.0</codenvy-commons.version>
   </properties>
   <dependencies>
     <dependency>
