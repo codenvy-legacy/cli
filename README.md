@@ -1,7 +1,7 @@
 CODENVY CLI
 ===
 
-- Website: http://docs.codenvy.com/sdk
+- Website: http://docs.codenvy.com/cli
 - Source: http://github.com/codenvy/cli
 - Mailing List: [Google Groups] (https://groups.google.com/a/codenvy.com/forum/#!forum/helpdesk)
 
@@ -9,7 +9,7 @@ Codenvy makes SaaS developer environments.  We provide those environments in our
 
 Quick Start
 -----------
-You will need to have [Java version 6] (http://java.com/en/download/index.jsp) or later installed on your system.  Download the CLI library and unzip it in a directory.  Once downloaded, you will need to update the `JAVA_HOME` variable in the startup script to point to the root directory where Java is installed on your computer.  Also update `CLI_HOME` to point to the directory where the CLI is installed.  On MacOS or Linux this is the `codenvy.sh` file.  For windows, this is the `codenvy.bat` file.
+You will need to have [Java version 6] (http://java.com/en/download/index.jsp) or later installed on your system.  Download the CLI library and unzip it in a directory.  The start script depends upon the `JAVA_HOME` environment variable being set and pointing to your Java installation.  Also update `CLI_HOME` to point to the directory where the CLI is installed. On MacOS or Linux this is in the `codenvy.sh` file.  For windows, this is in the `codenvy.bat` file.
 
     JAVA_HOME=path_to_your_Java_installation
     CLI_HOME=path_to_your_CLI_installatoin
@@ -22,7 +22,13 @@ To learn how to interact with remote Codenvy systems, create new projects, load 
 
 Contributing to the CLI
 -----------------------
-To hack on the CLI (or Codenvy) you will need [maven] (http://maven.apache.org/) installed.  Once maven is installed, you will need to have maven gain access to the Codenvy central nexus server to download libraries.  Add the following configuration item to your `settings.xml` file either stored in `M2_HOME` or `M2_REPO`.
+To hack on the CLI (or Codenvy) you will need [maven] (http://maven.apache.org/) installed.  
+
+Once your maven is properly configured, you can build the CLI by entering
+
+    mvn clean install
+
+If you run into problems with the build, may need to configure maven to reference the Codenvy central nexus server to download libraries.  Add the following configuration item to your `settings.xml` file either stored in `M2_HOME` or `M2_REPO`.
 
      <mirrors>
        <mirror>
@@ -32,6 +38,3 @@ To hack on the CLI (or Codenvy) you will need [maven] (http://maven.apache.org/)
        </mirror>
      </mirrors>
     
-Once your maven is properly configured, you can build the CLI by entering
-
-    mvn clean install
