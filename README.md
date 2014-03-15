@@ -9,11 +9,20 @@ Codenvy makes SaaS developer environments.  We provide those environments in our
 
 Quick Start
 -----------
-You will need to have [Java version 6] (http://java.com/en/download/index.jsp) or later installed on your system.  Download the CLI library and unzip it in a directory.  The start script depends upon the `JAVA_HOME` environment variable being set and pointing to your Java installation.  Also update `CLI_HOME` to point to the directory where the CLI is installed. On MacOS or Linux this is in the `codenvy.sh` file.  For windows, this is in the `codenvy.bat` file.
+You will need to have [Java version 6] (http://java.com/en/download/index.jsp) or later installed on your system.  Download the CLI library and unzip it in a directory.  The start script depends upon the `JAVA_HOME` environment variable being set and pointing to your Java installation.  Also update `CLI_HOME` to point to the directory where the CLI is installed.  Then set your system `PATH` variable to point to the directory where the CLI is installed.
 
-    JAVA_HOME=path_to_your_Java_installation
-    CLI_HOME=path_to_your_CLI_installatoin
+On MacOS or Linux, place this in your `.bashrc` file:
+
+    export JAVA_HOME=DIR_OF_JDK
+    export CLI_HOME=DIR_OF_CLI
+    export PATH=$CLI_HOME:$JAVA_HOME/bin:$PATH
     
+On Windows, update your system environment variables:
+
+    JAVA_HOME=DIR_OF_JDK
+    CLI_HOME=DIR_OF_CLI
+    PATH=%CLI_HOME%;%JAVA_HOME%\bin;%PATH%
+
 Test your configuration by entering `codenvy` in the console window.  You should see the CLI help message appear.
 
 Getting Started Guide
