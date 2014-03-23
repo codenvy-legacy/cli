@@ -297,6 +297,7 @@ public class JSONFileHelper {
     		System.out.println("### We are not completing the operation - abandoning.   ###");
     		System.out.println("### File: " + map.get("Name"));
     		System.out.println("###########################################################");
+		    System.out.println(e);
     		System.exit(0);    		
 		} finally {
             if (reader != null) {
