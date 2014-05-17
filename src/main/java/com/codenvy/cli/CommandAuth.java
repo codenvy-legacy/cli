@@ -399,7 +399,7 @@ public class CommandAuth implements CommandInterface {
         if (api_return_data == null)
             return "";
         else
-            return (String)api_return_data.get("token");
+            return (String)api_return_data.get("value");
 
     }
 }
