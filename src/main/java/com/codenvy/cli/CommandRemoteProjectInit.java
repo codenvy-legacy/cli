@@ -62,15 +62,15 @@ public class CommandRemoteProjectInit implements CommandInterface {
 
     public String getUsageLongDescription() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Initializes a new Codenvy project by creating a JSON file.  This command does not\n");
-		sb.append("perform any validation of the parameters inserted into the file.  You can check\n");
+		sb.append("Initializes a new Codenvy project by creating a JSON file. This command\n");
+		sb.append("does not perform validation of the parameters in the file.  You can check\n");
 		sb.append("validation of the parameters by creating a Factory URL using 'remote\n");
 		sb.append("factory:create --encoded --launch' to generate a Factory URL and invoke it.\n");
 		sb.append("\n");
 		sb.append("Precedence of JSON is --param command line and then --in file.  If --out is\n");
 		sb.append("specified, the JSON objects will be written to the specified file.\n");		
 		sb.append("\n");
-        sb.append("Example: Load angular.json, add 'happy:joy' parameter, and write to sample.json\n");
+        sb.append("Example: Load angular.json, add 'happy:joy' param, and write to sample.json\n");
         sb.append("  codenvy remote proj:init --in angular.json --param happy joy --out sample.json\n");
 		sb.append("\n");
 

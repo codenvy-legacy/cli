@@ -31,15 +31,15 @@ import java.util.ArrayList;
  */ 
 public class JSONFileParameterDelegate {
 
-    @Parameter(names = "--in", description = ".json file with Codenvy project parameters to import.")
+    @Parameter(names = "--in", description = ".json file with Codenvy project parameters to import")
     protected String inputFile;
     public String getInputFile() { return inputFile; }
     
-    @Parameter(names = "--out", converter = FileConverter.class, description = "Writes any loaded project parameters into designated file")
+    @Parameter(names = "--out", converter = FileConverter.class, description = "Writes loaded project parameters into designated file")
     protected File outputFile;
     public File getOutputFile() { return outputFile; }
 
-    @Parameter(names = "--param", listConverter = JSONPairConverter.class, converter = JSONPairConverter.class, arity = 2, description = "Sets name/value pair.  First is name.  Second is value.  Can be used multiple times.")
+    @Parameter(names = "--param", listConverter = JSONPairConverter.class, converter = JSONPairConverter.class, arity = 2, description = "Sets name/value pair separated by space")
     protected List<JSONPair> params = new ArrayList<JSONPair>();
     public List<JSONPair> getParams() { return params; }
 

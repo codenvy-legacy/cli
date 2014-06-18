@@ -41,7 +41,7 @@ public class CommandRemoteAnalyticsList extends AbstractCommand {
 	private boolean help;
     public boolean getHelp() { return help; }
 
-    @Parameter(names = { "-r", "--regex" }, description = "Applies a Perl regex filter to narrow list of returned metrics")
+    @Parameter(names = { "-r", "--regex" }, description = "Perl regex filter to narrow list of returned metrics")
     private String regex;
 
     @Parameter(names = { "-i", "--title" }, description = "Include title and header row; defaults to false")
@@ -74,16 +74,16 @@ public class CommandRemoteAnalyticsList extends AbstractCommand {
 
     public String getUsageLongDescription() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Generates a list of metrics that can be queried from the underlying analytics system.\n");
-        sb.append("The analytics system collects events across the system from actual usage and then \n");
-        sb.append("correlates them into a data warehouse of statistics. Aggregation occurs a couple\n");
-        sb.append("times each day.\n");
+        sb.append("Generates a list of metrics that can be queried from the underlying\n");
+        sb.append("analytics system. The analytics system collects events from actual usage\n");
+        sb.append("and then correlates into a warehouse of statistics. Aggregation occurs a\n");
+        sb.append("couple times each day.\n");
         sb.append("\n");
-        sb.append("Metrics in the system can be complex types. As of Codenvy 2.11, there were 130\n");
-        sb.append("metrics that can be pulled depending upon access rights. Use 'codenvy remote\n");
-        sb.append("analytics:metric' to see the value of a single metric.\n");
+        sb.append("Metrics in the system can be complex types. As of Codenvy 2.11, there were\n");
+        sb.append("130 metrics that can be pulled depending upon access rights. Use 'codenvy\n");
+        sb.append(" remote analytics:metric' to see the value of a single metric.\n");
         sb.append("\n");
-        sb.append("To filter the list of returned metrics, you can pass in a regular expresssion with\n");
+        sb.append("To filter the returned metrics, you can pass in a regular expresssion with\n");
         sb.append("--regex.  Cheat sheet:\n");
         sb.append("http://www.cheatography.com/davechild/cheat-sheets/regular-expressions/\n");
         sb.append("\n");

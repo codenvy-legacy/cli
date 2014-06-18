@@ -35,17 +35,17 @@ import java.util.*;
  * codenvy remote proj:create command and parameters.
  *
  */ 
-@Parameters(separators = " ", commandDescription = "Creates a new project in a remote Codenvy cloud workspace")
+@Parameters(separators = " ", commandDescription = "Creates a new project in a remote workspace")
 public class CommandRemoteProjectCreate implements CommandInterface {
 
     @Parameter(names = { "-h", "--help" }, description = "Prints this help")
 	private boolean help;
     public boolean getHelp() { return help; }
 
-    @Parameter(names = "--launch", description = "If set, will launch a browser session and open the new project")
+    @Parameter(names = "--launch", description = "Launch a browser session and open the new project")
     private boolean launch = false;
 
-    @Parameter(names = "--temp", description = "If set, will create the project in a new, temporary workspace")
+    @Parameter(names = "--temp", description = "Create the project in a new, temporary workspace")
     private boolean temp = false;
     
     @ParametersDelegate
@@ -72,20 +72,21 @@ public class CommandRemoteProjectCreate implements CommandInterface {
 
     public String getUsageLongDescription() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Generates a Codenvy Project.  A Codenvy Project is a set of files bound to an IDE,\n");
-		sb.append("builder, and runner/debugger with a set of access control lists.  The project will\n");
-		sb.append("be created in your remote, named workspace.  You will need to have a valid token\n");
-		sb.append("to create the project in your workspace.  If --temp is specified then the project\n");
-		sb.append("will be created a new temporary workspace.  If you do not provide a named token,\n");
-		sb.append("then the temporary workspace will be accessed anonymously.  Temporary workspaces\n");
-		sb.append("will be destroyed if they are idle for IDLE_TIMEOUT, which is set by cloud admins.\n");
-		sb.append("By default, Codenvy.com has an IDLE_TIMEOUT of 10 minutes.\n");
-		sb.append("\n");
+		sb.append("Generates a Codenvy Project. A Codenvy Project is a set of files bound to\n");
+		sb.append("an IDE, builder, and runner/debugger with a set of access control lists.\n");
+		sb.append("The project will be created in your remote, named workspace. You will need\n");
+		sb.append("to have a valid token to create the project in your workspace. If --temp is\n");
+		sb.append("specified then the project will be created a new temporary workspace. If\n");
+		sb.append("you do not provide a named token, then the temporary workspace will be\n");
+		sb.append("accessed anonymously. Temporary workspaces will be destroyed if they are\n");
+		sb.append("idle for IDLE_TIMEOUT, which is set by cloud admins. By default,\n");
+		sb.append("Codenvy.com has an IDLE_TIMEOUT of 10 minutes.\n");
+        sb.append("\n");
 		sb.append("The project will be configured based upon JSON configuration parameters.\n");
-		sb.append("Precedence of JSON object loading is --param command line and then --in file.\n");
-		sb.append("If --out is specified, the JSON objects will be written to the specified file.\n");
+		sb.append("Precedence of JSON object loading is --param command line and then --in\n");
+		sb.append("file. If --out, the JSON objects will be written to the specified file.\n");
 		sb.append("\n");
-		sb.append("If '--launch' then a Browser is opened and the new project is opened.  You can\n");
+		sb.append("If '--launch' then a Browser is opened with the new project. You can\n");
 		sb.append("also use 'codenvy remote proj:open' to achieve the same affect.\n");
 		sb.append("\n");
 

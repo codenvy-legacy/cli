@@ -25,7 +25,7 @@ import java.util.*;
  * Set of parameters and help for 'codenvy remote factory:invoke' command
  *
  */ 
-@Parameters(commandDescription = "Creates a new temporary developer environment from valid Factory URL")
+@Parameters(commandDescription = "Creates a temp developer environment from Factory URL")
 public class CommandRemoteFactoryInvoke implements CommandInterface {
 
     @Parameter(names = { "-h", "--help" }, description = "Prints this help")

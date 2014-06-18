@@ -36,7 +36,7 @@ import java.util.*;
  * codenvy remote factory:create command and parameters.
  *
  */ 
-@Parameters(separators = " ", commandDescription = "Packages a Codenvy project into a JSON file or Factory URL")
+@Parameters(separators = " ", commandDescription = "Packages a project into a JSON file or Factory")
 public class CommandRemoteFactoryCreate implements CommandInterface {
 
     @Parameter(names = { "-h", "--help" }, description = "Prints this help")
@@ -81,42 +81,44 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
 
     public String getUsageLongDescription() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Generates a Codenvy Factory.  A Codenvy Factory is a URL that, when invoked, creates\n");
-		sb.append("a cloned project loaded into a temporary developer environment called a workspace.\n");
-		sb.append("Spec is: http://docs.codenvy.com/user/creating-factories/factory-parameter-reference/\n");
+		sb.append("Generates a Codenvy Factory. A Codenvy Factory is a URL that, when invoked,\n");
+		sb.append("creates a project loaded into a temp developer environment. Spec is at:\n");
+		sb.append("http://docs.codenvy.com/.\n");
 		sb.append("\n");
-		sb.append("This command will locate the Factory configuration parameters used to generate the\n");
-		sb.append("Factory.  If you are building a non-encoded Factory, an internal algorithm to\n");
-        sb.append("convert the parameters to a query string is used.  If you are building an encoded\n");
-        sb.append("Factory then a Codenvy REST API will be called to generate the URL with the config\n");
-        sb.append("parameters.  The configuration parameters can be passed in via CLI or input file.\n");  
-		sb.append("Precedence of config parameter loading is '--param' CLI and then --in file.\n");
-        sb.append("Files passed with the --in parameter can be local files or downloaded via URL.\n");
-		sb.append("If --out is specified, the JSON objects will be written to the specified file.\n");
+		sb.append("This command locates the Factory configuration parameters to generate the\n");
+		sb.append("Factory. If you are building a non-encoded Factory, an algorithm to convert\n");
+        sb.append("the parameters to a query string is used. If you are building an encoded\n");
+        sb.append("Factory then a Codenvy API will be called to obtain the URL.  The\n");
+        sb.append("configuration parameters can be passed in by CLI or input file. Precedence\n");  
+		sb.append("of config parameter loading is '--param' CLI then --in file. Files passed\n");
+        sb.append("with the --in parameter can be local files or downloaded via URL. If --out\n");
+		sb.append("is specified, the JSON objects will be written to the specified file.\n");
 		sb.append("\n");
-        sb.append("If you use --param on the CLI, nested JSON objects have their keys structured as\n");
-        sb.append("'key.inner_key=inner_value'.  For example, you may need to do the following:\n");
-        sb.append("'--param projectattributes.ptype Java'\n");
+        sb.append("If you use --param on the CLI, nested JSON objects have their keys\n");
+        sb.append("structured as 'key.inner_key=inner_value'. For example, you may need to do\n");
+        sb.append("the following: '--param projectattributes.ptype Java'\n");
         sb.append("\n");
-		sb.append("If --encoded is specified, a URL with a hashed code for all of the parameters will be\n");
-		sb.append("generated.  You need a valid API token to generate encoded URLs.  Non-encoded URLs\n");
-		sb.append("can be generated without a token.  Non-encoded URLs are generated automatically\n");
-		sb.append("without making any REST calls to a Codenvy provider.\n");
+		sb.append("If --encoded is specified, a URL with a hashed code for all of the\n");
+		sb.append("parameters will be generated. You need a valid API token to generate\n");
+		sb.append("encoded URLs. Non-encoded URLs can be generated without a token.\n");
+		sb.append("Non-encoded URLs are generated without making API calls.\n");
 		sb.append("\n");
-        sb.append("If --rel is specified with --encoded, then will return the URL object for the rel\n");
-        sb.append("specified.  The default 'rel' is 'create-project' which returns a Factory URL that\n");
-        sb.append("can be used by any user.  Codenvy stores images, scripts and other assets tied to\n");
-        sb.append("an encoded factory.  This parameter returns different results.  Valid values include\n");
-        sb.append("'image', 'self', 'accepted', 'snippet/html', 'snippet/markdown', and 'snippet/url'.\n");
+        sb.append("If --rel is specified with --encoded, then will return the URL object for\n");
+        sb.append("the rel specified. The default 'rel' is 'create-project' which returns a\n");
+        sb.append("Factory URL that can be used by any user. Codenvy stores images, scripts\n");
+        sb.append("and other assets tied to an encoded factory. This parameter returns\n");
+        sb.append("different results. Valid values include'image', 'self', 'accepted',\n");
+        sb.append("'snippet/html', 'snippet/markdown', and 'snippet/url'.\n");
         sb.append("\n");
-		sb.append("If '--launch' is specified, then we will launch that new URL into a new Browser\n");
-		sb.append("session using the preferred local browser.  You can also use 'codenvy remote\n");
-		sb.append("factory:invoke' to launch the URL.\n");
+		sb.append("If '--launch' is specified, then we will launch that new URL into a new\n");
+		sb.append("Browser session using the preferred local browser. You can also use\n");
+		sb.append(" 'codenvy remote factory:invoke' to launch the URL.\n");
         sb.append("\n");
-        sb.append("The short form 'codenvy [file]' is the same as 'codenvy remote factory:create\n");
-        sb.append("--in [file]'.  The short form can use --launch and --encoded.");			
+        sb.append("The short form 'codenvy [file]' is the same as 'codenvy remote\n");
+        sb.append("factory:create --in [file]'.  The short form can use --launch and\n");
+        sb.append("--encoded\n");			
 		sb.append("\n\n\n");
-        sb.append("Example: Generate encoded Factory URL with JSON parameters from input file.\n");
+        sb.append("Example: Generate encoded Factory with JSON parameters from input file.\n");
         sb.append("  codenvy remote factory:create --encoded --in \\myfiles\\angular.json\n");
 		sb.append("\n");
         sb.append("  The angular.json file:\n");
@@ -124,7 +126,7 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
         sb.append("  {\n");
 		sb.append("     \"v\":\"1.1\",\n");
 		sb.append("     \"vcs\":\"git\",\n");
-		sb.append("     \"vcsurl\":\"http://codenvy.com/git/04/0f/7f/workspacegcpv6cdxy1q34n1i/Sample-AngularJS\",\n");
+		sb.append("     \"vcsurl\":\"http://codenvy.com/git/04/0f/7f/work1q34n1i/AngularJS\",\n");
 		sb.append("     \"idcommit\":\"37a21ef422e7995cbab615431f0f63991a9b314a\",\n");
 		sb.append("     \"action\":\"openproject\",\n");
 		sb.append("     \"projectattributes\":{\n");
@@ -133,12 +135,12 @@ public class CommandRemoteFactoryCreate implements CommandInterface {
 		sb.append("     }\n");
 		sb.append("  }\n");
         sb.append("\n");
-        sb.append("Example: Generate encoded Factory with JSON parameters passed on command line.\n");
+        sb.append("Example: Encoded Factory with JSON parameters passed on command line.\n");
         sb.append("  codenvy remote factory:create --encoded --param v 1.1\n");
         sb.append("          --param projectattributes.pname Sample-Android\n");
         sb.append("          --param projectattributes.ptype Android\n");
         sb.append("          --param vcs git\n");
-        sb.append("          --param vcsurl http://codenvy.com/git/04/0f/7f/workspacegcpv6cdxy1q34n1i/Sample-Android\n");
+        sb.append("          --param vcsurl http://codenvy.com/git/04/7f/worksa4n1i/Android\n");
         sb.append("          --param idcommit 2e0a2ca39856d8f5a34c32b2838918a07427ce49\n");
         sb.append("          --param action openproject\n");
         sb.append("          --param openfile AndroidManifest.xml\n");

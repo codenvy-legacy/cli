@@ -53,7 +53,7 @@ public class CommandAuth implements CommandInterface {
 	private boolean help;
     public boolean getHelp() { return help; }
 
-    @Parameter(names = { "--save" }, description = "Writes loaded properties to a profile configuration file")
+    @Parameter(names = { "--save" }, description = "Writes properties to a profile configuration file")
     private boolean configure;
     public boolean getConfigure() { return configure; }
 
@@ -64,7 +64,7 @@ public class CommandAuth implements CommandInterface {
 	private boolean display;
     public boolean getDisplay() { return display; }
 
-    @Parameter(names = { "--newToken" }, description = "Calls remote Codenvy instance to generate new API token")
+    @Parameter(names = { "--newToken" }, description = "Generate new API token from remote Codenvy system")
     private boolean newToken;
     public boolean getNewToken() { return newToken; }
 
@@ -274,48 +274,40 @@ public class CommandAuth implements CommandInterface {
 
     public String getUsageLongDescription() {
 		StringBuilder sb = new StringBuilder();
-        sb.append("Manages this client's local configuration for working with a remote Codenvy cloud.\n");
-        sb.append("The Codenvy CLI provides a number of configurable settings, and these settings are \n");
-        sb.append("specified in multiple ways.  Configuration items can be set in a configuration file, \n");
+        sb.append("Manages this client's local configuration for working with a remote Codenvy\n");
+        sb.append("cloud.  The CLI provides many settings, and these settings are specified\n");
+        sb.append("in multiple ways.  Configuration items can be set in a configuration file, \n");
         sb.append("in an environment variable, or a command line option.\n");
         sb.append("\n");
-        sb.append("When a configuration property is specified in multiple ways, the precedence from\n");
-        sb.append("highest to lowest is: Command Line, Environment Variable, Configuration File.\n");
+        sb.append("When a configuration property is specified in multiple ways, the precedence\n");
+        sb.append("is: Command Line, Environment Variable, Configuration File.\n");
         sb.append("\n");
-        sb.append("The default config file is stored at CLI_HOME/conf/config where CLI_HOME is the\n");
-        sb.append("directory where the CLI has been installed into.\n");
+        sb.append("The default config file is stored at CLI_HOME/conf/config where CLI_HOME is\n");
+        sb.append("the directory where the CLI has been installed into.\n");
         sb.append("\n");
-        sb.append("Codenvy supports multiple profiles that can be used against different Codenvy\n");
-        sb.append("clouds.  Use the --profile option to specify which profile should be loaded or\n");
-        sb.append("set.  We store each profile in its own configuration file in the same location\n");
-        sb.append("as the default configuration file.\n");
+        sb.append("Codenvy supports multiple profiles that can be used against different\n");
+        sb.append("clouds.  Use the --profile option to specify which profile should be loaded\n");
+        sb.append("or set.  We store each profile in its own configuration file in the same\n");
+        sb.append(" location as the default configuration file.\n");
         sb.append("\n");
-        sb.append("The following environment variables are set as part of a profile, whether stored\n");
-        sb.append("in a configuration file, stored as an environment variable, or passed as a command\n");
-        sb.append("line parameter: CODENVY_PROVIDER_NAME, CODENVY_USER_NAME, CODENVY_PASSWORD, \n");
-        sb.append("and CODENVY_TOKEN. You should only need to pass the user name and password when\n");
-        sb.append("first getting a token.  For most other Codenvy functions, the CLI will use the\n");
-        sb.append("token associated with the profile to gain authorized access to the system.\n");
+        sb.append("The following environment variables are set as part of a profile, whether\n");
+        sb.append("stored in a configuration file, environment variable, or as a command\n");
+        sb.append("line parameter: CODENVY_PROVIDER_NAME, CODENVY_USER_NAME, CODENVY_PASSWORD,\n");
+        sb.append("and CODENVY_TOKEN. You should only need to pass the user name and password\n");
+        sb.append("when acquiring a token.  For most other Codenvy functions, the CLI will use\n");
+        sb.append("the token associated with the profile to gain authorized access.\n");
         sb.append("\n");
-        sb.append("Specifying the --newToken parameter will generate a new API token from a remote\n");
-        sb.append("Codenvy installation.  We use REST API calls to generate the token.  You must\n");
-        sb.append("provide user name and password credentials for the remote system to generate\n");
-        sb.append("the token.  Tokens can expire with Codenvy, so check to make sure the stored\n");
-        sb.append("token is still valid when you use it on other calls.  If you specify\n");
-        sb.append("--newToken then the newly generated token takes precedence over any stored\n");
-        sb.append("in a configuration file, environment variable, or command line parameter.\n");
-        sb.append("Use the --provider parameter to specify which remote Codenvy environment to\n");
-        sb.append("generate the token from.\n");
+        sb.append("Specifying the --newToken parameter will generate a new API token from a\n");
+        sb.append("remote Codenvy installation. REST API calls generate the token. You must\n");
+        sb.append("provide user name and password credentials to generate the token. Tokens\n");
+        sb.append("can expire, so check the stored is still valid after inactivity. If you\n");
+        sb.append("specify --newToken then the newly generated token takes precedence over\n");
+        sb.append("any stored in a configuration file, environment variable, or command line\n");
+        sb.append("parameter. Use --provider to specificy which Codenvy system to generate a\n");
+        sb.append("token from.\n");
         sb.append("\n");
-        sb.append("The speed to acquire a token and its expiration date varies.  Anonymous tokens\n");
-        sb.append("do not require a Codenvy user name / password. They have a short expiration\n");
-        sb.append("and take 1 minute to generate.  We force a delay to prevent DDOS attacks from\n");
-        sb.append("anonymous clients.  Named tokens are generated when you provide a valid user\n");
-        sb.append("name and password.  Named tokens are quick to generate and have multi day\n");
-        sb.append("expiration.\n");
-        sb.append("\n");
-        sb.append("Use the --display option to see how the CLI is loading your properties.  Use the\n");
-        sb.append("--save option to write any loaded parameters to your config file.\n");
+        sb.append("Use --display to see how the CLI is loading your properties.  Use --save\n");
+        sb.append("to write any loaded parameters to your config file.\n");
         sb.append("\n");
         sb.append("Example: Display loaded configuration.\n");
         sb.append("  codenvy auth -d\n");
@@ -323,12 +315,11 @@ public class CommandAuth implements CommandInterface {
         sb.append("Example: Display configuration from the c2 profile.\n");
         sb.append("  codenvy auth -d --profile c2\n");
         sb.append("\n");
-        sb.append("Example: Set User Name parameter to john@codenvy.com and store in default profile.\n");
+        sb.append("Example: Set User Name to john@codenvy.com and store in default profile.\n");
         sb.append("  codenvy auth -u john@codenvy.com --save\n");
         sb.append("\n");
-        sb.append("Example: Set User Name to john@codenvy.com.  Set Password to krusty.  Generate a\n");
-        sb.append("         new token by talking to default Codenvy provider.  Store these items in\n");
-        sb.append("         c2 profile.\n");
+        sb.append("Example: Set User Name to john@codenvy.com. Set Password to krusty.\n");
+        sb.append("         Generate a new token by with the default. Store in c2 profile.\n");
         sb.append("  codenvy auth -u john@codenvy.com -p krusty --newToken --profile c2 --save\n");
        
 		return sb.toString();

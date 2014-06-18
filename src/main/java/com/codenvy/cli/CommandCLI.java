@@ -69,9 +69,8 @@ public class CommandCLI implements CommandInterface {
     	StringBuilder sb = new StringBuilder();
         sb.append("Codenvy CLI. For more information see http://docs.codenvy.com/cli.\n");
         sb.append("\n");
-        sb.append("The CLI takes in commands and provides subcommands to execute various functions.\n");
-        sb.append("Entering 'codenvy some_json_file_or_url' is a shortcut for executing\n");
-        sb.append("'codenvy remote factory:create --in some_json_file_or_url --rel create-project'\n");
+        sb.append("Entering 'codenvy json_file_or_url' is a shortcut for 'codenvy remote\n");
+        sb.append("factory:create --in json_file_or_url --rel create-project'\n");
         return sb.toString();
     }
 
