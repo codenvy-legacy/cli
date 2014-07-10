@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2012-2014 Codenvy, S.A.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+      Codenvy, S.A. - initial API and implementation
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>codenvy-cli</artifactId>
+        <groupId>com.codenvy.cli</groupId>
+        <version>2.0.0-M1-SNAPSHOT</version>
+    </parent>
+    <artifactId>cli-assembly</artifactId>
+    <name>Codenvy CLI :: Assembly</name>
+    <dependencies>
+        <!-- Dependency on the Codenvy branding for Karaf -->
+        <dependency>
+            <groupId>com.codenvy.cli</groupId>
+            <artifactId>cli-shell-branding</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- Dependency on Apache Karaf -->
+        <dependency>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>apache-karaf</artifactId>
+            <version>${org.apache.karaf.version}</version>
+            <type>tar.gz</type>
+        </dependency>
+    </dependencies>
+    <build>
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>filter</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <!-- The branding jar -->
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.codenvy.cli</groupId>
+                                    <artifactId>cli-shell-branding</artifactId>
+                                    <version>${project.version}</version>
+                                    <outputDirectory>target/dependencies</outputDirectory>
+                                    <destFileName>codenvy-branding.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <!-- Use of the minimal version -->
+                                <artifactItem>
+                                    <groupId>org.apache.karaf</groupId>
+                                    <artifactId>apache-karaf-minimal</artifactId>
+                                    <version>${org.apache.karaf.version}</version>
+                                    <type>tar.gz</type>
+                                    <outputDirectory>target/dependencies</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+            <execution>
+                <id>add-features</id>
+                <phase>process-classes</phase>
+                <goals>
+                    <goal>run</goal>
+                </goals>
+                <configuration>
+                    <target>
+                        <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/etc/org.apache.karaf.features.cfg">
+                            <replacetoken><![CDATA[featuresRepositories=]]></replacetoken>
+                            <replacevalue><![CDATA[featuresRepositories=mvn:com.codenvy.platform-api-client-java/assemblies-karaf-uberjar/${com.codenvy.client.version}/xml/features,mvn:com.codenvy.cli/cli-feature/${project.version}/xml/features,]]></replacevalue>
+                        </replace>
+                        <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/etc/org.apache.karaf.features.cfg">
+                            <replacetoken><![CDATA[featuresBoot=config,standard,region,package,kar,ssh,management]]></replacetoken>
+                            <replacevalue><![CDATA[featuresBoot=config,standard,region,package,kar,ssh,management,assemblies-karaf-uberjar,cli-feature]]></replacevalue>
+                        </replace>
+
+
+
+                        <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/etc/org.apache.karaf.features.repos.cfg">
+                            <replacetoken><![CDATA[cellar       =]]></replacetoken>
+                            <replacevalue><![CDATA[codenvy-client    = com.codenvy.platform-api-client-java:assemblies-karaf-uberjar:xml:features(0,]
+codenvy-cli  = com.codenvy.cli:cli-feature:xml:features(0,]
+cellar       =]]></replacevalue>
+                        </replace>
+                        <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/bin/shell">
+                            <replacetoken><![CDATA[CLASSPATH="$CLASSPATH:$KARAF_HOME/system/jline/jline/2.11/jline-2.11.jar"]]></replacetoken>
+                            <replacevalue><![CDATA[CLASSPATH="$CLASSPATH:$KARAF_HOME/lib/codenvy-branding.jar"
+CLASSPATH="$CLASSPATH:$KARAF_HOME/lib/karaf-org.osgi.core.jar"
+CLASSPATH="$CLASSPATH:$KARAF_HOME/system/com/codenvy/cli/cli-command/${project.version}/cli-command-${project.version}.jar"
+CLASSPATH="$CLASSPATH:$KARAF_HOME/system/com/codenvy/platform-api-client-java/uberjar/${com.codenvy.client.version}/uberjar-${com.codenvy.client.version}.jar"
+CLASSPATH="$CLASSPATH:$KARAF_HOME/system/jline/jline/2.11/jline-2.11.jar"]]></replacevalue>
+                        </replace>
+                    </target>
+                </configuration>
+            </execution>
+            </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>features-maven-plugin</artifactId>
+                <version>${org.apache.karaf.feature-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>add-features-to-repo</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>add-features-to-repo</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>mvn:org.apache.karaf.features/standard/${org.apache.karaf.version}/xml/features</descriptor>
+                                <descriptor>mvn:com.codenvy.platform-api-client-java/assemblies-karaf-uberjar/${com.codenvy.client.version}/xml/features</descriptor>
+                                <descriptor>mvn:com.codenvy.cli/cli-feature/${project.version}/xml/features</descriptor>
+                            </descriptors>
+                            <features>
+                                <feature>config</feature>
+                                <feature>assemblies-karaf-uberjar</feature>
+                                <feature>cli-feature</feature>
+                            </features>
+                            <includeMvnBasedDescriptors>true</includeMvnBasedDescriptors>
+                            <repository>target/features-repo</repository>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/assembly.xml</descriptor>
+                            </descriptors>
+                            <finalName>codenvy-cli-${project.version}</finalName>
+                            <tarLongFileMode>gnu</tarLongFileMode>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

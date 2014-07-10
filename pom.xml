@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2012-2014 Codenvy, S.A.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+      Codenvy, S.A. - initial API and implementation
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>maven-depmgt-pom</artifactId>
+        <groupId>com.codenvy</groupId>
+        <version>1.8.3-SNAPSHOT</version>
+        <relativePath />
+    </parent>
+    <groupId>com.codenvy.cli</groupId>
+    <artifactId>codenvy-cli</artifactId>
+    <version>2.0.0-M1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Codenvy CLI</name>
+    <licenses>
+        <license>
+            <name>Eclipse Public License</name>
+            <url>http://www.eclipse.org/legal/epl-v10.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Tyler Jewell</name>
+            <organization>Codenvy</organization>
+            <organizationUrl>http://www.codenvy.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>Florent Benoit</name>
+            <organization>Serli</organization>
+            <organizationUrl>http://www.serli.com</organizationUrl>
+        </developer>
+    </developers>
+    <modules>
+        <module>command</module>
+        <module>feature</module>
+        <module>shell</module>
+        <module>assembly</module>
+    </modules>
+    <scm>
+        <connection>scm:git:git@github.com:codenvy/cli.git</connection>
+        <developerConnection>scm:git:git@github.com:codenvy/cli.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    <properties>
+        <bnd-plugin.attributes />
+        <com.codenvy.client.version>1.0.0-SNAPSHOT</com.codenvy.client.version>
+        <license_years>2012-2014</license_years>
+        <maven-bundle-plugin.version>2.5.0</maven-bundle-plugin.version>
+        <org.apache.karaf.feature-plugin.version>2.3.5</org.apache.karaf.feature-plugin.version>
+        <org.apache.karaf.version>3.0.1</org.apache.karaf.version>
+    </properties>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.karaf.tooling</groupId>
+                    <artifactId>karaf-maven-plugin</artifactId>
+                    <version>${org.apache.karaf.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <!-- FindBugs -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>Low</threshold>
+                    <xmlOutput>true</xmlOutput>
+                </configuration>
+            </plugin>
+            <!-- Maven Bundle plugin -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${maven-bundle-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <_include>-src/main/bnd/instructions.bnd</_include>
+                        <_plugin>${bnd-plugin.attributes}</_plugin>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
