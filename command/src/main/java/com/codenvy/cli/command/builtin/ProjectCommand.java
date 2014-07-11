@@ -14,6 +14,7 @@ package com.codenvy.cli.command.builtin;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.Workspace;
+import com.codenvy.client.model.WorkspaceRef;
 
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
@@ -44,11 +45,11 @@ public class ProjectCommand extends AbsCommand {
 
         Ansi buffer = Ansi.ansi();
 
-        Workspace.WorkspaceRef workspaceRef = null;
+        WorkspaceRef workspaceRef = null;
 
         Workspace workspace = getCurrentWorkspace();
         if (workspace != null) {
-            workspaceRef = workspace.workspaceRef;
+            workspaceRef = workspace.workspaceRef();
         }
         if (workspaceRef == null) {
             if (workspaceName == null) {
@@ -61,10 +62,10 @@ public class ProjectCommand extends AbsCommand {
         }
 
         // now call project api
-        List<Project> projects = current.project().getWorkspaceProjects(workspaceRef.id).execute();
+        List<? extends Project> projects = current.project().getWorkspaceProjects(workspaceRef.id()).execute();
         buffer.a("NAME").a("\t\t").a("WorkspaceID\n");
         for (Project project : projects) {
-            buffer.a(project.name).a("\t\t").a(project.workspaceId).a("\n");
+            buffer.a(project.name()).a("\t\t").a(project.workspaceId()).a("\n");
         }
 
         session.getConsole().println(buffer.toString());

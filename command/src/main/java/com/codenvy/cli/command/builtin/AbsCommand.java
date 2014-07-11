@@ -11,6 +11,8 @@
 package com.codenvy.cli.command.builtin;
 
 import com.codenvy.client.Codenvy;
+import com.codenvy.client.CodenvyAPI;
+import com.codenvy.client.CodenvyClient;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.Workspace;
 
@@ -38,6 +40,11 @@ public abstract class AbsCommand extends OsgiCommandSupport {
     private Properties codenvySettings;
 
     /**
+     * Codenvy client instance.
+     */
+    private CodenvyClient codenvyClient;
+
+    /**
      * Get a configuration property from the Codenvy configuration file stored in KARAF_HOME/etc folder.
      * @param property the name of the property
      * @return the value or null if not found
@@ -62,6 +69,16 @@ public abstract class AbsCommand extends OsgiCommandSupport {
      */
     protected Codenvy getCurrentCodenvy() {
         return (Codenvy)session.get(Codenvy.class.getName());
+    }
+
+    /**
+     * @return the current workspace used at runtime
+     */
+    protected CodenvyClient getCodenvyClient() {
+        if (codenvyClient == null) {
+            codenvyClient = CodenvyAPI.getClient();
+        }
+        return codenvyClient;
     }
 
     /**

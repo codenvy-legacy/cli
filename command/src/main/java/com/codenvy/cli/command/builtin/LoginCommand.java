@@ -13,7 +13,6 @@ package com.codenvy.cli.command.builtin;
 
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyException;
-import com.codenvy.client.auth.AuthenticationException;
 import com.codenvy.client.auth.Credentials;
 import static com.codenvy.cli.command.builtin.Constants.*;
 import org.apache.karaf.shell.commands.Command;
@@ -68,10 +67,10 @@ public class LoginCommand extends AbsCommand {
         }
 
         // Manage credentials
-        Credentials credentials = new Credentials.Builder().withUsername(username)
+        Credentials credentials = getCodenvyClient().newCredentialsBuilder().withUsername(username)
                                                            .withPassword(password)
                                                            .build();
-        Codenvy codenvy = new Codenvy.Builder(host, username).withCredentials(credentials).build();
+        Codenvy codenvy = getCodenvyClient().newCodenvyBuilder(host, username).withCredentials(credentials).build();
 
         Ansi buffer = Ansi.ansi();
 
@@ -88,7 +87,7 @@ public class LoginCommand extends AbsCommand {
             buffer.fg(Ansi.Color.BLUE);
             buffer.a(username);
             buffer.fg(Ansi.Color.DEFAULT);
-        } catch (CodenvyException | AuthenticationException e) {
+        } catch (CodenvyException e) {
             buffer.fg(Ansi.Color.RED);
             buffer.a("failed");
             buffer.fg(Ansi.Color.DEFAULT);

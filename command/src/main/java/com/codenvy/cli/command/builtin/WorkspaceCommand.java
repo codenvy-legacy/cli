@@ -13,6 +13,7 @@ package com.codenvy.cli.command.builtin;
 
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Workspace;
+import com.codenvy.client.model.WorkspaceRef;
 
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
@@ -39,7 +40,7 @@ public class WorkspaceCommand extends AbsCommand {
 
         Ansi buffer = Ansi.ansi();
 
-        List<Workspace> workspaces = current.workspace().all().execute();
+        List<? extends Workspace> workspaces = current.workspace().all().execute();
         if (workspaces.size() == 0) {
             buffer.a(Ansi.Attribute.INTENSITY_BOLD);
             buffer.a("NO");
@@ -48,10 +49,10 @@ public class WorkspaceCommand extends AbsCommand {
         } else {
             buffer.a("ID").a("\t\t\t").a("NAME").a("\t").a("OrgID\n");
             for (Workspace workspace : workspaces) {
-                Workspace.WorkspaceRef ref = current.workspace().withName(workspace.workspaceRef.name).execute();
-                String id = ref.id;
-                String name = ref.name;
-                String organizationID = ref.organizationId;
+                WorkspaceRef ref = current.workspace().withName(workspace.workspaceRef().name()).execute();
+                String id = ref.id();
+                String name = ref.name();
+                String organizationID = ref.organizationId();
                 buffer.a(id).a("\t").a(name).a("\t").a(organizationID).a("\n");
             }
         }

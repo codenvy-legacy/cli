@@ -14,13 +14,14 @@ import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.RunnerStatus;
 import com.codenvy.client.model.Workspace;
+import com.codenvy.client.model.WorkspaceRef;
 
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 
 import java.util.List;
 
-import static com.codenvy.client.model.RunnerStatus.Status.STOPPED;
+import static com.codenvy.client.model.RunnerState.STOPPED;
 
 /**
  * Allows to run a given project
@@ -42,11 +43,11 @@ public class RunnerCommand extends AbsCommand {
             return null;
         }
 
-        Workspace.WorkspaceRef workspaceRef = null;
+        WorkspaceRef workspaceRef = null;
 
         Workspace workspace = getCurrentWorkspace();
         if (workspace != null) {
-            workspaceRef = workspace.workspaceRef;
+            workspaceRef = workspace.workspaceRef();
         }
         if (workspaceRef == null) {
             if (workspaceName == null) {
@@ -59,7 +60,7 @@ public class RunnerCommand extends AbsCommand {
         }
 
         // get workspace ID
-        String workspaceID = workspaceRef.id;
+        String workspaceID = workspaceRef.id();
         session.getConsole().println("Using workspace ID" + workspaceID);
 
         Project project = getCurrentProject();
@@ -69,9 +70,9 @@ public class RunnerCommand extends AbsCommand {
                 return null;
             } else {
                 // select a project
-                List<Project> projects = current.project().getWorkspaceProjects(workspaceID).execute();
+                List<? extends Project> projects = current.project().getWorkspaceProjects(workspaceID).execute();
                 for (Project foundProject : projects) {
-                    if (foundProject.name.equals(projectName)) {
+                    if (foundProject.name().equals(projectName)) {
                         project = foundProject;
                         break;
                     }
@@ -89,12 +90,12 @@ public class RunnerCommand extends AbsCommand {
             @Override
             public void run() {
                 RunnerStatus updatedStatus = runnerStatus;
-                while (updatedStatus.status != STOPPED) {
-                    updatedStatus = current.runner().status(projectToRun, runnerStatus.processId).execute();
+                while (updatedStatus.status() != STOPPED) {
+                    updatedStatus = current.runner().status(projectToRun, runnerStatus.processId()).execute();
 
                     String log = null;
                     try {
-                        log = current.runner().logs(projectToRun, runnerStatus.processId).execute();
+                        log = current.runner().logs(projectToRun, runnerStatus.processId()).execute();
                     } catch (RuntimeException e) {
                         session.getConsole().println(e);
                     }
