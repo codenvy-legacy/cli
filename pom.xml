@@ -62,6 +62,23 @@
         <org.apache.karaf.feature-plugin.version>2.3.5</org.apache.karaf.feature-plugin.version>
         <org.apache.karaf.version>3.0.1</org.apache.karaf.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>codenvy-public-repo</id>
+            <name>codenvy public</name>
+            <url>https://maven.codenvycorp.com/content/groups/public/</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>codenvy-public-repo</id>
+            <name>codenvy public</name>
+            <url>https://maven.codenvycorp.com/content/groups/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <build>
         <pluginManagement>
             <plugins>
