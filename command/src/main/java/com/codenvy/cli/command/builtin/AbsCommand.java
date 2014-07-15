@@ -82,6 +82,13 @@ public abstract class AbsCommand extends OsgiCommandSupport {
     }
 
     /**
+     * Defines the codenvy Client to use.
+     */
+    protected void setCodenvyClient(CodenvyClient codenvyClient) {
+        this.codenvyClient = codenvyClient;
+    }
+
+    /**
      * @return the current workspace used at runtime
      */
     protected Workspace getCurrentWorkspace() {

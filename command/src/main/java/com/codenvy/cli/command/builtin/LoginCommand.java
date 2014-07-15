@@ -14,10 +14,16 @@ package com.codenvy.cli.command.builtin;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyException;
 import com.codenvy.client.auth.Credentials;
-import static com.codenvy.cli.command.builtin.Constants.*;
+import com.codenvy.client.auth.Token;
+
+import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.fusesource.jansi.Ansi;
+
+import static org.fusesource.jansi.Ansi.Color.BLUE;
+import static org.fusesource.jansi.Ansi.Color.DEFAULT;
+import static org.fusesource.jansi.Ansi.Color.GREEN;
 
 /**
  * Allows to be authenticated on Codenvy
@@ -26,6 +32,8 @@ import org.fusesource.jansi.Ansi;
 @Command(scope = "codenvy", name = "login", description = "Login into Codenvy System")
 public class LoginCommand extends AbsCommand {
 
+    protected static final String DEFAULT_URL = "http://ide3.cf.codenvy-stg.com";
+
     /**
      * Host on which to perform the authentication. (override host defined in the configuration file)
      */
@@ -33,21 +41,21 @@ public class LoginCommand extends AbsCommand {
     private String host;
 
     /**
-     * TODO: check ?
+     * TODO: check is for ?
      */
     @Option(name = "-c", aliases = {"--check"}, description = "Check", required = false, multiValued = false)
     private boolean check;
 
     /**
-     * Specify the username (override user defined in the configuration file)
+     * Specify the username
      */
-    @Option(name = "-u", aliases = {"--username"}, description = "Username", required = false, multiValued = false)
+    @Argument(index = 0, name = "username", description = "Username", required = true, multiValued = false)
     private String username;
 
     /**
      * Specify the password (override password defined in the configuration file)
      */
-    @Option(name = "-p", aliases = {"--password"}, description = "Password", required = false, multiValued = false)
+    @Argument(index = 1, name = "password", description = "Password", required = true, multiValued = false)
     private String password;
 
     /**
@@ -55,22 +63,18 @@ public class LoginCommand extends AbsCommand {
      * @return
      */
     protected Object doExecute() {
-        // use configuration file if properties are not defined
-        if (host == null) {
-            host = getCodenvyProperty(HOST_PROPERTY);
-        }
-        if (username == null) {
-            username = getCodenvyProperty(USERNAME_PROPERTY);
-        }
-        if (password == null) {
-            password = getCodenvyProperty(PASSWORD_PROPERTY);
+
+        String url = host;
+        if (url == null) {
+            url = DEFAULT_URL;
         }
 
         // Manage credentials
         Credentials credentials = getCodenvyClient().newCredentialsBuilder().withUsername(username)
-                                                           .withPassword(password)
-                                                           .build();
-        Codenvy codenvy = getCodenvyClient().newCodenvyBuilder(host, username).withCredentials(credentials).build();
+                                                    .withPassword(password)
+                                                    .build();
+
+        Codenvy codenvy = getCodenvyClient().newCodenvyBuilder(url, username).withCredentials(credentials).build();
 
         Ansi buffer = Ansi.ansi();
 
@@ -80,23 +84,22 @@ public class LoginCommand extends AbsCommand {
         try {
             // Login
             codenvy.user().current().execute();
-            buffer.fg(Ansi.Color.GREEN);
+            buffer.fg(GREEN);
             buffer.a("OK");
-            buffer.fg(Ansi.Color.DEFAULT);
+            buffer.fg(DEFAULT);
             buffer.a(" : Welcome ");
-            buffer.fg(Ansi.Color.BLUE);
+            buffer.fg(BLUE);
             buffer.a(username);
-            buffer.fg(Ansi.Color.DEFAULT);
+            buffer.fg(DEFAULT);
+            // Keep the token object
+            session.put(Token.class.getName(), credentials.token());
         } catch (CodenvyException e) {
             buffer.fg(Ansi.Color.RED);
             buffer.a("failed");
-            buffer.fg(Ansi.Color.DEFAULT);
+            buffer.fg(DEFAULT);
             buffer.a(" : Unable to perform login : ");
             buffer.a(e.getMessage());
         }
-
-        // Keep the codenvy object
-        session.put(Codenvy.class.getName(), codenvy);
 
         // print result
         session.getConsole().println(buffer.toString());
