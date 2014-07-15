@@ -33,6 +33,13 @@
             <artifactId>apache-karaf</artifactId>
             <version>${org.apache.karaf.version}</version>
             <type>tar.gz</type>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>framework</artifactId>
+                    <groupId>org.apache.karaf.features</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     <build>
@@ -104,48 +111,44 @@
                 </executions>
             </plugin>
             <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <executions>
-            <execution>
-                <id>add-features</id>
-                <phase>process-classes</phase>
-                <goals>
-                    <goal>run</goal>
-                </goals>
-                <configuration>
-                    <target>
-                        <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/etc/org.apache.karaf.features.cfg">
-                            <replacetoken><![CDATA[featuresRepositories=]]></replacetoken>
-                            <replacevalue><![CDATA[featuresRepositories=mvn:com.codenvy.platform-api-client-java/assemblies-karaf-uberjar/${com.codenvy.client.version}/xml/features,mvn:com.codenvy.cli/cli-feature/${project.version}/xml/features,]]></replacevalue>
-                        </replace>
-                        <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/etc/org.apache.karaf.features.cfg">
-                            <replacetoken><![CDATA[featuresBoot=config,standard,region,package,kar,ssh,management]]></replacetoken>
-                            <replacevalue><![CDATA[featuresBoot=config,standard,region,package,kar,ssh,management,assemblies-karaf-uberjar,cli-feature]]></replacevalue>
-                        </replace>
-
-
-
-                        <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/etc/org.apache.karaf.features.repos.cfg">
-                            <replacetoken><![CDATA[cellar       =]]></replacetoken>
-                            <replacevalue><![CDATA[codenvy-client    = com.codenvy.platform-api-client-java:assemblies-karaf-uberjar:xml:features(0,]
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-features</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/etc/org.apache.karaf.features.cfg">
+                                    <replacetoken><![CDATA[featuresRepositories=]]></replacetoken>
+                                    <replacevalue><![CDATA[featuresRepositories=mvn:com.codenvy.platform-api-client-java/assemblies-karaf-uberjar/${com.codenvy.client.version}/xml/features,mvn:com.codenvy.cli/cli-feature/${project.version}/xml/features,]]></replacevalue>
+                                </replace>
+                                <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/etc/org.apache.karaf.features.cfg">
+                                    <replacetoken><![CDATA[featuresBoot=config,standard,region,package,kar,ssh,management]]></replacetoken>
+                                    <replacevalue><![CDATA[featuresBoot=config,standard,region,package,kar,ssh,management,assemblies-karaf-uberjar,cli-feature]]></replacevalue>
+                                </replace>
+                                <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/etc/org.apache.karaf.features.repos.cfg">
+                                    <replacetoken><![CDATA[cellar       =]]></replacetoken>
+                                    <replacevalue><![CDATA[codenvy-client    = com.codenvy.platform-api-client-java:assemblies-karaf-uberjar:xml:features(0,]
 codenvy-cli  = com.codenvy.cli:cli-feature:xml:features(0,]
 cellar       =]]></replacevalue>
-                        </replace>
-                        <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/bin/shell">
-                            <replacetoken><![CDATA[CLASSPATH="$CLASSPATH:$KARAF_HOME/system/jline/jline/2.11/jline-2.11.jar"]]></replacetoken>
-                            <replacevalue><![CDATA[CLASSPATH="$CLASSPATH:$KARAF_HOME/lib/codenvy-branding.jar"
+                                </replace>
+                                <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/bin/shell">
+                                    <replacetoken><![CDATA[CLASSPATH="$CLASSPATH:$KARAF_HOME/system/jline/jline/2.11/jline-2.11.jar"]]></replacetoken>
+                                    <replacevalue><![CDATA[CLASSPATH="$CLASSPATH:$KARAF_HOME/lib/codenvy-branding.jar"
 CLASSPATH="$CLASSPATH:$KARAF_HOME/lib/karaf-org.osgi.core.jar"
 CLASSPATH="$CLASSPATH:$KARAF_HOME/system/com/codenvy/cli/cli-command/${project.version}/cli-command-${project.version}.jar"
 CLASSPATH="$CLASSPATH:$KARAF_HOME/system/com/codenvy/platform-api-client-java/uberjar/${com.codenvy.client.version}/uberjar-${com.codenvy.client.version}.jar"
 CLASSPATH="$CLASSPATH:$KARAF_HOME/system/jline/jline/2.11/jline-2.11.jar"]]></replacevalue>
-                        </replace>
-                    </target>
-                </configuration>
-            </execution>
-            </executions>
+                                </replace>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>features-maven-plugin</artifactId>
