@@ -93,6 +93,7 @@ public class LoginCommand extends AbsCommand {
             buffer.fg(DEFAULT);
             // Keep the token object
             session.put(Token.class.getName(), credentials.token());
+            session.put(Codenvy.class.getName(), codenvy);
         } catch (CodenvyException e) {
             buffer.fg(Ansi.Color.RED);
             buffer.a("failed");
