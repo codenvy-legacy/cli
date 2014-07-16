@@ -39,5 +39,9 @@
             <action class="com.codenvy.cli.command.builtin.RunnerCommand">
             </action>
         </command>
+        <command>
+            <action class="com.codenvy.cli.command.builtin.ListCommand">
+            </action>
+        </command>
     </command-bundle>
 </blueprint>

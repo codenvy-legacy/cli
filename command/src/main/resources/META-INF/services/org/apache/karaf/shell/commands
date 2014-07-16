@@ -15,3 +15,4 @@ com.codenvy.cli.command.builtin.LoginCommand
 com.codenvy.cli.command.builtin.LogoutCommand
 com.codenvy.cli.command.builtin.HelpCommand
 com.codenvy.cli.command.builtin.RunnerCommand
+com.codenvy.cli.command.builtin.ListCommand

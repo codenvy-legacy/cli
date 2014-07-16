@@ -13,22 +13,34 @@ package com.codenvy.cli.command.builtin;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyBuilder;
 import com.codenvy.client.CodenvyClient;
+import com.codenvy.client.ProjectClient;
 import com.codenvy.client.Request;
 import com.codenvy.client.UserClient;
+import com.codenvy.client.WorkspaceClient;
 import com.codenvy.client.auth.Credentials;
 import com.codenvy.client.auth.CredentialsBuilder;
+import com.codenvy.client.model.Project;
 import com.codenvy.client.model.User;
+import com.codenvy.client.model.Workspace;
+import com.codenvy.client.model.WorkspaceRef;
 
 import org.apache.felix.service.command.CommandSession;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -63,7 +75,27 @@ public abstract class AbsCommandTest {
     private User user;
 
     @Mock
-    private Request<User> request;
+    private Request<User> userRequest;
+
+    @Mock
+    private ProjectClient projectClient;
+
+    @Mock
+    private Request<List<? extends Project>> projectRequests;
+
+    @Mock
+    private WorkspaceClient workspaceClient;
+
+    @Mock
+    private Request<List<? extends Workspace>> workspaceRequests;
+
+    private List<Workspace> workspaces;
+
+    /**
+     * List of projects for a given project name
+     */
+    private Map<String, List<Project>> projects;
+
 
     @Before
     public void setUp() {
@@ -98,12 +130,49 @@ public abstract class AbsCommandTest {
         doReturn(codenvy).when(codenvyBuilder).build();
 
         // UserClient
-        doReturn(request).when(userClient).current();
-        doReturn(user).when(request).execute();
-
+        doReturn(userRequest).when(userClient).current();
+        doReturn(user).when(userRequest).execute();
         doReturn(userClient).when(codenvy).user();
 
+        // WorkspaceClient
+        doReturn(workspaceClient).when(codenvy).workspace();
+        doReturn(workspaceRequests).when(getWorkspaceClient()).all();
+        // workspaces to use
+        this.workspaces = new ArrayList<>();
+        doReturn(workspaces).when(workspaceRequests).execute();
 
+        // ProjectClient
+        this.projects = new HashMap<>();
+        doReturn(projectClient).when(codenvy).project();
+
+        // intercept request
+        when(projectClient.getWorkspaceProjects(anyString())).thenAnswer(
+                new Answer() {
+                    @Override
+                    public Object answer(InvocationOnMock invocation) {
+                        final String workspaceName = invocation.getArguments()[0].toString();
+
+                        Request<List<Project>> requestProject = mock(Request.class);
+
+                        when(requestProject.execute()).thenAnswer(new Answer<Object>() {
+                            @Override
+                            public Object answer(InvocationOnMock invocation) throws Throwable {
+                                List<Project> workspaceProjects = projects.get(workspaceName);
+                                if (workspaceProjects == null) {
+                                    workspaceProjects = new ArrayList<Project>();
+                                    projects.put(workspaceName, workspaceProjects);
+                                }
+
+                                return workspaceProjects;
+                            }
+                        });
+
+                        return requestProject;
+
+                    }
+                });
+
+        doReturn(codenvy).when(commandSession).get(Codenvy.class.getName());
 
         command.setCodenvyClient(codenvyClient);
     }
@@ -137,6 +206,60 @@ public abstract class AbsCommandTest {
     }
 
     public Request<User> getRequest() {
-        return request;
+        return userRequest;
     }
+
+    public ProjectClient getProjectClient() {
+        return projectClient;
+    }
+
+    public WorkspaceClient getWorkspaceClient() {
+        return workspaceClient;
+    }
+
+    public Request<List<? extends Workspace>> getWorkspaceRequests() {
+        return workspaceRequests;
+    }
+
+    public List<Workspace> getWorkspaces() {
+        return workspaces;
+    }
+
+
+    protected Workspace addWorkspace(String workspaceName) {
+        Workspace workspace = mock(Workspace.class);
+        WorkspaceRef workspaceRef = mock(WorkspaceRef.class);
+        doReturn(workspaceRef).when(workspace).workspaceRef();
+        doReturn(workspaceName).when(workspaceRef).name();
+        doReturn(workspaceName).when(workspaceRef).id();
+
+        getWorkspaces().add(workspace);
+
+        Request<? extends WorkspaceRef> requestWorkspaceRef = mock(Request.class);
+        doReturn(requestWorkspaceRef).when(getWorkspaceClient()).withName(workspaceName);
+        doReturn(workspaceRef).when(requestWorkspaceRef).execute();
+
+        return workspace;
+    }
+
+    protected Project addProject(String workspaceName, String projectName) {
+        Project project = mock(Project.class);
+        doReturn(projectName).when(project).name();
+
+        getProjects(workspaceName).add(project);
+
+        return project;
+    }
+
+    protected List<Project> getProjects(String workspaceName) {
+        List<Project> workspaceProjects = projects.get(workspaceName);
+        if (workspaceProjects == null) {
+            workspaceProjects = new ArrayList<>();
+            projects.put(workspaceName, workspaceProjects);
+        }
+        return workspaceProjects;
+    }
+
+
+
 }
