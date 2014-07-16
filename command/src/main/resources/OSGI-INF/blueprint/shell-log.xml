@@ -28,14 +28,6 @@
             </action>
         </command>
         <command>
-            <action class="com.codenvy.cli.command.builtin.WorkspaceCommand">
-            </action>
-        </command>
-        <command>
-            <action class="com.codenvy.cli.command.builtin.ProjectCommand">
-            </action>
-        </command>
-        <command>
             <action class="com.codenvy.cli.command.builtin.RunnerCommand">
             </action>
         </command>

@@ -9,8 +9,6 @@
 #   Codenvy, S.A. - initial API and implementation
 #
 
-com.codenvy.cli.command.builtin.WorkspaceCommand
-com.codenvy.cli.command.builtin.ProjectCommand
 com.codenvy.cli.command.builtin.LoginCommand
 com.codenvy.cli.command.builtin.LogoutCommand
 com.codenvy.cli.command.builtin.HelpCommand
