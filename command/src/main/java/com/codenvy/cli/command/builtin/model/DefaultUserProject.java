@@ -91,6 +91,13 @@ public class DefaultUserProject implements UserProject {
     }
 
     /**
+     * @return the inner project object
+     */
+    public Project getInnerProject() {
+        return project;
+    }
+
+    /**
      * Helper method used to convert byte into hexa value
      *
      * @param b

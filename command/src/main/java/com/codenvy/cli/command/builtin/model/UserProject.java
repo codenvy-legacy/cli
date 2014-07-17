@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
+import com.codenvy.client.model.Project;
+
 /**
  * Define a project available for a given user
  *
@@ -31,4 +33,9 @@ public interface UserProject {
      * @return a short identifier that could identify the project
      */
     String shortId();
+
+    /**
+     * @return the inner project object
+     */
+    Project getInnerProject();
 }
