@@ -45,12 +45,12 @@ public class ListCommand extends AbsCommand {
         Ansi buffer = Ansi.ansi();
 
 
-       List<UserProject> projects = getProjects(current);
-       if (projects.isEmpty()) {
+        List<UserProject> projects = getProjects(current);
+        if (projects.isEmpty()) {
             buffer.a("No projects");
-           session.getConsole().println(buffer.toString());
-           return null;
-       }
+            session.getConsole().println(buffer.toString());
+            return null;
+        }
 
         // Titles
         List<String> ids = new ArrayList<>();
