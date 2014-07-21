@@ -146,7 +146,7 @@ public abstract class AbsCommand extends OsgiCommandSupport {
      * @param codenvy the codenvy object used to retrieve the data
      * @return the list of projects
      */
-    List<UserProject> getProjects(Codenvy codenvy) {
+    protected List<UserProject> getProjects(Codenvy codenvy) {
         List<UserProject> projects = new ArrayList<>();
 
         // For each workspace, search the project and compute
@@ -172,4 +172,46 @@ public abstract class AbsCommand extends OsgiCommandSupport {
         }
         return projects;
     }
+
+
+    /**
+     * Allows to search a project
+     */
+    protected UserProject getProject(Codenvy codenvy, String shortId) {
+        if (shortId == null || shortId.length() < 2) {
+            throw new IllegalArgumentException("The identifier should at least contain two digits");
+        }
+
+
+        // get all projects
+        List<UserProject> projects = getProjects(codenvy);
+
+        // no projects
+        if (projects.size() == 0) {
+            return null;
+        }
+
+        // now search in the given projects
+        List<UserProject> matchingProjects = new ArrayList<>();
+        for (UserProject project : projects) {
+            // match
+            if (project.shortId().startsWith(shortId)) {
+                matchingProjects.add(project);
+            }
+        }
+
+        // No matching project
+        if (matchingProjects.size() == 0) {
+            return null;
+        } else if (matchingProjects.size() == 1) {
+            // one matching project
+            return matchingProjects.get(0);
+        } else {
+            throw new IllegalArgumentException("Too many matching projects. Try with a longer identifier");
+        }
+
+
+
+    }
+
 }
