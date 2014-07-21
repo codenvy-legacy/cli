@@ -28,12 +28,20 @@
             </action>
         </command>
         <command>
-            <action class="com.codenvy.cli.command.builtin.RunnerCommand">
-            </action>
+            <action class="com.codenvy.cli.command.builtin.RunnerCommand" />
+            <completers>
+                <ref component-id="projectIDCompleter"/>
+                <null/>
+            </completers>
+        </command>
         </command>
         <command>
             <action class="com.codenvy.cli.command.builtin.ListCommand">
             </action>
         </command>
     </command-bundle>
+
+
+    <bean id="projectIDCompleter" class="com.codenvy.cli.command.builtin.ProjectIDCompleter"/>
+
 </blueprint>
