@@ -16,7 +16,7 @@ import com.codenvy.client.Request;
 import com.codenvy.client.auth.Token;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.Workspace;
-import com.codenvy.client.model.WorkspaceRef;
+import com.codenvy.client.model.WorkspaceReference;
 
 import org.junit.Before;
 import org.junit.Test;

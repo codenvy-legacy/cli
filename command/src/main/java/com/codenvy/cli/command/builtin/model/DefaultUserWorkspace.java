@@ -12,7 +12,7 @@ package com.codenvy.cli.command.builtin.model;
 
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
-import com.codenvy.client.model.WorkspaceRef;
+import com.codenvy.client.model.WorkspaceReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ public class DefaultUserWorkspace implements UserWorkspace {
     /**
      * Workspace ref object used to extract the data
      */
-    private WorkspaceRef linkWorkspace;
+    private WorkspaceReference linkWorkspace;
 
     /**
      * Build a new workspace with a link to the remote api and workspace ref
@@ -43,7 +43,7 @@ public class DefaultUserWorkspace implements UserWorkspace {
      * @param workspaceRef
      *         the given workspace reference
      */
-    public DefaultUserWorkspace(Codenvy codenvy, WorkspaceRef workspaceRef) {
+    public DefaultUserWorkspace(Codenvy codenvy, WorkspaceReference workspaceRef) {
         this.codenvy = codenvy;
         this.linkWorkspace = workspaceRef;
     }

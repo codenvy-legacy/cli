@@ -22,7 +22,7 @@ import com.codenvy.client.auth.CredentialsBuilder;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.User;
 import com.codenvy.client.model.Workspace;
-import com.codenvy.client.model.WorkspaceRef;
+import com.codenvy.client.model.WorkspaceReference;
 
 import org.apache.felix.service.command.CommandSession;
 import org.junit.Before;
@@ -228,14 +228,14 @@ public abstract class AbsCommandTest {
 
     protected Workspace addWorkspace(String workspaceName) {
         Workspace workspace = mock(Workspace.class);
-        WorkspaceRef workspaceRef = mock(WorkspaceRef.class);
-        doReturn(workspaceRef).when(workspace).workspaceRef();
+        WorkspaceReference workspaceRef = mock(WorkspaceReference.class);
+        doReturn(workspaceRef).when(workspace).workspaceReference();
         doReturn(workspaceName).when(workspaceRef).name();
         doReturn(workspaceName).when(workspaceRef).id();
 
         getWorkspaces().add(workspace);
 
-        Request<? extends WorkspaceRef> requestWorkspaceRef = mock(Request.class);
+        Request<? extends WorkspaceReference> requestWorkspaceRef = mock(Request.class);
         doReturn(requestWorkspaceRef).when(getWorkspaceClient()).withName(workspaceName);
         doReturn(workspaceRef).when(requestWorkspaceRef).execute();
 

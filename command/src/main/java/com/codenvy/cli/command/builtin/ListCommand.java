@@ -20,7 +20,7 @@ import com.codenvy.client.Request;
 import com.codenvy.client.WorkspaceClient;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.Workspace;
-import com.codenvy.client.model.WorkspaceRef;
+import com.codenvy.client.model.WorkspaceReference;
 
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;

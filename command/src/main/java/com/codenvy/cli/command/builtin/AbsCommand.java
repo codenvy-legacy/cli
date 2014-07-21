@@ -20,7 +20,7 @@ import com.codenvy.client.Request;
 import com.codenvy.client.WorkspaceClient;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.Workspace;
-import com.codenvy.client.model.WorkspaceRef;
+import com.codenvy.client.model.WorkspaceReference;
 
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.fusesource.jansi.Ansi;
@@ -156,7 +156,7 @@ public abstract class AbsCommand extends OsgiCommandSupport {
         List<? extends Workspace> readWorkspaces = request.execute();
 
         for (Workspace workspace : readWorkspaces) {
-            WorkspaceRef ref = codenvy.workspace().withName(workspace.workspaceRef().name()).execute();
+            WorkspaceReference ref = workspace.workspaceReference();
             // Now skip all temporary workspaces
             if (ref.isTemporary()) {
                 continue;
