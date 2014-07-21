@@ -40,6 +40,7 @@ import com.codenvy.client.auth.CredentialsBuilder;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.User;
 import com.codenvy.client.model.Workspace;
+import com.codenvy.client.model.WorkspaceReference;
 
 /**
  * Super class of tests.

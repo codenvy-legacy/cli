@@ -10,12 +10,6 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
-import org.apache.felix.service.command.CommandSession;
-import org.apache.karaf.shell.commands.Action;
-import org.apache.karaf.shell.commands.Argument;
-import org.apache.karaf.shell.commands.Option;
-import org.fusesource.jansi.AnsiOutputStream;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,6 +19,12 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.felix.service.command.CommandSession;
+import org.apache.karaf.shell.commands.Action;
+import org.apache.karaf.shell.commands.Argument;
+import org.apache.karaf.shell.commands.Option;
+import org.fusesource.jansi.AnsiOutputStream;
 
 /**
  * This class allows to test and invoke a Karaf command.

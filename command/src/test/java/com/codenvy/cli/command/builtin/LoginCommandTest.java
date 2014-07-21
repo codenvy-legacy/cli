@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
-import static com.codenvy.cli.command.builtin.AbsCommandTest.DEFAULT_URL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -27,7 +26,7 @@ import com.codenvy.client.auth.Token;
 
 /**
  * Test of the login command
- * 
+ *
  * @author Florent Benoit
  */
 public class LoginCommandTest extends AbsCommandTest {
@@ -38,7 +37,7 @@ public class LoginCommandTest extends AbsCommandTest {
 
     /**
      * Test that we're submitting correct data
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -77,7 +76,7 @@ public class LoginCommandTest extends AbsCommandTest {
 
     /**
      * Test that login failed with invalid data
-     * 
+     *
      * @throws Exception
      */
     @Test
