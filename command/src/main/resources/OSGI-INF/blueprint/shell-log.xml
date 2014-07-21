@@ -34,7 +34,6 @@
                 <null/>
             </completers>
         </command>
-        </command>
         <command>
             <action class="com.codenvy.cli.command.builtin.ListCommand">
             </action>
