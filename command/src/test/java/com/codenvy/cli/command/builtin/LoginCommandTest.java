@@ -53,7 +53,10 @@ public class LoginCommandTest extends AbsCommandTest {
 
         String username = "florent";
         String password = "mySecretPassword";
-        CommandInvoker commandInvoker = new CommandInvoker(loginCommand).argument("username", username).argument("password", password);
+        CommandInvoker commandInvoker =
+                                        new CommandInvoker(loginCommand).option("-h", DEFAULT_URL)
+                                                                        .argument("username", username)
+                                                                        .argument("password", password);
 
         CommandInvoker.Result result = commandInvoker.invoke(getCommandSession());
 
@@ -91,7 +94,9 @@ public class LoginCommandTest extends AbsCommandTest {
 
         String username = "florent";
         String password = "mySecretPassword";
-        CommandInvoker commandInvoker = new CommandInvoker(loginCommand).argument("username", username).argument("password", password);
+        CommandInvoker commandInvoker = new CommandInvoker(loginCommand).option("-h", DEFAULT_URL)
+                                                                        .argument("username", username)
+                                                                        .argument("password", password);
 
         // Throw an exception when searching user
         reset(getRequest());
