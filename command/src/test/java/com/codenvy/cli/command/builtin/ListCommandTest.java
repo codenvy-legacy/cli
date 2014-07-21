@@ -100,7 +100,7 @@ public class ListCommandTest extends AbsCommandTest {
         assertEquals("+-------+----------+--------+\n" +
                      "|     ID| Workspace| Project|\n" +
                      "+-------+----------+--------+\n" +
-                     "|d8ed618|WORKSPACE1|project1|\n" +
+                     "|prd8ed6|WORKSPACE1|project1|\n" +
                      "+-------+----------+--------+\n", result.disableAnsi().getOutputStream());
 
     }
