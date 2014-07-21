@@ -11,34 +11,33 @@
 package com.codenvy.cli.command.builtin;
 
 
-import com.codenvy.client.Codenvy;
-import com.codenvy.client.CodenvyException;
-import com.codenvy.client.auth.Credentials;
-import com.codenvy.client.auth.Token;
+import static org.fusesource.jansi.Ansi.Color.BLUE;
+import static org.fusesource.jansi.Ansi.Color.DEFAULT;
+import static org.fusesource.jansi.Ansi.Color.GREEN;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.fusesource.jansi.Ansi;
 
-import static org.fusesource.jansi.Ansi.Color.BLUE;
-import static org.fusesource.jansi.Ansi.Color.DEFAULT;
-import static org.fusesource.jansi.Ansi.Color.GREEN;
+import com.codenvy.client.Codenvy;
+import com.codenvy.client.CodenvyException;
+import com.codenvy.client.auth.Credentials;
+import com.codenvy.client.auth.Token;
 
 /**
  * Allows to be authenticated on Codenvy
+ *
  * @author Florent Benoit
+ * @author Stéphane Daviet
  */
 @Command(scope = "codenvy", name = "login", description = "Login into Codenvy System")
 public class LoginCommand extends AbsCommand {
-
-    protected static final String DEFAULT_URL = "http://ide3.cf.codenvy-stg.com";
-
     /**
      * Host on which to perform the authentication. (override host defined in the configuration file)
      */
     @Option(name = "-h", aliases = {"--host"}, description = "URL of codenvy server", required = false, multiValued = false)
-    private String host;
+    private String  host;
 
     /**
      * TODO: check is for ?
@@ -50,23 +49,25 @@ public class LoginCommand extends AbsCommand {
      * Specify the username
      */
     @Argument(index = 0, name = "username", description = "Username", required = true, multiValued = false)
-    private String username;
+    private String  username;
 
     /**
      * Specify the password (override password defined in the configuration file)
      */
     @Argument(index = 1, name = "password", description = "Password", required = true, multiValued = false)
-    private String password;
+    private String  password;
 
     /**
      * Launch the authentication
+     *
      * @return
      */
+    @Override
     protected Object doExecute() {
 
         String url = host;
         if (url == null) {
-            url = DEFAULT_URL;
+            url = getCodenvyProperty("host");
         }
 
         // Manage credentials
