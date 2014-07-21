@@ -10,12 +10,15 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
+import com.codenvy.cli.command.builtin.util.SHA1;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
 
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import static com.codenvy.cli.command.builtin.util.SHA1.sha1;
 
 /**
  * Implements the {@link com.codenvy.cli.command.builtin.model.UserProject} interface providing links between project and workspaces.
@@ -57,15 +60,8 @@ public class DefaultUserProject implements UserProject {
         //FIXME : should use project.id()
         String fullID = workspace.id() + project.name();
 
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("Unable to find SHA-1 message digest");
-        }
 
-        Charset utf8 = Charset.forName("UTF-8");
-        this.sha1Id = bytesToHexa(md.digest(fullID.getBytes(utf8)));
+        this.sha1Id = sha1("pr", fullID);
     }
 
     /**
@@ -84,11 +80,19 @@ public class DefaultUserProject implements UserProject {
     }
 
     /**
+     * @return full sha1 ID
+     */
+    public String sha1ID() {
+        return sha1Id;
+    }
+
+    /**
      * @return only the first 7 digits
      */
     public String shortId() {
         return sha1Id.substring(0, 7);
     }
+
 
     /**
      * @return the inner project object
@@ -97,21 +101,5 @@ public class DefaultUserProject implements UserProject {
         return project;
     }
 
-    /**
-     * Helper method used to convert byte into hexa value
-     *
-     * @param b
-     *         the given array of bytes
-     * @return a string with hexadecimal values for a pretty print
-     */
-    public static String bytesToHexa(final byte[] b) {
-        char hexDigit[] = {'0', '1', '2', '3', '4', '5', '6', '7',
-                           '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-        StringBuilder buffer = new StringBuilder();
-        for (int i = 0; i < b.length; i++) {
-            buffer.append(hexDigit[(b[i] >> 4) & 0x0f]);
-            buffer.append(hexDigit[b[i] & 0x0f]);
-        }
-        return buffer.toString();
-    }
+
 }

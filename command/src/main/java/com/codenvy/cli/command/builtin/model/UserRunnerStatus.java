@@ -8,26 +8,16 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
+
 package com.codenvy.cli.command.builtin.model;
 
-import com.codenvy.client.model.Project;
+import com.codenvy.client.model.RunnerStatus;
 
 /**
- * Define a project available for a given user
- *
+ * Represents runner status and its local identifier
  * @author Florent Benoit
  */
-public interface UserProject {
-
-    /**
-     * @return the name of the project
-     */
-    String name();
-
-    /**
-     * @return the workspace used by this project
-     */
-    UserWorkspace getWorkspace();
+public interface UserRunnerStatus {
 
     /**
      * @return complete ID
@@ -40,7 +30,13 @@ public interface UserProject {
     String shortId();
 
     /**
-     * @return the inner project object
+     * @return the linked project
      */
-    Project getInnerProject();
+    UserProject getProject();
+
+    /**
+     * @return inner status
+     */
+    RunnerStatus getInnerStatus();
+
 }
