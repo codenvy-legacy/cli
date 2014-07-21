@@ -10,36 +10,14 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.client.CodenvyException;
-import com.codenvy.client.ProjectClient;
-import com.codenvy.client.Request;
-import com.codenvy.client.auth.Token;
-import com.codenvy.client.model.Project;
-import com.codenvy.client.model.Workspace;
-import com.codenvy.client.model.WorkspaceReference;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.codenvy.cli.command.builtin.LoginCommand.DEFAULT_URL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+
+import org.junit.Test;
 
 /**
  * Test of the list command
+ * 
  * @author Florent Benoit
  */
 public class ListCommandTest extends AbsCommandTest {

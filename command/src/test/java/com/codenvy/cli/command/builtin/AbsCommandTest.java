@@ -10,6 +10,24 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.felix.service.command.CommandSession;
+import org.junit.Before;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
+
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyBuilder;
 import com.codenvy.client.CodenvyClient;
@@ -22,91 +40,73 @@ import com.codenvy.client.auth.CredentialsBuilder;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.User;
 import com.codenvy.client.model.Workspace;
-import com.codenvy.client.model.WorkspaceReference;
-
-import org.apache.felix.service.command.CommandSession;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Super class of tests.
+ *
  * @author Florent Benoit
  */
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbsCommandTest {
+    public static final String                  DEFAULT_URL = "http://ide3.cf.codenvy-stg.com";
 
     @Mock
-    private CommandSession commandSession;
+    private CommandSession                      commandSession;
 
     @Mock
-    private CodenvyClient codenvyClient;
+    private CodenvyClient                       codenvyClient;
 
     @Mock
-    private CredentialsBuilder credentialsBuilder;
+    private CredentialsBuilder                  credentialsBuilder;
 
     @Mock
-    private Credentials credentials;
+    private Credentials                         credentials;
 
     @Mock
-    private CodenvyBuilder codenvyBuilder;
+    private CodenvyBuilder                      codenvyBuilder;
 
     @Mock
-    private Codenvy codenvy;
+    private Codenvy                             codenvy;
 
     @Mock
-    private UserClient userClient;
+    private UserClient                          userClient;
 
     @Mock
-    private User user;
+    private User                                user;
 
     @Mock
-    private Request<User> userRequest;
+    private Request<User>                       userRequest;
 
     @Mock
-    private ProjectClient projectClient;
+    private ProjectClient                       projectClient;
 
     @Mock
-    private Request<List<? extends Project>> projectRequests;
+    private Request<List< ? extends Project>>   projectRequests;
 
     @Mock
-    private WorkspaceClient workspaceClient;
+    private WorkspaceClient                     workspaceClient;
 
     @Mock
-    private Request<List<? extends Workspace>> workspaceRequests;
+    private Request<List< ? extends Workspace>> workspaceRequests;
 
-    private List<Workspace> workspaces;
+    private List<Workspace>                     workspaces;
 
     /**
      * List of projects for a given project name
      */
-    private Map<String, List<Project>> projects;
+    private Map<String, List<Project>>          projects;
 
 
     @Before
     public void setUp() {
         // return current system.out when invocation is performed
         when(commandSession.getConsole()).thenAnswer(
-                new Answer() {
-                    @Override
-                    public Object answer(InvocationOnMock invocation) {
-                        return System.out;
-                    }
-                });
+                                                     new Answer() {
+                                                         @Override
+                                                         public Object answer(InvocationOnMock invocation) {
+                                                             return System.out;
+                                                         }
+                                                     });
 
     }
 
@@ -116,6 +116,7 @@ public abstract class AbsCommandTest {
 
     /**
      * Prepare the given command by injecting default configuration
+     *
      * @param command
      */
     protected void prepare(AbsCommand command) {
@@ -147,30 +148,35 @@ public abstract class AbsCommandTest {
 
         // intercept request
         when(projectClient.getWorkspaceProjects(anyString())).thenAnswer(
-                new Answer() {
-                    @Override
-                    public Object answer(InvocationOnMock invocation) {
-                        final String workspaceName = invocation.getArguments()[0].toString();
+                                                                         new Answer() {
+                                                                             @Override
+                                                                             public Object answer(InvocationOnMock invocation) {
+                                                                                 final String workspaceName =
+                                                                                                              invocation.getArguments()[0].toString();
 
-                        Request<List<Project>> requestProject = mock(Request.class);
+                                                                                 Request<List<Project>> requestProject =
+                                                                                                                         mock(Request.class);
 
-                        when(requestProject.execute()).thenAnswer(new Answer<Object>() {
-                            @Override
-                            public Object answer(InvocationOnMock invocation) throws Throwable {
-                                List<Project> workspaceProjects = projects.get(workspaceName);
-                                if (workspaceProjects == null) {
-                                    workspaceProjects = new ArrayList<Project>();
-                                    projects.put(workspaceName, workspaceProjects);
-                                }
+                                                                                 when(requestProject.execute()).thenAnswer(new Answer<Object>() {
+                                                                                                                               @Override
+                                                                                                                               public Object answer(InvocationOnMock invocation) throws Throwable {
+                                                                                                                                   List<Project> workspaceProjects =
+                                                                                                                                                                     projects.get(workspaceName);
+                                                                                                                                   if (workspaceProjects == null) {
+                                                                                                                                       workspaceProjects =
+                                                                                                                                                           new ArrayList<Project>();
+                                                                                                                                       projects.put(workspaceName,
+                                                                                                                                                    workspaceProjects);
+                                                                                                                                   }
 
-                                return workspaceProjects;
-                            }
-                        });
+                                                                                                                                   return workspaceProjects;
+                                                                                                                               }
+                                                                                                                           });
 
-                        return requestProject;
+                                                                                 return requestProject;
 
-                    }
-                });
+                                                                             }
+                                                                         });
 
         doReturn(codenvy).when(commandSession).get(Codenvy.class.getName());
 
@@ -217,7 +223,7 @@ public abstract class AbsCommandTest {
         return workspaceClient;
     }
 
-    public Request<List<? extends Workspace>> getWorkspaceRequests() {
+    public Request<List< ? extends Workspace>> getWorkspaceRequests() {
         return workspaceRequests;
     }
 
@@ -235,7 +241,7 @@ public abstract class AbsCommandTest {
 
         getWorkspaces().add(workspace);
 
-        Request<? extends WorkspaceReference> requestWorkspaceRef = mock(Request.class);
+        Request< ? extends WorkspaceReference> requestWorkspaceRef = mock(Request.class);
         doReturn(requestWorkspaceRef).when(getWorkspaceClient()).withName(workspaceName);
         doReturn(workspaceRef).when(requestWorkspaceRef).execute();
 
@@ -259,7 +265,6 @@ public abstract class AbsCommandTest {
         }
         return workspaceProjects;
     }
-
 
 
 }

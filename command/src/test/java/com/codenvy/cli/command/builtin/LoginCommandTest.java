@@ -10,13 +10,7 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.client.CodenvyException;
-import com.codenvy.client.auth.Token;
-
-import org.junit.Test;
-import org.mockito.Mock;
-
-import static com.codenvy.cli.command.builtin.LoginCommand.DEFAULT_URL;
+import static com.codenvy.cli.command.builtin.AbsCommandTest.DEFAULT_URL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -25,8 +19,15 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import org.junit.Test;
+import org.mockito.Mock;
+
+import com.codenvy.client.CodenvyException;
+import com.codenvy.client.auth.Token;
+
 /**
  * Test of the login command
+ * 
  * @author Florent Benoit
  */
 public class LoginCommandTest extends AbsCommandTest {
@@ -37,6 +38,7 @@ public class LoginCommandTest extends AbsCommandTest {
 
     /**
      * Test that we're submitting correct data
+     * 
      * @throws Exception
      */
     @Test
@@ -75,6 +77,7 @@ public class LoginCommandTest extends AbsCommandTest {
 
     /**
      * Test that login failed with invalid data
+     * 
      * @throws Exception
      */
     @Test
