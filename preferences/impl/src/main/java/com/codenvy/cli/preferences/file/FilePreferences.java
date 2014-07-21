@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.cli.preferences.impl;
+package com.codenvy.cli.preferences.file;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  *
  * @author Stéphane Daviet
  */
-public class PreferencesManager implements Preferences {
+public class FilePreferences implements Preferences, LifecycleCallback {
     private JsonPreferences    rootNode;
 
     private final ObjectMapper mapper;
@@ -33,11 +33,11 @@ public class PreferencesManager implements Preferences {
     private final File         preferencesFile;
 
     /**
-     * Create a {@link PreferencesManager} linked to the specified {@link File}.
+     * Create a {@link FilePreferences} linked to the specified {@link File}.
      *
-     * @param preferencesFile the {@link File} to link to this new {@link PreferencesManager} instance.
+     * @param preferencesFile the {@link File} to link to this new {@link FilePreferences} instance.
      */
-    public PreferencesManager(File preferencesFile) {
+    public FilePreferences(File preferencesFile) {
         this.mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         this.preferencesFile = preferencesFile;
@@ -107,11 +107,11 @@ public class PreferencesManager implements Preferences {
     }
 
     /**
-     * Load the file where {@link Credentials} are stored.
+     * Load the file where preferences are stored.
      *
-     * @return the current {@link PreferencesManager} to chain commands.
+     * @return the current {@link FilePreferences} to chain commands.
      */
-    protected PreferencesManager loadFile() {
+    protected FilePreferences loadFile() {
         try {
             if (!preferencesFile.exists()) {
                 if (!preferencesFile.createNewFile()) {
@@ -126,22 +126,39 @@ public class PreferencesManager implements Preferences {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        this.rootNode.addCallback(this);
         return this;
     }
 
     /**
-     * Dump the in-memory cache into the file where {@link Credentials}.
+     * Dump the in-memory cache into the file.
      *
-     * @return the current {@link PreferencesManager} to chain commands.
+     * @return the current {@link FilePreferences} to chain commands.
      */
-    protected PreferencesManager dumpFile() {
+    protected FilePreferences dumpFile() {
         synchronized (preferencesFile) {
             try {
-                mapper.writeValue(preferencesFile, preferencesFile);
+                mapper.writeValue(preferencesFile, rootNode);
                 return this;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     }
+
+    @Override
+    public void notify(LifecycleEvent lifecycleEvent) {
+        // we dump the file for each event
+        if (!disableSaveOnChanges) {
+            dumpFile();
+        }
+    }
+
+    private boolean disableSaveOnChanges = false;
+
+    public FilePreferences setDisableSaveOnChanges() {
+        disableSaveOnChanges = true;
+        return this;
+    }
+
 }

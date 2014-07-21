@@ -20,5 +20,5 @@
     </parent>
     <artifactId>cli-preferences-api</artifactId>
     <packaging>bundle</packaging>
-    <name>Codenvy CLI ::Preferences :: API</name>
+    <name>Codenvy CLI :: Preferences :: API</name>
 </project>

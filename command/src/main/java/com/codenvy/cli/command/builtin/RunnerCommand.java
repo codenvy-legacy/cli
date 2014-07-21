@@ -16,24 +16,10 @@ import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.RunnerStatus;
-import com.codenvy.client.model.Workspace;
-import com.codenvy.client.model.WorkspaceReference;
 
-import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.commands.Option;
 import org.fusesource.jansi.Ansi;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
-
-import static com.codenvy.client.model.RunnerState.STOPPED;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
 import static org.fusesource.jansi.Ansi.Color.RED;
@@ -51,10 +37,10 @@ public class RunnerCommand extends ScopedIDCommand {
      */
     @Override
     protected Object doExecute() throws Exception {
-        final Codenvy current = checkLoggedIn();
+        init();
 
         // not logged in
-        if (current == null) {
+        if (!checkifEnvironments()) {
             return null;
         }
 
@@ -70,7 +56,7 @@ public class RunnerCommand extends ScopedIDCommand {
         }
 
         // get project for the given shortID
-        UserProject project = getProject(current, projectShortId);
+        UserProject project = getMultiEnvCodenvy().getProject(projectShortId);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();
@@ -85,7 +71,7 @@ public class RunnerCommand extends ScopedIDCommand {
         final Project projectToRun = project.getInnerProject();
 
         // Ok now we have the project
-        final RunnerStatus runnerStatus = current.runner().run(projectToRun).execute();
+        final RunnerStatus runnerStatus = project.getCodenvy().runner().run(projectToRun).execute();
 
         UserRunnerStatus userRunnerStatus = new DefaultUserRunnerStatus(runnerStatus, project);
 

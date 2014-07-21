@@ -8,12 +8,14 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.cli.preferences.impl;
+package com.codenvy.cli.preferences.file;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -28,29 +30,36 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 
+import static com.codenvy.cli.preferences.file.LifecycleEvent.CREATE;
+import static com.codenvy.cli.preferences.file.LifecycleEvent.DELETE;
+import static com.codenvy.cli.preferences.file.LifecycleEvent.MERGE;
+
 /**
  * Real implementation of {@link Preferences} based on Jackson to be able to map and unmap stored objects to a preferences tree.
  *
  * @author Stéphane Daviet
  */
-public class JsonPreferences implements Preferences {
+public class JsonPreferences implements Preferences, LifecycleCallback {
+
+    private List<LifecycleCallback> callbackList;
+
     private final ConcurrentMap<String, Object> innerPreferences;
 
-    private final ObjectMapper                  mapper;
+    private final ObjectMapper mapper;
 
-    private final MapLikeType                   mapType;
+    private final MapLikeType mapType;
 
-    private final Collection<Class< ? >>        simpleTypes = Arrays.asList(new Class< ? >[]{
-                                                            Byte.class,
-                                                            Character.class,
-                                                            Short.class,
-                                                            Integer.class,
-                                                            Long.class,
-                                                            Boolean.class,
-                                                            Float.class,
-                                                            Double.class,
-                                                            Void.class
-                                                            });
+    private final Collection<Class<?>> simpleTypes = Arrays.asList(new Class<?>[]{
+            Byte.class,
+            Character.class,
+            Short.class,
+            Integer.class,
+            Long.class,
+            Boolean.class,
+            Float.class,
+            Double.class,
+            Void.class
+    });
 
     protected JsonPreferences() {
         this(new HashMap<String, Object>());
@@ -58,6 +67,7 @@ public class JsonPreferences implements Preferences {
 
     @JsonCreator
     protected JsonPreferences(Map<String, Object> innerPreferences) {
+        this.callbackList = new ArrayList<>();
         this.innerPreferences = new ConcurrentHashMap<String, Object>(innerPreferences);
 
         this.mapper = new ObjectMapper();
@@ -92,11 +102,13 @@ public class JsonPreferences implements Preferences {
     @Override
     public void put(String key, Object value) {
         put(key, value, true);
+        notify(CREATE);
     }
 
     @Override
     public void merge(String key, Object value) {
         put(key, value, false);
+        notify(MERGE);
     }
 
     protected void put(String key, Object value, boolean overwrite) {
@@ -120,6 +132,7 @@ public class JsonPreferences implements Preferences {
     @Override
     public void delete(String key) {
         innerPreferences.remove(key);
+        notify(DELETE);
     }
 
     @Override
@@ -144,6 +157,7 @@ public class JsonPreferences implements Preferences {
                 return null;
             }
             value = new JsonPreferences();
+            ((JsonPreferences) value).addCallback(this);
             innerPreferences.put(key, value);
             return (JsonPreferences)value;
         } else if (value instanceof JsonPreferences) {
@@ -151,6 +165,7 @@ public class JsonPreferences implements Preferences {
         } else if (value instanceof Map) {
             @SuppressWarnings("unchecked")
             JsonPreferences deepInnerPreferences = new JsonPreferences((Map<String, Object>)value);
+            deepInnerPreferences.addCallback(this);
             innerPreferences.put(key, deepInnerPreferences);
             return deepInnerPreferences;
         } else {
@@ -164,5 +179,22 @@ public class JsonPreferences implements Preferences {
                  || clazz.isArray()
                  || Enum.class.isAssignableFrom(clazz)
                  || Collection.class.isAssignableFrom(clazz));
+    }
+
+
+    protected void addCallback(LifecycleCallback lifecycleCallback) {
+        callbackList.add(lifecycleCallback);
+    }
+
+    protected void sendNotification(LifecycleEvent lifecycleEvent) {
+        for (LifecycleCallback callback : callbackList) {
+            callback.notify(lifecycleEvent);
+        }
+    }
+
+    @Override
+    public void notify(LifecycleEvent lifecycleEvent) {
+        // notify listeners
+        sendNotification(lifecycleEvent);
     }
 }

@@ -1,0 +1,15 @@
+{
+    "config" : {},
+    "environments" : {
+        "florent_dev" : {
+            "url" : "http://dev.codenvy.com",
+            "username" : "florent",
+            "token" : "abc123"
+        },
+        "stephane_dev" : {
+            "url" : "http://dev.codenvy.com",
+            "username" : "stephane",
+            "token" : "def456"
+        }
+    }
+}

@@ -47,56 +47,16 @@ public class ProjectIDCompleter implements Completer {
         StringsCompleter delegate = new StringsCompleter();
 
         // get current client
-        Codenvy codenvy = (Codenvy) commandSession.get(Codenvy.class.getName());
+        MultiEnvCodenvy multiEnvCodenvy = (MultiEnvCodenvy)commandSession.get(MultiEnvCodenvy.class.getName());
 
-        if (codenvy != null) {
+        if (multiEnvCodenvy != null) {
             // get current projects
-            List<UserProject> projects = getProjects(codenvy);
+            List<UserProject> projects = multiEnvCodenvy.getProjects();
             for (UserProject project : projects) {
                 delegate.getStrings().add(project.shortId());
             }
         }
         return delegate.complete(buffer, cursor, candidates);
     }
-
-
-
-    /**
-     * Gets list of all projects for the current user
-     * @param codenvy the codenvy object used to retrieve the data
-     * @return the list of projects
-     */
-    protected List<UserProject> getProjects(Codenvy codenvy) {
-        List<UserProject> projects = new ArrayList<>();
-
-        // For each workspace, search the project and compute
-
-        WorkspaceClient workspaceClient = codenvy.workspace();
-        Request<List<? extends Workspace>> request = workspaceClient.all();
-        List<? extends Workspace> readWorkspaces = request.execute();
-
-
-
-
-        for (Workspace workspace : readWorkspaces) {
-            WorkspaceReference ref = workspace.workspaceReference();
-
-            // Now skip all temporary workspaces
-            if (ref.isTemporary()) {
-                continue;
-            }
-
-            DefaultUserWorkspace defaultUserWorkspace = new DefaultUserWorkspace(codenvy, ref);
-
-            List<? extends Project> readProjects = codenvy.project().getWorkspaceProjects(ref.id()).execute();
-            for (Project readProject : readProjects) {
-                DefaultUserProject project = new DefaultUserProject(codenvy, readProject, defaultUserWorkspace);
-                projects.add(project);
-            }
-        }
-        return projects;
-    }
-
-
 
 }

@@ -10,31 +10,27 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.cli.command.builtin.model.DefaultUserProject;
-import com.codenvy.cli.command.builtin.model.DefaultUserWorkspace;
-import com.codenvy.cli.command.builtin.model.UserProject;
 import com.codenvy.cli.command.builtin.util.ascii.AsciiArray;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiArray;
 import com.codenvy.cli.command.builtin.util.ascii.FormatterMode;
+import com.codenvy.cli.preferences.Preferences;
+import com.codenvy.cli.preferences.PreferencesAPI;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyClient;
-import com.codenvy.client.Request;
-import com.codenvy.client.WorkspaceClient;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.Workspace;
-import com.codenvy.client.model.WorkspaceReference;
 
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.fusesource.jansi.Ansi;
 
+import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import static com.codenvy.cli.command.builtin.Constants.CODENVY_CONFIG_FILE;
@@ -58,6 +54,42 @@ public abstract class AbsCommand extends OsgiCommandSupport {
     private CodenvyClient codenvyClient;
 
     /**
+     * Manage environments that can be used.
+     */
+    private MultiEnvCodenvy multiEnvCodenvy;
+
+    /**
+     * Global preferences instance
+     */
+    private Preferences globalPreferences;
+
+    @PostConstruct
+    public void init() {
+        // Do we have existing preferences ?
+        this.globalPreferences = (Preferences) session.get(Preferences.class.getName());
+        if (globalPreferences == null) {
+            globalPreferences = PreferencesAPI.getPreferences(new File(Constants.PREFERENCES_STORE_FILE).toURI());
+            session.put(Preferences.class.getName(), globalPreferences);
+        }
+
+        // Do we have multi env ?
+        this.multiEnvCodenvy = (MultiEnvCodenvy)session.get(MultiEnvCodenvy.class.getName());
+        if (multiEnvCodenvy == null) {
+            // build a new one
+            multiEnvCodenvy = new MultiEnvCodenvy(getCodenvyClient(), globalPreferences);
+            session.put(MultiEnvCodenvy.class.getName(), multiEnvCodenvy);
+        }
+    }
+
+    /**
+     * @return multi environment
+     */
+    protected MultiEnvCodenvy getMultiEnvCodenvy() {
+        return multiEnvCodenvy;
+    }
+
+
+    /**
      * Get a configuration property from the Codenvy configuration file stored in KARAF_HOME/etc folder.
      * @param property the name of the property
      * @return the value or null if not found
@@ -77,11 +109,13 @@ public abstract class AbsCommand extends OsgiCommandSupport {
         return codenvySettings.getProperty(property);
     }
 
-    /**
-     * @return the current Codenvy instance used at runtime
-     */
-    protected Codenvy getCurrentCodenvy() {
-        return (Codenvy)session.get(Codenvy.class.getName());
+    protected boolean checkifEnvironments() {
+        if (!multiEnvCodenvy.hasEnvironments()) {
+            System.out.println("There is no Codenvy environment. Manage environments with env command.");
+        }
+
+
+        return multiEnvCodenvy.hasEnvironments();
     }
 
     /**
@@ -101,20 +135,6 @@ public abstract class AbsCommand extends OsgiCommandSupport {
         this.codenvyClient = codenvyClient;
     }
 
-    /**
-     * @return the current workspace used at runtime
-     */
-    protected Workspace getCurrentWorkspace() {
-        return (Workspace) session.get(Workspace.class.getName());
-    }
-
-
-    /**
-     * @return the current project used at runtime
-     */
-    protected Project getCurrentProject() {
-        return (Project) session.get(Project.class.getName());
-    }
 
     /**
      * @return the current formatter mode used at runtime
@@ -144,98 +164,6 @@ public abstract class AbsCommand extends OsgiCommandSupport {
         this.codenvySettings = codenvySettings;
     }
 
-    /**
-     * Helper method that checks if the user is currently logged or not and display an error if not logged.
-     * @return the current Codenvy instance if one is found
-     */
-    protected Codenvy checkLoggedIn() {
-        Codenvy codenvy = getCurrentCodenvy();
 
-        // unset
-        if (codenvy == null) {
-            Ansi buffer = Ansi.ansi();
-
-            buffer.fg(RED);
-            buffer.a("Not logged in");
-            buffer.reset();
-            System.out.println(buffer.toString());
-        }
-        return codenvy;
-    }
-
-
-
-    /**
-     * Gets list of all projects for the current user
-     * @param codenvy the codenvy object used to retrieve the data
-     * @return the list of projects
-     */
-    protected List<UserProject> getProjects(Codenvy codenvy) {
-        List<UserProject> projects = new ArrayList<>();
-
-        // For each workspace, search the project and compute
-
-        WorkspaceClient workspaceClient = codenvy.workspace();
-        Request<List<? extends Workspace>> request = workspaceClient.all();
-        List<? extends Workspace> readWorkspaces = request.execute();
-
-        for (Workspace workspace : readWorkspaces) {
-            WorkspaceReference ref = workspace.workspaceReference();
-            // Now skip all temporary workspaces
-            if (ref.isTemporary()) {
-                continue;
-            }
-
-            DefaultUserWorkspace defaultUserWorkspace = new DefaultUserWorkspace(codenvy, ref);
-
-            List<? extends Project> readProjects = codenvy.project().getWorkspaceProjects(ref.id()).execute();
-            for (Project readProject : readProjects) {
-                DefaultUserProject project = new DefaultUserProject(codenvy, readProject, defaultUserWorkspace);
-                projects.add(project);
-            }
-        }
-        return projects;
-    }
-
-
-    /**
-     * Allows to search a project
-     */
-    protected UserProject getProject(Codenvy codenvy, String shortId) {
-        if (shortId == null || shortId.length() < 2) {
-            throw new IllegalArgumentException("The identifier should at least contain two digits");
-        }
-
-
-        // get all projects
-        List<UserProject> projects = getProjects(codenvy);
-
-        // no projects
-        if (projects.size() == 0) {
-            return null;
-        }
-
-        // now search in the given projects
-        List<UserProject> matchingProjects = new ArrayList<>();
-        for (UserProject project : projects) {
-            // match
-            if (project.shortId().startsWith(shortId)) {
-                matchingProjects.add(project);
-            }
-        }
-
-        // No matching project
-        if (matchingProjects.size() == 0) {
-            return null;
-        } else if (matchingProjects.size() == 1) {
-            // one matching project
-            return matchingProjects.get(0);
-        } else {
-            throw new IllegalArgumentException("Too many matching projects. Try with a longer identifier");
-        }
-
-
-
-    }
 
 }

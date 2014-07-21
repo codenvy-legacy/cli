@@ -73,11 +73,12 @@ public class ListCommandTest extends AbsCommandTest {
     @Test
     public void testOneWorkspaceOneProject() throws Exception {
 
-        CommandInvoker commandInvoker = getInvoker();
 
         String workspaceName = "WORKSPACE1";
         addWorkspace(workspaceName);
         addProject(workspaceName, "project1");
+
+        CommandInvoker commandInvoker = getInvoker();
 
         // use CSV format
         doReturn(CSV).when(getCommandSession()).get(FormatterMode.class.getName());

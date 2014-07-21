@@ -16,14 +16,6 @@
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
         <command>
-            <action class="com.codenvy.cli.command.builtin.LoginCommand">
-            </action>
-        </command>
-        <command>
-            <action class="com.codenvy.cli.command.builtin.LogoutCommand">
-            </action>
-        </command>
-        <command>
             <action class="com.codenvy.cli.command.builtin.HelpCommand">
             </action>
         </command>
@@ -41,6 +33,9 @@
         <command>
             <action class="com.codenvy.cli.command.builtin.SwitchToCodenvyCommand">
             </action>
+        </command>
+        <command>
+            <action class="com.codenvy.cli.command.builtin.EnvCommand" />
         </command>
         <command>
             <action class="com.codenvy.cli.command.builtin.LogsCommand">

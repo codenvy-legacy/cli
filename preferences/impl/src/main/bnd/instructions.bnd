@@ -9,9 +9,11 @@
 #   Codenvy, S.A. - initial API and implementation
 #
 
+Bundle-Activator com.codenvy.cli.preferences.file.Activator
+
 Export-Package com.codenvy.cli.preferences;version=${project.version}
 
-Private-Package com.codenvy.cli.preferences.impl.*
+Private-Package com.codenvy.cli.preferences.file.*
 
 Embed-Dependency jackson-module-jaxb-annotations;inline=true, \
                  jackson-core;inline=true, \

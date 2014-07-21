@@ -14,6 +14,8 @@ package com.codenvy.cli.command.builtin;
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
 
+import java.util.Collection;
+
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
 import static org.fusesource.jansi.Ansi.Color.CYAN;
@@ -32,31 +34,55 @@ public class HelpCommand extends AbsCommand {
      * @return nothing
      */
     protected Object doExecute() {
+        init();
 
         Ansi buffer = Ansi.ansi();
 
-        buffer.a(INTENSITY_BOLD).a("The current Codenvy commands are \n").a(INTENSITY_BOLD_OFF);
+        buffer.a(INTENSITY_BOLD).a("COMMANDS").a(INTENSITY_BOLD_OFF);
 
-        // Login
+        // env
         buffer.a("\n");
         buffer.fg(CYAN);
-        buffer.a("codenvy:login");
+        buffer.a("codenvy:env");
         buffer.reset();
-        buffer.a(" : Log into codenvy");
+        buffer.a(": Manage Codenvy environments");
 
         // List
         buffer.a("\n");
         buffer.fg(CYAN);
         buffer.a("codenvy:list");
         buffer.reset();
-        buffer.a(" : List all workspaces from Codenvy");
+        buffer.a(": List all projects from Codenvy");
 
-        // Logout
+        // Build
         buffer.a("\n");
         buffer.fg(CYAN);
-        buffer.a("codenvy:logout");
+        buffer.a("codenvy:build");
         buffer.reset();
-        buffer.a(" : Logout from Codenvy");
+        buffer.a(": Build a given project");
+
+        // Run
+        buffer.a("\n");
+        buffer.fg(CYAN);
+        buffer.a("codenvy:run");
+        buffer.reset();
+        buffer.a(": Run a given project");
+
+        // Logs
+        buffer.a("\n");
+        buffer.fg(CYAN);
+        buffer.a("codenvy:logs");
+        buffer.reset();
+        buffer.a(": Display logs for a given runner/builder");
+
+
+        // Environments
+        buffer.a("\n");
+        buffer.a("\n");
+        buffer.a(getMultiEnvCodenvy().listEnvironments());
+
+        buffer.a("To manage environments, use the codenvy:env command");
+
 
         System.out.println(buffer.toString());
         return null;

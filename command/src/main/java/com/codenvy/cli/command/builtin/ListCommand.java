@@ -33,12 +33,17 @@ public class ListCommand extends AbsCommand {
      * Prints the current projects per workspace
      */
     protected Object doExecute() {
-        Codenvy current = checkLoggedIn();
+        init();
+
+        // not logged in
+        if (!checkifEnvironments()) {
+            return null;
+        }
 
         Ansi buffer = Ansi.ansi();
 
 
-        List<UserProject> projects = getProjects(current);
+        List<UserProject> projects = getMultiEnvCodenvy().getProjects();
         if (projects.isEmpty()) {
             buffer.a("No projects");
             System.out.println(buffer.toString());

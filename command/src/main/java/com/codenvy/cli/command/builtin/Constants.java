@@ -30,9 +30,9 @@ public class Constants {
     /**
      * Path to the configuration file of Codenvy.
      */
-    public static final String CREDENTIAL_STORE_FILE =
-                                                       System.getProperty("karaf.home") + File.separatorChar
-                                                           + "credentialStore.json";
+    public static final String PREFERENCES_STORE_FILE =
+                                                       System.getProperty("karaf.home") + File.separatorChar + "etc" + File.separatorChar
+                                                           + "preferences.json";
 
     /**
      * Define the <b>host</b> property which is defined in the codenvy configuration file.

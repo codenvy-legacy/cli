@@ -18,16 +18,21 @@ import org.apache.karaf.shell.console.OsgiCommandSupport;
  * @author Florent Benoit
  */
 @Command(scope = "prompt", name = "default-codenvy-namespace", description = "Switch to Codenvy shell namepsace")
-public class SwitchToCodenvyCommand extends OsgiCommandSupport {
+public class SwitchToCodenvyCommand extends AbsCommand {
 
     /**
      * Change to codenvy subshell
      */
     @Override
     protected Object doExecute() throws Exception {
+
+
         // Change default scope/subshell after login to be ready with codenvy commands
         session.put("SCOPE", "codenvy:*");
         session.put("SUBSHELL", "codenvy");
+
+        init();
+
         return null;
     }
 }

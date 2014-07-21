@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
+import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
 
 /**
@@ -43,4 +44,6 @@ public interface UserProject {
      * @return the inner project object
      */
     Project getInnerProject();
+
+    Codenvy getCodenvy();
 }

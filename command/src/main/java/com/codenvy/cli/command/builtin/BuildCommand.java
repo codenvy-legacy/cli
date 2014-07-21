@@ -39,10 +39,10 @@ public class BuildCommand extends ScopedIDCommand {
      */
     @Override
     protected Object doExecute() throws Exception {
-        final Codenvy current = checkLoggedIn();
+        init();
 
         // not logged in
-        if (current == null) {
+        if (!checkifEnvironments()) {
             return null;
         }
 
@@ -58,7 +58,7 @@ public class BuildCommand extends ScopedIDCommand {
         }
 
         // get project for the given shortID
-        UserProject project = getProject(current, projectShortId);
+        UserProject project = getMultiEnvCodenvy().getProject(projectShortId);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();
@@ -73,7 +73,7 @@ public class BuildCommand extends ScopedIDCommand {
         final Project projectToBuild = project.getInnerProject();
 
         // Ok now we have the project
-        final BuilderStatus builderStatus = current.builder().build(projectToBuild).execute();
+        final BuilderStatus builderStatus = project.getCodenvy().builder().build(projectToBuild).execute();
 
         UserBuilderStatus userBuilderStatus = new DefaultUserBuilderStatus(builderStatus, project);
 

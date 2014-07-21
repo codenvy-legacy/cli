@@ -42,6 +42,8 @@ public class DefaultUserProject implements UserProject {
      */
     private String sha1Id;
 
+    private Codenvy codenvy;
+
     /**
      * Build a project that will be linked to its workspace
      *
@@ -53,6 +55,7 @@ public class DefaultUserProject implements UserProject {
      *         the current workspace
      */
     public DefaultUserProject(Codenvy codenvy, Project project, UserWorkspace workspace) {
+        this.codenvy = codenvy;
         this.project = project;
         this.workspace = workspace;
 
@@ -98,6 +101,11 @@ public class DefaultUserProject implements UserProject {
      */
     public Project getInnerProject() {
         return project;
+    }
+
+
+    public Codenvy getCodenvy() {
+        return codenvy;
     }
 
 

@@ -42,25 +42,35 @@ public class LogsCommand extends AbsCommand {
     /**
      * Runner or builder ID
      */
-    @Argument(name = "id", description = "Specify the runner/builder ID", required = true, multiValued = false)
+    @Argument(name = "id", description = "Specify the runner/builder ID", required = false, multiValued = false)
     private String processID;
 
     /**
      * Execute the current command
      */
     protected Object doExecute() throws Exception {
-        final Codenvy current = checkLoggedIn();
+        init();
 
         // not logged in
-        if (current == null) {
+        if (!checkifEnvironments()) {
+            return null;
+        }
+
+        // do we have the process ID ?
+        if (processID == null) {
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a("No ID has been defined. It should be a runner or builder ID");
+            buffer.reset();
+            System.out.println(buffer.toString());
             return null;
         }
 
         // processId is beginning with a r --> runner ID
         if (processID.startsWith("r")) {
-            displayRunnerLog(current);
+            displayRunnerLog();
         } else if (processID.startsWith("b")) {
-            displayBuilderLog(current);
+            displayBuilderLog();
         } else {
             // invalid id
             Ansi buffer = Ansi.ansi();
@@ -75,19 +85,18 @@ public class LogsCommand extends AbsCommand {
 
     /**
      * Display the runner log
-     * @param current
      */
-    protected void displayRunnerLog(Codenvy current) {
+    protected void displayRunnerLog() {
 
 
         // first collect all processes
-        List<UserProject> projects = getProjects(current);
+        List<UserProject> projects = getMultiEnvCodenvy().getProjects();
 
         List<UserRunnerStatus> matchingStatuses = new ArrayList<>();
 
         // then for each project, gets the process IDs
         for (UserProject userProject : projects) {
-            final List<? extends RunnerStatus> runnerStatuses = current.runner().processes(userProject.getInnerProject()).execute();
+            final List<? extends RunnerStatus> runnerStatuses = userProject.getCodenvy().runner().processes(userProject.getInnerProject()).execute();
             for (RunnerStatus runnerStatus : runnerStatuses) {
 
                 UserRunnerStatus tmpStatus = new DefaultUserRunnerStatus(runnerStatus, userProject);
@@ -122,7 +131,7 @@ public class LogsCommand extends AbsCommand {
 
 
         // Now, print the log
-        String log = current.runner().logs(foundStatus.getProject().getInnerProject(), foundStatus.getInnerStatus().processId()).execute();
+        String log = foundStatus.getProject().getCodenvy().runner().logs(foundStatus.getProject().getInnerProject(), foundStatus.getInnerStatus().processId()).execute();
         System.out.println(log);
     }
 
@@ -153,19 +162,18 @@ public class LogsCommand extends AbsCommand {
 
     /**
      * Display the builder log.
-     * @param current
      */
-    protected void displayBuilderLog(Codenvy current) {
+    protected void displayBuilderLog() {
 
 
         // first collect all processes
-        List<UserProject> projects = getProjects(current);
+        List<UserProject> projects = getMultiEnvCodenvy().getProjects();
 
         List<UserBuilderStatus> matchingStatuses = new ArrayList<>();
 
         // then for each project, gets the builds IDs
         for (UserProject userProject : projects) {
-            final List<? extends BuilderStatus> builderStatuses = current.builder().builds(userProject.getInnerProject()).execute();
+            final List<? extends BuilderStatus> builderStatuses = userProject.getCodenvy().builder().builds(userProject.getInnerProject()).execute();
             for (BuilderStatus builderStatus : builderStatuses) {
 
                 UserBuilderStatus tmpStatus = new DefaultUserBuilderStatus(builderStatus, userProject);
@@ -200,7 +208,7 @@ public class LogsCommand extends AbsCommand {
 
 
         // Now, print the log
-        String log = current.builder().logs(foundStatus.getProject().getInnerProject(), foundStatus.getInnerStatus().taskId()).execute();
+        String log = foundStatus.getProject().getCodenvy().builder().logs(foundStatus.getProject().getInnerProject(), foundStatus.getInnerStatus().taskId()).execute();
         System.out.println(log);
 
     }

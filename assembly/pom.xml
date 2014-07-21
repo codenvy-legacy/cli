@@ -154,6 +154,7 @@ CLASSPATH="$CLASSPATH:$KARAF_HOME/system/jline/jline/2.11/jline-2.11.jar"]]></re
                                     <replacevalue><![CDATA[set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\lib\codenvy-branding.jar
 set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\lib\karaf-org.osgi.core.jar
 set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\com\codenvy\cli\cli-command\${project.version}\cli-command-${project.version}.jar
+set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\com\codenvy\cli\cli-preferences-impl\${project.version}\cli-preferences-impl-${project.version}.jar
 set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\com\codenvy\platform-api-client-java\uberjar\${com.codenvy.client.version}\uberjar-${com.codenvy.client.version}.jar
 set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\jline\jline\2.11\jline-2.11.jar]]></replacevalue>
                                 </replace>

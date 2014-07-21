@@ -8,7 +8,7 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.cli.preferences.impl;
+package com.codenvy.cli.preferences.file;
 
 import org.junit.Test;
 
