@@ -44,7 +44,8 @@ public class DefaultUserRunnerStatus implements UserRunnerStatus {
         this.runnerStatus = runnerStatus;
         this.userProject = userProject;
 
-        this.sha1Id = sha1("ps", String.valueOf(runnerStatus.processId()) + userProject.shortId());
+        // r is for runner
+        this.sha1Id = sha1("r", String.valueOf(runnerStatus.processId()) + userProject.shortId());
     }
 
     /**
