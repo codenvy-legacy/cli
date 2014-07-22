@@ -21,11 +21,11 @@ Codenvy command line interface V2
 3. Build: mvn clean install
 
 ## Running
-1. Go in bin directory of target maven assembly
-2. cd "assembly/target/codenvy-cli-2.0.0-M1-SNAPSHOT/codenvy-cli-2.0.0-M1-SNAPSHOT/bin"
-3. launch:
-  1. : Interactive client with ./codenvy-cli
-  2. : Non-interactive client with ./codenvy
+1. Launch from the root directory of the project:
+
+  1.: Interactive client with ./codenvy-cli.sh
+  
+  2.: Non-interactive client with ./codenvy.sh
 
 
 ## Developing a new command
