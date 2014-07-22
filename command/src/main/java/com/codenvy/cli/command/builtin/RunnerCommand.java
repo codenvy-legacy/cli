@@ -44,19 +44,10 @@ import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
 @Command(scope = "codenvy", name = "run", description = "Run a project in Codenvy System")
 public class RunnerCommand extends ScopedIDCommand {
 
-    /**
-     * Executor service
-     */
-    //private ExecutorService executorService;
 
     /**
-     * Default constructor.
+     * Execute the command
      */
-    public RunnerCommand() {
-       // this.executorService = Executors.newFixedThreadPool(10);
-    }
-
-
     @Override
     protected Object doExecute() throws Exception {
         final Codenvy current = checkLoggedIn();
