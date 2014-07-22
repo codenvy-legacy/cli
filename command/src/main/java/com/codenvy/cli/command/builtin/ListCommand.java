@@ -10,17 +10,10 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.cli.command.builtin.model.DefaultUserProject;
-import com.codenvy.cli.command.builtin.model.DefaultUserWorkspace;
 import com.codenvy.cli.command.builtin.model.UserProject;
-import com.codenvy.cli.command.builtin.model.UserWorkspace;
-import com.codenvy.cli.command.builtin.util.AsciiArray;
+import com.codenvy.cli.command.builtin.util.ascii.AsciiArray;
+import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiArray;
 import com.codenvy.client.Codenvy;
-import com.codenvy.client.Request;
-import com.codenvy.client.WorkspaceClient;
-import com.codenvy.client.model.Project;
-import com.codenvy.client.model.Workspace;
-import com.codenvy.client.model.WorkspaceReference;
 
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
@@ -64,7 +57,7 @@ public class ListCommand extends AbsCommand {
         }
 
         // Ascii array
-        AsciiArray asciiArray = new AsciiArray().withColumns(ids, workspaces, projectNames).withTitle("ID", "Workspace", "Project");
+        AsciiArray asciiArray = buildAsciiArray().withColumns(ids, workspaces, projectNames).withTitle("ID", "Workspace", "Project");
         session.getConsole().println(asciiArray.toAscii());
 
         return null;

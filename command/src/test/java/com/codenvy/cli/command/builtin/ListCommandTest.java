@@ -10,8 +10,12 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
+import com.codenvy.cli.command.builtin.util.ascii.FormatterMode;
+
+import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.CSV;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 
 import org.junit.Test;
 
@@ -74,12 +78,14 @@ public class ListCommandTest extends AbsCommandTest {
         addWorkspace(workspaceName);
         addProject(workspaceName, "project1");
 
+        // use CSV format
+        doReturn(CSV).when(getCommandSession()).get(FormatterMode.class.getName());
+
         CommandInvoker.Result result = commandInvoker.invoke(getCommandSession());
-        assertEquals("+-------+----------+--------+\n" +
-                     "|     ID| Workspace| Project|\n" +
-                     "+-------+----------+--------+\n" +
-                     "|prd8ed6|WORKSPACE1|project1|\n" +
-                     "+-------+----------+--------+\n", result.disableAnsi().getOutputStream());
+
+        assertEquals("ID,Workspace,Project\n" +
+                     "prd8ed6,WORKSPACE1,project1\n" +
+                     "\n", result.disableAnsi().getOutputStream());
 
     }
 

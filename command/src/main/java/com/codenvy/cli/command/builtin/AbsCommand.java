@@ -13,6 +13,9 @@ package com.codenvy.cli.command.builtin;
 import com.codenvy.cli.command.builtin.model.DefaultUserProject;
 import com.codenvy.cli.command.builtin.model.DefaultUserWorkspace;
 import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.util.ascii.AsciiArray;
+import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiArray;
+import com.codenvy.cli.command.builtin.util.ascii.FormatterMode;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyClient;
@@ -35,6 +38,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static com.codenvy.cli.command.builtin.Constants.CODENVY_CONFIG_FILE;
+import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.MODERN;
 
 /**
  * Abstract command which should be extended by all Codenvy commands.
@@ -109,6 +113,25 @@ public abstract class AbsCommand extends OsgiCommandSupport {
      */
     protected Project getCurrentProject() {
         return (Project) session.get(Project.class.getName());
+    }
+
+    /**
+     * @return the current formatter mode used at runtime
+     */
+    protected FormatterMode getFormatterMode() {
+        FormatterMode formatterMode = (FormatterMode) session.get(FormatterMode.class.getName());
+        if (formatterMode == null) {
+            formatterMode = MODERN;
+        }
+        return formatterMode;
+    }
+
+    /**
+     * Build a new Ascii array instance with the selected formatter mode
+     * @return a new instance of the ascii array
+     */
+    protected AsciiArray buildAsciiArray() {
+        return new DefaultAsciiArray().withFormatter(getFormatterMode());
     }
 
 

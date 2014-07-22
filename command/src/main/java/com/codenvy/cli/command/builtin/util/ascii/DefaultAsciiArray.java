@@ -8,18 +8,25 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.cli.command.builtin.util;
+package com.codenvy.cli.command.builtin.util.ascii;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.CSV;
+import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.EIGHTIES;
+import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.MODERN;
 
 /**
  * This utility class is for allowing to get a nice ascii table from multi dimensional array
+ *
  * @author Florent Benoit
  */
-public class AsciiArray {
+public class DefaultAsciiArray implements AsciiArray {
 
     /**
      * Columns of this array
@@ -32,38 +39,63 @@ public class AsciiArray {
     private List<String> titles;
 
     /**
+     * Formatters.
+     */
+    private Map<FormatterMode, TableFormatter> formatters;
+
+    /**
+     * Formatter
+     */
+    private FormatterMode formatterMode;
+
+    /**
      * Default constructor
      */
-    public AsciiArray() {
+    public DefaultAsciiArray() {
         this.columns = new ArrayList<>();
+        this.formatters = new HashMap<>();
+        formatters.put(EIGHTIES, new EightiesFormatter());
+        formatters.put(MODERN, new ModernFormatter());
+        formatters.put(CSV, new CSVFormatter());
+
+        this.formatterMode = EIGHTIES;
     }
 
     /**
      * Specify the titles for this array
-     * @param titles the given titles
+     *
+     * @param titles
+     *         the given titles
      * @return the current array
      */
-    public AsciiArray withTitle(List<String> titles) {
+    @Override
+    public DefaultAsciiArray withTitle(List<String> titles) {
         this.titles = titles;
         return this;
     }
 
     /**
      * Specify the titles for this array
-     * @param columnsTitle the given titles
+     *
+     * @param columnsTitle
+     *         the given titles
      * @return the current array
      */
-    public AsciiArray withTitle(String... columnsTitle) {
+    @Override
+    public DefaultAsciiArray withTitle(String... columnsTitle) {
         this.titles = Arrays.asList(columnsTitle);
         return this;
     }
 
     /**
      * Specify the columns (containing data) for this array
-     * @param columns the given data column
+     *
+     * @param columns
+     *         the given data column
      * @return the current array
      */
-    public AsciiArray withColumns(List<String>... columns) {
+    @Override
+    public DefaultAsciiArray withColumns(List<String>... columns) {
         for (List<String> column : columns) {
             addColumn(column);
         }
@@ -72,9 +104,12 @@ public class AsciiArray {
 
     /**
      * Specify the columns (containing data) for this array
-     * @param columns the given data column
+     *
+     * @param columns
+     *         the given data column
      * @return the current array
      */
+    @Override
     public AsciiArray withColumns(String[]... columns) {
         for (String[] column : columns) {
             addColumn(Arrays.asList(column));
@@ -84,7 +119,9 @@ public class AsciiArray {
 
     /**
      * Add the given column
-     * @param column the column
+     *
+     * @param column
+     *         the column
      */
     protected void addColumn(List<String> column) {
         this.columns.add(column);
@@ -92,6 +129,7 @@ public class AsciiArray {
 
     /**
      * Override the current method and return ascii representation
+     *
      * @return ascii table.
      */
     @Override
@@ -102,8 +140,10 @@ public class AsciiArray {
 
     /**
      * Transform the given data into an ascii array
+     *
      * @return stringified table of the array
      */
+    @Override
     public String toAscii() {
 
         // check
@@ -121,23 +161,33 @@ public class AsciiArray {
 
 
         // first line is the border
-        StringBuilder buffer = new StringBuilder(getBorderLine()).append("\n");
+        String computeBorder = getBorderLine();
+        String beginBorderLine;
+        String endBorderLine;
+        if (computeBorder != null) {
+            beginBorderLine = new StringBuilder(computeBorder).append("\n").toString();
+            endBorderLine = computeBorder;
+        } else {
+            beginBorderLine = "";
+            endBorderLine = "";
+        }
 
+        StringBuilder buffer = new StringBuilder(beginBorderLine);
         String formatter = getFormatter();
 
         // now add title
         if (titles != null) {
-            buffer.append(String.format(formatter, titles.toArray(new String[titles.size()])));
-            buffer.append(getBorderLine()).append("\n");
+            buffer.append(String.format(formatter, (Object[]) titles.toArray(new String[titles.size()])));
+            buffer.append(beginBorderLine);
         }
 
         // data ?
         if (columns.size() > 0) {
             int nbRows = columns.get(0).size();
             for (int row = 0; row < nbRows; row++) {
-                buffer.append(String.format(formatter, getRow(row)));
+                buffer.append(String.format(formatter, (Object[]) getRow(row)));
             }
-            buffer.append(getBorderLine());
+            buffer.append(endBorderLine);
         }
 
         return buffer.toString();
@@ -146,7 +196,9 @@ public class AsciiArray {
 
     /**
      * Get content of a selected row for the given array
-     * @param index the index in the columns
+     *
+     * @param index
+     *         the index in the columns
      * @return the content
      */
     protected String[] getRow(int index) {
@@ -160,34 +212,30 @@ public class AsciiArray {
     }
 
     /**
+     * @return formatter
+     */
+    protected TableFormatter getFormatterMode() {
+        return formatters.get(formatterMode);
+    }
+
+    protected AsciiArrayInfo getArrayInfo() {
+        final DefaultAsciiArray array = this;
+
+        return new MyAsciiArrayInfo(array);
+    }
+
+    /**
      * @return formatter used to format row content
      */
     protected String getFormatter() {
-        List<Integer> columnsSizes = getColumnsSize();
-        StringBuilder buffer = new StringBuilder("|");
-
-        for (Integer columnSize : columnsSizes) {
-            buffer.append("%" + columnSize + "s");
-            buffer.append("|");
-        }
-        buffer.append("%n");
-
-        return buffer.toString();
+        return getFormatterMode().getFormatter(getArrayInfo());
     }
 
     /**
      * @return value used as border of the array
      */
     protected String getBorderLine() {
-        List<Integer> columnsSize = getColumnsSize();
-        StringBuilder buffer = new StringBuilder("+");
-        for (int i = 0; i < columnsSize.size(); i++) {
-            for (int repeat = 0; repeat < columnsSize.get(i); repeat++) {
-                buffer.append("-");
-            }
-            buffer.append("+");
-        }
-        return buffer.toString();
+        return getFormatterMode().getBorderLine(getArrayInfo());
     }
 
 
@@ -244,12 +292,31 @@ public class AsciiArray {
         if (titles != null && titles.size() > 0) {
             if (columns.size() > 0) {
                 if (titles.size() != columns.size()) {
-                    throw new IllegalArgumentException("Invalid expected titles. There are " + columns.size() + " while there are " + titles.size() + " titles.");
+                    throw new IllegalArgumentException(
+                            "Invalid expected titles. There are " + columns.size() + " while there are " + titles.size() + " titles.");
                 }
             }
         }
 
     }
 
+    @Override
+    public AsciiArray withFormatter(FormatterMode formatterMode) {
+        this.formatterMode = formatterMode;
+        return this;
+    }
 
+
+    private static class MyAsciiArrayInfo implements AsciiArrayInfo {
+        private final DefaultAsciiArray array;
+
+        public MyAsciiArrayInfo(DefaultAsciiArray array) {
+            this.array = array;
+        }
+
+        @Override
+        public List<Integer> getColumnsSize() {
+            return array.getColumnsSize();
+        }
+    }
 }

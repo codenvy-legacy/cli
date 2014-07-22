@@ -8,13 +8,15 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.cli.command.builtin.util;
+package com.codenvy.cli.command.builtin.util.ascii;
 
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.CSV;
+import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.MODERN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -26,7 +28,7 @@ public class AsciiArrayTest {
 
     @Test
     public void testEmptyArray() {
-        AsciiArray asciiArray = new AsciiArray();
+        AsciiArray asciiArray = new DefaultAsciiArray();
         String result = asciiArray.toAscii();
         assertTrue(result.length() == 0);
     }
@@ -34,7 +36,7 @@ public class AsciiArrayTest {
     @Test
     public void testColumnsSize() {
         List<String> column1 = Arrays.asList("a", "ab", "abc", "a");
-        AsciiArray asciiArray = new AsciiArray().withColumns(column1);
+        DefaultAsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1);
         List<Integer> columnsSize = asciiArray.getColumnsSize();
         assertNotNull(columnsSize);
         assertEquals(1, columnsSize.size());
@@ -45,7 +47,7 @@ public class AsciiArrayTest {
     public void testColumnsSizeTwoColumns() {
         List<String> column1 = Arrays.asList("a", "ab", "abcdef", " abcdef ");
         List<String> column2 = Arrays.asList("defgh", "d", "e", "f");
-        AsciiArray asciiArray = new AsciiArray().withColumns(column1, column2);
+        DefaultAsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2);
         List<Integer> columnsSize = asciiArray.getColumnsSize();
         assertNotNull(columnsSize);
         assertEquals(2, columnsSize.size());
@@ -58,7 +60,7 @@ public class AsciiArrayTest {
         List<String> titles = Arrays.asList("Col1", " My Column 2");
         List<String> column1 = Arrays.asList("a", "ab", "abcdef", " abcdef ");
         List<String> column2 = Arrays.asList("defgh", "d", "e", "f");
-        AsciiArray asciiArray = new AsciiArray().withColumns(column1, column2).withTitle(titles);
+        DefaultAsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2).withTitle(titles);
         List<Integer> columnsSize = asciiArray.getColumnsSize();
         assertNotNull(columnsSize);
         assertEquals(2, columnsSize.size());
@@ -69,7 +71,7 @@ public class AsciiArrayTest {
     @Test
     public void testGetBorderLine() {
         List<String> column1 = Arrays.asList("a", "ab", "abc", "abcd");
-        AsciiArray asciiArray = new AsciiArray().withColumns(column1);
+        DefaultAsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1);
 
         String line = asciiArray.getBorderLine();
 
@@ -81,7 +83,7 @@ public class AsciiArrayTest {
     @Test
     public void testGetBorderLineWithTitle() {
         List<String> column1 = Arrays.asList("a", "ab", "abc", "abcd");
-        AsciiArray asciiArray = new AsciiArray().withColumns(column1).withTitle("Identifier");
+        DefaultAsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1).withTitle("Identifier");
 
         String line = asciiArray.getBorderLine();
 
@@ -93,7 +95,7 @@ public class AsciiArrayTest {
     @Test
     public void testOneColumn() {
         List<String> column1 = Arrays.asList("row1", "row2", "row3");
-        AsciiArray asciiArray = new AsciiArray().withColumns(column1);
+        AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1);
         String result = asciiArray.toAscii();
         assertEquals("+----+\n|row1|\n|row2|\n|row3|\n+----+", result);
     }
@@ -102,7 +104,7 @@ public class AsciiArrayTest {
     public void testTwoColumns() {
         List<String> column1 = Arrays.asList("row1", "row2", "row3");
         List<String> column2 = Arrays.asList("1", "2", "3");
-        AsciiArray asciiArray = new AsciiArray().withColumns(column1, column2);
+        AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2);
         String result = asciiArray.toAscii();
         assertEquals("+----+-+\n|row1|1|\n|row2|2|\n|row3|3|\n+----+-+", result);
     }
@@ -112,9 +114,35 @@ public class AsciiArrayTest {
         List<String> column1 = Arrays.asList("row1", "row2", "row3");
         List<String> column2 = Arrays.asList("1", "2", "3");
         List<String> titles = Arrays.asList("name", "id");
-        AsciiArray asciiArray = new AsciiArray().withColumns(column1, column2).withTitle(titles);
+        AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2).withTitle(titles);
         String result = asciiArray.toAscii();
         assertEquals("+----+--+\n|name|id|\n+----+--+\n|row1| 1|\n|row2| 2|\n|row3| 3|\n+----+--+", result);
+    }
+
+    @Test
+    public void testTwoColumnsWithTitleModernFormatter() {
+        List<String> column1 = Arrays.asList("row1", "row2", "row3");
+        List<String> column2 = Arrays.asList("1", "2", "3");
+        List<String> titles = Arrays.asList("name", "id");
+        AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2).withTitle(titles).withFormatter(MODERN);
+        String result = asciiArray.toAscii();
+        assertEquals("name  id  \n" +
+                     "row1  1   \n" +
+                     "row2  2   \n" +
+                     "row3  3   \n", result);
+    }
+
+    @Test
+    public void testTwoColumnsWithTitleCsvFormatter() {
+        List<String> column1 = Arrays.asList("row1", "row2", "row3");
+        List<String> column2 = Arrays.asList("1", "2", "3");
+        List<String> titles = Arrays.asList("name", "id");
+        AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2).withTitle(titles).withFormatter(CSV);
+        String result = asciiArray.toAscii();
+        assertEquals("name,id\n" +
+                     "row1,1\n" +
+                     "row2,2\n" +
+                     "row3,3\n", result);
     }
 
 }
