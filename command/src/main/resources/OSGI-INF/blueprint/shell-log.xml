@@ -38,6 +38,10 @@
             <action class="com.codenvy.cli.command.builtin.ListCommand">
             </action>
         </command>
+        <command>
+            <action class="com.codenvy.cli.command.builtin.LogsCommand">
+            </action>
+        </command>
     </command-bundle>
 
 
