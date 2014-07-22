@@ -57,11 +57,10 @@ public class DefaultUserProject implements UserProject {
         this.workspace = workspace;
 
         // compute short id
-        //FIXME : should use project.id()
-        String fullID = workspace.id() + project.name();
+        String fullID = workspace.id() + project.id();
 
-
-        this.sha1Id = sha1("pr", fullID);
+        // p is for project
+        this.sha1Id = sha1("p", fullID);
     }
 
     /**
