@@ -84,7 +84,7 @@ public class ListCommandTest extends AbsCommandTest {
         CommandInvoker.Result result = commandInvoker.invoke(getCommandSession());
 
         assertEquals("ID,Workspace,Project\n" +
-                     "prd8ed6,WORKSPACE1,project1\n" +
+                     "p10ff33,WORKSPACE1,project1\n" +
                      "\n", result.disableAnsi().getOutputStream());
 
     }
