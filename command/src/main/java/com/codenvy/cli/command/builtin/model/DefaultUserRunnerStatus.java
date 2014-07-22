@@ -15,16 +15,31 @@ import com.codenvy.client.model.RunnerStatus;
 import static com.codenvy.cli.command.builtin.util.SHA1.sha1;
 
 /**
+ * Runner status implementation of {@link com.codenvy.cli.command.builtin.model.UserRunnerStatus}
  * @author Florent Benoit
  */
 public class DefaultUserRunnerStatus implements UserRunnerStatus {
 
+    /**
+     * Runner status model
+     */
     private RunnerStatus runnerStatus;
 
+    /**
+     * Project on which this runner process is linked
+     */
     private UserProject userProject;
 
+    /**
+     * SHA-1.
+     */
     private String sha1Id;
 
+    /**
+     * Default constructor
+     * @param runnerStatus the status returned from Rest API
+     * @param userProject the user project
+     */
     public DefaultUserRunnerStatus(RunnerStatus runnerStatus, UserProject userProject) {
         this.runnerStatus = runnerStatus;
         this.userProject = userProject;
