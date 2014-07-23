@@ -42,6 +42,13 @@
             <action class="com.codenvy.cli.command.builtin.LogsCommand">
             </action>
         </command>
+        <command>
+            <action class="com.codenvy.cli.command.builtin.BuildCommand" />
+            <completers>
+                <ref component-id="projectIDCompleter"/>
+                <null/>
+            </completers>
+        </command>
     </command-bundle>
 
 
