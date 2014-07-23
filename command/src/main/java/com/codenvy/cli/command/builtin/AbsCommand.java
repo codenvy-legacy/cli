@@ -69,7 +69,7 @@ public abstract class AbsCommand extends OsgiCommandSupport {
                 codenvySettings = new Properties();
                 codenvySettings.load(reader);
             } catch (IOException e) {
-                session.getConsole().println("Unable to load condenvy settings" + e.getMessage());
+                System.out.println("Unable to load condenvy settings" + e.getMessage());
                 throw new IllegalStateException("Unable to load codenvy settings", e);
             }
         }
@@ -157,7 +157,7 @@ public abstract class AbsCommand extends OsgiCommandSupport {
             buffer.fg(Ansi.Color.RED);
             buffer.a("Not logged in");
             buffer.fg(Ansi.Color.DEFAULT);
-            session.getConsole().println(buffer.toString());
+            System.out.println(buffer.toString());
         }
         return codenvy;
     }

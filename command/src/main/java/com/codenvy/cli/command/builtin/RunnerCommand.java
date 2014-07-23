@@ -64,7 +64,7 @@ public class RunnerCommand extends ScopedIDCommand {
             buffer.fg(Ansi.Color.RED);
             buffer.a("No projectID has been set");
             buffer.fg(Ansi.Color.DEFAULT);
-            session.getConsole().println(buffer.toString());
+            System.out.println(buffer.toString());
             return null;
         }
 
@@ -76,7 +76,7 @@ public class RunnerCommand extends ScopedIDCommand {
             buffer.fg(Ansi.Color.RED);
             buffer.a("No matching project for identifier '").a(projectShortId).a("'.");
             buffer.fg(Ansi.Color.DEFAULT);
-            session.getConsole().println(buffer.toString());
+            System.out.println(buffer.toString());
             return null;
         }
 
@@ -90,7 +90,7 @@ public class RunnerCommand extends ScopedIDCommand {
 
         Ansi buffer = Ansi.ansi();
         buffer.a("Run task for project ").a(INTENSITY_BOLD).a(project.name()).a(INTENSITY_BOLD_OFF).a("' has been submitted with runner ID ").a(INTENSITY_BOLD).a(userRunnerStatus.shortId()).a(INTENSITY_BOLD_OFF);
-        session.getConsole().println(buffer.toString());
+        System.out.println(buffer.toString());
 
         return null;
     }

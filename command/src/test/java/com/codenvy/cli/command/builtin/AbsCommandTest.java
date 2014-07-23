@@ -100,12 +100,12 @@ public abstract class AbsCommandTest {
 
     @Before
     public void setUp() {
-        // return current system.out when invocation is performed
+        // We shouldn't use session.getConsole() for logging as grep, less, more commands won't work in interactive mode
         when(commandSession.getConsole()).thenAnswer(
                                                      new Answer() {
                                                          @Override
                                                          public Object answer(InvocationOnMock invocation) {
-                                                             return System.out;
+                                                             throw new IllegalStateException("System.out.println should be used instead");
                                                          }
                                                      });
 

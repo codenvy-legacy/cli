@@ -41,7 +41,7 @@ public class ListCommand extends AbsCommand {
         List<UserProject> projects = getProjects(current);
         if (projects.isEmpty()) {
             buffer.a("No projects");
-            session.getConsole().println(buffer.toString());
+            System.out.println(buffer.toString());
             return null;
         }
 
@@ -58,7 +58,7 @@ public class ListCommand extends AbsCommand {
 
         // Ascii array
         AsciiArray asciiArray = buildAsciiArray().withColumns(ids, workspaces, projectNames).withTitle("ID", "Workspace", "Project");
-        session.getConsole().println(asciiArray.toAscii());
+        System.out.println(asciiArray.toAscii());
 
         return null;
     }

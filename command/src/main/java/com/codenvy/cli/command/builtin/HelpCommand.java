@@ -58,7 +58,7 @@ public class HelpCommand extends AbsCommand {
         buffer.fg(DEFAULT);
         buffer.a(" : Logout from Codenvy");
 
-        session.getConsole().println(buffer.toString());
+        System.out.println(buffer.toString());
         return null;
     }
 }

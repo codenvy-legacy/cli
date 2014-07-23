@@ -47,7 +47,7 @@ public class LogoutCommand extends AbsCommand {
         }
 
         // print
-        session.getConsole().println(buffer.toString());
+        System.out.println(buffer.toString());
 
 
         return null;
