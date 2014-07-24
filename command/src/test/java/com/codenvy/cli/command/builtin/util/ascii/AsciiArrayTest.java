@@ -98,7 +98,7 @@ public class AsciiArrayTest {
         List<String> column1 = Arrays.asList("row1", "row2", "row3");
         AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1);
         String result = asciiArray.toAscii();
-        assertEquals(format("+----+%n|row1|%n|row2|%n|row3|%n+----+"), result);
+        assertEquals("+----+|row1||row2||row3|+----+", result.replaceAll("\\r|\\n", ""));
     }
 
     @Test
@@ -107,7 +107,7 @@ public class AsciiArrayTest {
         List<String> column2 = Arrays.asList("1", "2", "3");
         AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2);
         String result = asciiArray.toAscii();
-        assertEquals(format("+----+-+%n|row1|1|%n|row2|2|%n|row3|3|%n+----+-+"), result);
+        assertEquals(format("+----+-+|row1|1||row2|2||row3|3|+----+-+"), result.replaceAll("\\r|\\n", ""));
     }
 
     @Test
@@ -117,7 +117,7 @@ public class AsciiArrayTest {
         List<String> titles = Arrays.asList("name", "id");
         AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2).withTitle(titles);
         String result = asciiArray.toAscii();
-        assertEquals(format("+----+--+%n|name|id|%n+----+--+%n|row1| 1|%n|row2| 2|%n|row3| 3|%n+----+--+"), result);
+        assertEquals(format("+----+--+|name|id|+----+--+|row1| 1||row2| 2||row3| 3|+----+--+"), result.replaceAll("\\r|\\n", ""));
     }
 
     @Test

@@ -112,7 +112,7 @@ public class LoginCommandTest extends AbsCommandTest {
         // check token is not saved
         verify(getCommandSession(), times(0)).put(Token.class.getName(), getCredentials().token());
 
-        assertEquals("Login failed : Unable to perform login : null\n", result.disableAnsi().getOutputStream());
+        assertEquals(String.format("Login failed : Unable to perform login : null%n"), result.disableAnsi().getOutputStream());
 
     }
 
