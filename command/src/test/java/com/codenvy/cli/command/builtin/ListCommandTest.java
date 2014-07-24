@@ -13,6 +13,7 @@ package com.codenvy.cli.command.builtin;
 import com.codenvy.cli.command.builtin.util.ascii.FormatterMode;
 
 import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.CSV;
+import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
@@ -83,9 +84,9 @@ public class ListCommandTest extends AbsCommandTest {
 
         CommandInvoker.Result result = commandInvoker.invoke(getCommandSession());
 
-        assertEquals("ID,Workspace,Project\n" +
-                     "p10ff33,WORKSPACE1,project1\n" +
-                     "\n", result.disableAnsi().getOutputStream());
+        assertEquals(format("ID,Workspace,Project,RunnerID,BuilderID%n" +
+                            "p10ff33,WORKSPACE1,project1,,%n" +
+                            "%n"), result.disableAnsi().getOutputStream());
 
     }
 

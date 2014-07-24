@@ -17,6 +17,7 @@ import java.util.List;
 
 import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.CSV;
 import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.MODERN;
+import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -97,7 +98,7 @@ public class AsciiArrayTest {
         List<String> column1 = Arrays.asList("row1", "row2", "row3");
         AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1);
         String result = asciiArray.toAscii();
-        assertEquals("+----+\n|row1|\n|row2|\n|row3|\n+----+", result);
+        assertEquals(format("+----+%n|row1|%n|row2|%n|row3|%n+----+"), result);
     }
 
     @Test
@@ -106,7 +107,7 @@ public class AsciiArrayTest {
         List<String> column2 = Arrays.asList("1", "2", "3");
         AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2);
         String result = asciiArray.toAscii();
-        assertEquals("+----+-+\n|row1|1|\n|row2|2|\n|row3|3|\n+----+-+", result);
+        assertEquals(format("+----+-+%n|row1|1|%n|row2|2|%n|row3|3|%n+----+-+"), result);
     }
 
     @Test
@@ -116,7 +117,7 @@ public class AsciiArrayTest {
         List<String> titles = Arrays.asList("name", "id");
         AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2).withTitle(titles);
         String result = asciiArray.toAscii();
-        assertEquals("+----+--+\n|name|id|\n+----+--+\n|row1| 1|\n|row2| 2|\n|row3| 3|\n+----+--+", result);
+        assertEquals(format("+----+--+%n|name|id|%n+----+--+%n|row1| 1|%n|row2| 2|%n|row3| 3|%n+----+--+"), result);
     }
 
     @Test
@@ -126,10 +127,10 @@ public class AsciiArrayTest {
         List<String> titles = Arrays.asList("name", "id");
         AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2).withTitle(titles).withFormatter(MODERN);
         String result = asciiArray.toAscii();
-        assertEquals("name  id  \n" +
-                     "row1  1   \n" +
-                     "row2  2   \n" +
-                     "row3  3   \n", result);
+        assertEquals(format("name  id  %n" +
+                     "row1  1   %n" +
+                     "row2  2   %n" +
+                     "row3  3   %n"), result);
     }
 
     @Test
@@ -139,10 +140,10 @@ public class AsciiArrayTest {
         List<String> titles = Arrays.asList("name", "id");
         AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2).withTitle(titles).withFormatter(CSV);
         String result = asciiArray.toAscii();
-        assertEquals("name,id\n" +
-                     "row1,1\n" +
-                     "row2,2\n" +
-                     "row3,3\n", result);
+        assertEquals(format("name,id%n" +
+                     "row1,1%n" +
+                     "row2,2%n" +
+                     "row3,3%n"), result);
     }
 
 }
