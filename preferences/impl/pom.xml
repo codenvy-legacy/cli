@@ -14,42 +14,42 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>codenvy-cli</artifactId>
+        <artifactId>cli-preferences</artifactId>
         <groupId>com.codenvy.cli</groupId>
         <version>2.0.0-M1-SNAPSHOT</version>
     </parent>
-    <artifactId>cli-command</artifactId>
+    <artifactId>cli-preferences-impl</artifactId>
     <packaging>bundle</packaging>
-    <name>Codenvy CLI :: Command</name>
-    <description>Provides the OSGi codenvy commands</description>
+    <name>Codenvy CLI :: Preferences :: Implementation</name>
     <dependencies>
         <dependency>
             <groupId>com.codenvy.cli</groupId>
             <artifactId>cli-preferences-api</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.codenvy.platform-api-client-java</groupId>
-            <artifactId>codenvy-platform-api-client-java-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.karaf.shell</groupId>
-            <artifactId>org.apache.karaf.shell.console</artifactId>
-            <version>${org.apache.karaf.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.3.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>5.0.0</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.3.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>5.0.0</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.3.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <version>2.3.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

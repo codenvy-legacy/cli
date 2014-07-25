@@ -20,4 +20,3 @@ Import-Package !com.codenvy.cli.command.builtin*, \
                             org.apache.karaf.shell.commands, \
                             org.apache.karaf.shell.console, \
                             *
-

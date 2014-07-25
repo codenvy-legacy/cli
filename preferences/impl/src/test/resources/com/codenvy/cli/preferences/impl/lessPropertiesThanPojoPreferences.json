@@ -1,0 +1,10 @@
+{
+    "uselessPojo" : {
+        "leitmotiv" : "No leitmotiv: I’m dumb.",
+        "characteristics" : [
+            "fake",
+            "dumb",
+            "useless"
+        ]
+    }
+}

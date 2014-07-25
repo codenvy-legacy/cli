@@ -145,6 +145,7 @@ cellar       =]]></replacevalue>
                                     <replacevalue><![CDATA[CLASSPATH="$CLASSPATH:$KARAF_HOME/lib/codenvy-branding.jar"
 CLASSPATH="$CLASSPATH:$KARAF_HOME/lib/karaf-org.osgi.core.jar"
 CLASSPATH="$CLASSPATH:$KARAF_HOME/system/com/codenvy/cli/cli-command/${project.version}/cli-command-${project.version}.jar"
+CLASSPATH="$CLASSPATH:$KARAF_HOME/system/com/codenvy/cli/cli-preferences-impl/${project.version}/cli-preferences-impl-${project.version}.jar"
 CLASSPATH="$CLASSPATH:$KARAF_HOME/system/com/codenvy/platform-api-client-java/uberjar/${com.codenvy.client.version}/uberjar-${com.codenvy.client.version}.jar"
 CLASSPATH="$CLASSPATH:$KARAF_HOME/system/jline/jline/2.11/jline-2.11.jar"]]></replacevalue>
                                 </replace>

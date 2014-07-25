@@ -44,6 +44,7 @@
         </developer>
     </developers>
     <modules>
+        <module>preferences</module>
         <module>command</module>
         <module>feature</module>
         <module>shell</module>

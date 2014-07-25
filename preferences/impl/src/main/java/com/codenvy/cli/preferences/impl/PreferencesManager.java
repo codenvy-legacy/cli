@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 
 import com.codenvy.cli.preferences.Preferences;
-import com.codenvy.client.auth.Credentials;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
