@@ -27,6 +27,7 @@
             <groupId>com.codenvy.cli</groupId>
             <artifactId>cli-preferences-api</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.codenvy.platform-api-client-java</groupId>
