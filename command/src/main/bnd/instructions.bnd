@@ -9,6 +9,7 @@
 #   Codenvy, S.A. - initial API and implementation
 #
 
+Bundle-Activator com.codenvy.cli.command.builtin.activator.CodenvyActivator
 Export-Package com.codenvy.cli.command.builtin*;version=${project.version}
 
 Import-Package !com.codenvy.cli.command.builtin*, \

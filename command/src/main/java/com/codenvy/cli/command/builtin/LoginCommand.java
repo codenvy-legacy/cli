@@ -106,10 +106,6 @@ public class LoginCommand extends AbsCommand {
         // print result
         System.out.println(buffer.toString());
 
-        // Change default scope/subshell after login to be ready with codenvy commands
-        session.put("SCOPE", "codenvy:*");
-        session.put("SUBSHELL", "codenvy");
-
         return null;
     }
 }

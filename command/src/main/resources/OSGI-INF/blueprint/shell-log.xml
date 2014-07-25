@@ -39,6 +39,10 @@
             </action>
         </command>
         <command>
+            <action class="com.codenvy.cli.command.builtin.SwitchToCodenvyCommand">
+            </action>
+        </command>
+        <command>
             <action class="com.codenvy.cli.command.builtin.LogsCommand">
             </action>
         </command>
