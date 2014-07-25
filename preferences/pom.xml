@@ -20,7 +20,7 @@
     </parent>
     <artifactId>cli-preferences</artifactId>
     <packaging>pom</packaging>
-    <name>Codenvy CLI Preferences :: Parent</name>
+    <name>Codenvy CLI :: Preferences</name>
     <modules>
         <module>api</module>
         <module>impl</module>
