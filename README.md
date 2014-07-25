@@ -23,9 +23,9 @@ Codenvy command line interface V2
 ## Running
 1. Launch from the root directory of the project:
 
-  1.: Interactive client with ./codenvy-cli.sh
+  1.: Interactive client with ./codenvy-cli
   
-  2.: Non-interactive client with ./codenvy.sh
+  2.: Non-interactive client with ./codenvy
 
 
 ## Developing a new command
