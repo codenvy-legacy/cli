@@ -39,6 +39,7 @@ import java.util.Properties;
 
 import static com.codenvy.cli.command.builtin.Constants.CODENVY_CONFIG_FILE;
 import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.MODERN;
+import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
  * Abstract command which should be extended by all Codenvy commands.
@@ -154,9 +155,9 @@ public abstract class AbsCommand extends OsgiCommandSupport {
         if (codenvy == null) {
             Ansi buffer = Ansi.ansi();
 
-            buffer.fg(Ansi.Color.RED);
+            buffer.fg(RED);
             buffer.a("Not logged in");
-            buffer.fg(Ansi.Color.DEFAULT);
+            buffer.reset();
             System.out.println(buffer.toString());
         }
         return codenvy;

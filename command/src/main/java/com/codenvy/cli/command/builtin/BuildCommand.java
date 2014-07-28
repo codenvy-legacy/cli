@@ -25,6 +25,7 @@ import org.fusesource.jansi.Ansi;
 
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
+import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
  * Allows to build a given project
@@ -49,9 +50,9 @@ public class BuildCommand extends ScopedIDCommand {
         String projectShortId = getScopedProjectId();
         if (projectShortId == null) {
             Ansi buffer = Ansi.ansi();
-            buffer.fg(Ansi.Color.RED);
+            buffer.fg(RED);
             buffer.a("No projectID has been set");
-            buffer.fg(Ansi.Color.DEFAULT);
+            buffer.reset();
             System.out.println(buffer.toString());
             return null;
         }
@@ -61,9 +62,9 @@ public class BuildCommand extends ScopedIDCommand {
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();
-            buffer.fg(Ansi.Color.RED);
+            buffer.fg(RED);
             buffer.a("No matching project for identifier '").a(projectShortId).a("'.");
-            buffer.fg(Ansi.Color.DEFAULT);
+            buffer.reset();
             System.out.println(buffer.toString());
             return null;
         }

@@ -12,8 +12,10 @@ package com.codenvy.cli.command.builtin;
 
 
 import static org.fusesource.jansi.Ansi.Color.BLUE;
+import static org.fusesource.jansi.Ansi.Color.CYAN;
 import static org.fusesource.jansi.Ansi.Color.DEFAULT;
 import static org.fusesource.jansi.Ansi.Color.GREEN;
+import static org.fusesource.jansi.Ansi.Color.RED;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
@@ -87,18 +89,18 @@ public class LoginCommand extends AbsCommand {
             codenvy.user().current().execute();
             buffer.fg(GREEN);
             buffer.a("OK");
-            buffer.fg(DEFAULT);
+            buffer.reset();
             buffer.a(" : Welcome ");
-            buffer.fg(BLUE);
+            buffer.fg(CYAN);
             buffer.a(username);
-            buffer.fg(DEFAULT);
+            buffer.reset();
             // Keep the token object
             session.put(Token.class.getName(), credentials.token());
             session.put(Codenvy.class.getName(), codenvy);
         } catch (CodenvyException e) {
-            buffer.fg(Ansi.Color.RED);
+            buffer.fg(RED);
             buffer.a("failed");
-            buffer.fg(DEFAULT);
+            buffer.reset();
             buffer.a(" : Unable to perform login : ");
             buffer.a(e.getMessage());
         }

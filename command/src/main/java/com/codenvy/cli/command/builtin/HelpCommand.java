@@ -16,7 +16,7 @@ import org.fusesource.jansi.Ansi;
 
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
-import static org.fusesource.jansi.Ansi.Color.BLUE;
+import static org.fusesource.jansi.Ansi.Color.CYAN;
 import static org.fusesource.jansi.Ansi.Color.DEFAULT;
 
 /**
@@ -39,23 +39,23 @@ public class HelpCommand extends AbsCommand {
 
         // Login
         buffer.a("\n");
-        buffer.fg(BLUE);
+        buffer.fg(CYAN);
         buffer.a("codenvy:login");
-        buffer.fg(DEFAULT);
+        buffer.reset();
         buffer.a(" : Log into codenvy");
 
         // List
         buffer.a("\n");
-        buffer.fg(BLUE);
+        buffer.fg(CYAN);
         buffer.a("codenvy:list");
-        buffer.fg(DEFAULT);
+        buffer.reset();
         buffer.a(" : List all workspaces from Codenvy");
 
         // Logout
         buffer.a("\n");
-        buffer.fg(BLUE);
+        buffer.fg(CYAN);
         buffer.a("codenvy:logout");
-        buffer.fg(DEFAULT);
+        buffer.reset();
         buffer.a(" : Logout from Codenvy");
 
         System.out.println(buffer.toString());

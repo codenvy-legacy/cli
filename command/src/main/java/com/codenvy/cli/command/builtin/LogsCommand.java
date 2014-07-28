@@ -30,6 +30,8 @@ import org.fusesource.jansi.Ansi;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.fusesource.jansi.Ansi.Color.RED;
+
 /**
  * Allows to print the logs of a given runner/builder
  * @author Florent Benoit
@@ -62,7 +64,7 @@ public class LogsCommand extends AbsCommand {
         } else {
             // invalid id
             Ansi buffer = Ansi.ansi();
-            buffer.fg(Ansi.Color.RED);
+            buffer.fg(RED);
             buffer.a("Invalid identifier");
             buffer.fg(Ansi.Color.DEFAULT);
             System.out.println(buffer.toString());
@@ -111,9 +113,9 @@ public class LogsCommand extends AbsCommand {
         // not in a valid state
         if (state != RunnerState.RUNNING && state != RunnerState.STOPPED) {
             Ansi buffer = Ansi.ansi();
-            buffer.fg(Ansi.Color.RED);
+            buffer.fg(RED);
             buffer.a("Logs are only available in RUNNING or STOPPED state. Current state is ").a(state);
-            buffer.fg(Ansi.Color.DEFAULT);
+            buffer.reset();
             System.out.println(buffer.toString());
             return;
         }
@@ -130,9 +132,9 @@ public class LogsCommand extends AbsCommand {
      */
     protected void errorTooManyIdentifiers(String text) {
         Ansi buffer = Ansi.ansi();
-        buffer.fg(Ansi.Color.RED);
+        buffer.fg(RED);
         buffer.a("Too many ").a(text).a(" have been found with identifier '").a(processID).a("'. Please add extra data to the identifier");
-        buffer.fg(Ansi.Color.DEFAULT);
+        buffer.reset();
         System.out.println(buffer.toString());
     }
 
@@ -142,9 +144,9 @@ public class LogsCommand extends AbsCommand {
      */
     protected void errorNoIdentifier(String text) {
         Ansi buffer = Ansi.ansi();
-        buffer.fg(Ansi.Color.RED);
+        buffer.fg(RED);
         buffer.a("No ").a(text).a(" found with identifier '").a(processID).a("'.");
-        buffer.fg(Ansi.Color.DEFAULT);
+        buffer.reset();
         System.out.println(buffer.toString());
     }
 
@@ -189,9 +191,9 @@ public class LogsCommand extends AbsCommand {
         // not in a valid state
         if (state == BuilderState.IN_QUEUE) {
             Ansi buffer = Ansi.ansi();
-            buffer.fg(Ansi.Color.RED);
+            buffer.fg(RED);
             buffer.a("Logs are not available in IN_QUEUE state");
-            buffer.fg(Ansi.Color.DEFAULT);
+            buffer.reset();
             System.out.println(buffer.toString());
             return;
         }
