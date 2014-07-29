@@ -12,6 +12,7 @@ package com.codenvy.cli.command.builtin;
 
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.fusesource.jansi.Ansi;
 
 /**
  * This command will use codenvy subshell and then default commands to codenvy namespace
@@ -32,6 +33,13 @@ public class SwitchToCodenvyCommand extends AbsCommand {
         session.put("SUBSHELL", "codenvy");
 
         init();
+
+        // Environments ?
+        if (!getMultiEnvCodenvy().hasEnvironments()) {
+            Ansi buffer = Ansi.ansi();
+            buffer.a("Welcome on Codenvy CLI. Codenvy environment is not configured. In order to use Codenvy commands, a new environment needs to be added with 'env add <env-name> <url> <username> <password> command");
+            System.out.println(buffer.toString());
+        }
 
         return null;
     }

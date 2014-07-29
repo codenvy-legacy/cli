@@ -98,7 +98,7 @@ public class InfoCommand extends AbsCommand {
 
         Ansi buffer = Ansi.ansi();
 
-        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(id).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.shortId()).a(System.lineSeparator());
         buffer.a(INTENSITY_BOLD).a("WORKSPACE").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.getProject().getWorkspace().name()).a(System.lineSeparator());
         buffer.a(INTENSITY_BOLD).a("PROJECT").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.getProject().name()).a(System.lineSeparator());
         buffer.a(INTENSITY_BOLD).a("IDE URL").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.getProject().getInnerProject().ideUrl()).a(System.lineSeparator());
@@ -139,7 +139,7 @@ public class InfoCommand extends AbsCommand {
 
         Ansi buffer = Ansi.ansi();
 
-        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(id).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.shortId()).a(System.lineSeparator());
         buffer.a(INTENSITY_BOLD).a("WORKSPACE").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.getProject().getWorkspace().name()).a(System.lineSeparator());
         buffer.a(INTENSITY_BOLD).a("PROJECT").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.getProject().name()).a(System.lineSeparator());
         buffer.a(INTENSITY_BOLD).a("IDE URL").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.getProject().getInnerProject().ideUrl()).a(System.lineSeparator());
@@ -159,7 +159,7 @@ public class InfoCommand extends AbsCommand {
 
         Ansi buffer = Ansi.ansi();
 
-        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(id).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(foundProject.shortId()).a(System.lineSeparator());
         buffer.a(INTENSITY_BOLD).a("WORKSPACE").a(INTENSITY_BOLD_OFF).a(":").a(foundProject.getWorkspace().name()).a(System.lineSeparator());
         buffer.a(INTENSITY_BOLD).a("PROJECT").a(INTENSITY_BOLD_OFF).a(":").a(foundProject.name()).a(System.lineSeparator());
         buffer.a(INTENSITY_BOLD).a("IDE URL").a(INTENSITY_BOLD_OFF).a(":").a(foundProject.getInnerProject().ideUrl()).a(System.lineSeparator());

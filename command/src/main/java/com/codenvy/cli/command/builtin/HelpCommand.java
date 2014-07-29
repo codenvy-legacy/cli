@@ -43,45 +43,51 @@ public class HelpCommand extends AbsCommand {
         // env
         buffer.a("\n");
         buffer.fg(CYAN);
-        buffer.a("codenvy:env");
+        buffer.a("env");
         buffer.reset();
         buffer.a(": Manage Codenvy environments");
 
         // List
         buffer.a("\n");
         buffer.fg(CYAN);
-        buffer.a("codenvy:list");
+        buffer.a("list");
         buffer.reset();
         buffer.a(": List all projects from Codenvy");
 
         // Build
         buffer.a("\n");
         buffer.fg(CYAN);
-        buffer.a("codenvy:build");
+        buffer.a("build");
         buffer.reset();
         buffer.a(": Build a given project");
 
         // Run
         buffer.a("\n");
         buffer.fg(CYAN);
-        buffer.a("codenvy:run");
+        buffer.a("run");
         buffer.reset();
         buffer.a(": Run a given project");
 
         // Logs
         buffer.a("\n");
         buffer.fg(CYAN);
-        buffer.a("codenvy:logs");
+        buffer.a("logs");
         buffer.reset();
         buffer.a(": Display logs for a given runner/builder");
 
+        // Info
+        buffer.a("\n");
+        buffer.fg(CYAN);
+        buffer.a("info");
+        buffer.reset();
+        buffer.a(": Display information on a given project/runner/builder ID");
 
         // Environments
         buffer.a("\n");
         buffer.a("\n");
         buffer.a(getMultiEnvCodenvy().listEnvironments());
 
-        buffer.a("To manage environments, use the codenvy:env command");
+        buffer.a("To manage environments, use the env command");
 
 
         System.out.println(buffer.toString());

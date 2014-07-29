@@ -76,7 +76,8 @@ public class RunnerCommand extends ScopedIDCommand {
         UserRunnerStatus userRunnerStatus = new DefaultUserRunnerStatus(runnerStatus, project);
 
         Ansi buffer = Ansi.ansi();
-        buffer.a("Run task for project ").a(INTENSITY_BOLD).a(project.name()).a(INTENSITY_BOLD_OFF).a("' has been submitted with runner ID ").a(INTENSITY_BOLD).a(userRunnerStatus.shortId()).a(INTENSITY_BOLD_OFF);
+        buffer.a("Run task for project ").a(INTENSITY_BOLD).a(project.name()).a(INTENSITY_BOLD_OFF).a("' has been submitted with runner ID ").a(INTENSITY_BOLD).a(userRunnerStatus.shortId()).a(INTENSITY_BOLD_OFF).a(System.lineSeparator());
+        buffer.a("To get more details on runner ID, use the 'info ").a(INTENSITY_BOLD).a(userRunnerStatus.shortId()).a(INTENSITY_BOLD_OFF).a("' command");
         System.out.println(buffer.toString());
 
         return null;

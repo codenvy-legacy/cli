@@ -99,7 +99,7 @@ public class EnvCommand extends AbsCommand {
 
         // ok let's try to add the env
         if (getMultiEnvCodenvy().addEnvironment(name, url, username, password)) {
-            buffer.a("The environment '").a(name).a("' has been successfully added");
+            buffer.a("The environment '").a(name).a("' has been successfully added. list command could be used to list projects of this environment.");
             System.out.println(buffer.toString());
             return;
         }
