@@ -30,6 +30,7 @@ import org.fusesource.jansi.Ansi;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.codenvy.cli.command.builtin.MultiEnvCodenvy.checkOnlyOne;
 import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
@@ -88,36 +89,24 @@ public class LogsCommand extends AbsCommand {
      */
     protected void displayRunnerLog() {
 
+        List<UserRunnerStatus> matchingStatuses = getMultiEnvCodenvy().findRunners(processID);
 
-        // first collect all processes
-        List<UserProject> projects = getMultiEnvCodenvy().getProjects();
+        UserRunnerStatus foundStatus = checkOnlyOne(matchingStatuses, processID, "runner", "runners");
 
-        List<UserRunnerStatus> matchingStatuses = new ArrayList<>();
-
-        // then for each project, gets the process IDs
-        for (UserProject userProject : projects) {
-            final List<? extends RunnerStatus> runnerStatuses = userProject.getCodenvy().runner().processes(userProject.getInnerProject()).execute();
-            for (RunnerStatus runnerStatus : runnerStatuses) {
-
-                UserRunnerStatus tmpStatus = new DefaultUserRunnerStatus(runnerStatus, userProject);
-                if (tmpStatus.shortId().startsWith(processID)) {
-                    matchingStatuses.add(tmpStatus);
-                }
-            }
-        }
-
-        if (matchingStatuses.size() == 0) {
-            errorNoIdentifier("runner");
-            return;
-        } else if (matchingStatuses.size() > 1) {
-            errorTooManyIdentifiers("runners");
+        // not found, errors already printed
+        if (foundStatus == null) {
             return;
         }
-
-        // only one matching status
-        UserRunnerStatus foundStatus = matchingStatuses.get(0);
 
         RunnerState state = foundStatus.getInnerStatus().status();
+
+        if (state == RunnerState.NEW) {
+            Ansi buffer = Ansi.ansi();
+            buffer.a("Logs are not yet available as the runner has not yet started");
+            buffer.reset();
+            System.out.println(buffer.toString());
+            return;
+        }
 
         // not in a valid state
         if (state != RunnerState.RUNNING && state != RunnerState.STOPPED) {
@@ -135,64 +124,19 @@ public class LogsCommand extends AbsCommand {
         System.out.println(log);
     }
 
-    /**
-     * Display error if there are too many identifiers that have been found
-     * @param text a description of the identifier
-     */
-    protected void errorTooManyIdentifiers(String text) {
-        Ansi buffer = Ansi.ansi();
-        buffer.fg(RED);
-        buffer.a("Too many ").a(text).a(" have been found with identifier '").a(processID).a("'. Please add extra data to the identifier");
-        buffer.reset();
-        System.out.println(buffer.toString());
-    }
-
-    /**
-     * Display error if no identifier has been found
-     * @param text a description of the identifier
-     */
-    protected void errorNoIdentifier(String text) {
-        Ansi buffer = Ansi.ansi();
-        buffer.fg(RED);
-        buffer.a("No ").a(text).a(" found with identifier '").a(processID).a("'.");
-        buffer.reset();
-        System.out.println(buffer.toString());
-    }
-
 
     /**
      * Display the builder log.
      */
     protected void displayBuilderLog() {
 
+        List<UserBuilderStatus> matchingStatuses = getMultiEnvCodenvy().findBuilders(processID);
 
-        // first collect all processes
-        List<UserProject> projects = getMultiEnvCodenvy().getProjects();
-
-        List<UserBuilderStatus> matchingStatuses = new ArrayList<>();
-
-        // then for each project, gets the builds IDs
-        for (UserProject userProject : projects) {
-            final List<? extends BuilderStatus> builderStatuses = userProject.getCodenvy().builder().builds(userProject.getInnerProject()).execute();
-            for (BuilderStatus builderStatus : builderStatuses) {
-
-                UserBuilderStatus tmpStatus = new DefaultUserBuilderStatus(builderStatus, userProject);
-                if (tmpStatus.shortId().startsWith(processID)) {
-                    matchingStatuses.add(tmpStatus);
-                }
-            }
-        }
-
-        if (matchingStatuses.size() == 0) {
-            errorNoIdentifier("builder");
-            return;
-        } else if (matchingStatuses.size() > 1) {
-            errorTooManyIdentifiers("builders");
+        UserBuilderStatus foundStatus = checkOnlyOne(matchingStatuses, processID, "builder", "builders");
+        // not found, errors already printed
+        if (foundStatus == null) {
             return;
         }
-
-        // only one matching status
-        UserBuilderStatus foundStatus = matchingStatuses.get(0);
 
         BuilderState state = foundStatus.getInnerStatus().status();
 

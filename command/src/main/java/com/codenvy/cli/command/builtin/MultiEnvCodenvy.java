@@ -10,9 +10,13 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
+import com.codenvy.cli.command.builtin.model.DefaultUserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.DefaultUserProject;
+import com.codenvy.cli.command.builtin.model.DefaultUserRunnerStatus;
 import com.codenvy.cli.command.builtin.model.DefaultUserWorkspace;
+import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.cli.preferences.Preferences;
 import com.codenvy.cli.security.EnvironmentCredentials;
 import com.codenvy.cli.security.PreferencesDataStore;
@@ -25,7 +29,9 @@ import com.codenvy.client.WorkspaceClient;
 import com.codenvy.client.auth.CodenvyAuthenticationException;
 import com.codenvy.client.auth.Credentials;
 import com.codenvy.client.auth.Token;
+import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.RunnerStatus;
 import com.codenvy.client.model.User;
 import com.codenvy.client.model.Workspace;
 import com.codenvy.client.model.WorkspaceReference;
@@ -43,6 +49,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
+import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
  * @author Florent Benoit
@@ -296,5 +303,109 @@ public class MultiEnvCodenvy {
         // OK
         return true;
     }
+
+    public List<UserBuilderStatus> findBuilders(String builderID) {
+        // first collect all processes
+        List<UserProject> projects = getProjects();
+
+        List<UserBuilderStatus> matchingStatuses = new ArrayList<>();
+
+        // then for each project, gets the builds IDs
+        for (UserProject userProject : projects) {
+            final List<? extends BuilderStatus> builderStatuses = userProject.getCodenvy().builder().builds(userProject.getInnerProject()).execute();
+            for (BuilderStatus builderStatus : builderStatuses) {
+
+                UserBuilderStatus tmpStatus = new DefaultUserBuilderStatus(builderStatus, userProject);
+                if (tmpStatus.shortId().startsWith(builderID)) {
+                    matchingStatuses.add(tmpStatus);
+                }
+            }
+        }
+        return matchingStatuses;
+    }
+
+
+    public List<UserRunnerStatus> findRunners(String runnerID) {
+        List<UserProject> projects = getProjects();
+
+        List<UserRunnerStatus> matchingStatuses = new ArrayList<>();
+
+        // then for each project, gets the process IDs
+        for (UserProject userProject : projects) {
+            final List<? extends RunnerStatus> runnerStatuses =
+                    userProject.getCodenvy().runner().processes(userProject.getInnerProject()).execute();
+            for (RunnerStatus runnerStatus : runnerStatuses) {
+
+                UserRunnerStatus tmpStatus = new DefaultUserRunnerStatus(runnerStatus, userProject);
+                if (tmpStatus.shortId().startsWith(runnerID)) {
+                    matchingStatuses.add(tmpStatus);
+                }
+            }
+        }
+
+        return matchingStatuses;
+    }
+
+    public List<UserRunnerStatus> getRunners(UserProject userProject) {
+        List<UserRunnerStatus> statuses = new ArrayList<>();
+        final List<? extends RunnerStatus> runnerStatuses = userProject.getCodenvy().runner().processes(userProject.getInnerProject()).execute();
+        for (RunnerStatus runnerStatus : runnerStatuses) {
+
+            UserRunnerStatus tmpStatus = new DefaultUserRunnerStatus(runnerStatus, userProject);
+                statuses.add(tmpStatus);
+        }
+        return statuses;
+    }
+
+    public List<UserBuilderStatus> getBuilders(UserProject userProject) {
+        List<UserBuilderStatus> statuses = new ArrayList<>();
+        final List<? extends BuilderStatus> builderStatuses = userProject.getCodenvy().builder().builds(userProject.getInnerProject()).execute();
+        for (BuilderStatus builderStatus : builderStatuses) {
+
+            UserBuilderStatus tmpStatus = new DefaultUserBuilderStatus(builderStatus, userProject);
+            statuses.add(tmpStatus);
+        }
+        return statuses;
+    }
+
+
+    protected static <T> T checkOnlyOne(List<T> list, String id, String textNoIdentifier, String textTooManyIDs) {
+        if (list.size() == 0) {
+            errorNoIdentifier(id, textNoIdentifier);
+            return null;
+        } else if (list.size() > 1) {
+            errorTooManyIdentifiers(id, textTooManyIDs);
+            return null;
+        }
+
+        return list.get(0);
+    }
+
+
+    /**
+     * Display error if there are too many identifiers that have been found
+     * @param text a description of the identifier
+     */
+    protected static void errorTooManyIdentifiers(String id, String text) {
+        Ansi buffer = Ansi.ansi();
+        buffer.fg(RED);
+        buffer.a("Too many ").a(text).a(" have been found with identifier '").a(id).a("'. Please add extra data to the identifier");
+        buffer.reset();
+        System.out.println(buffer.toString());
+    }
+
+    /**
+     * Display error if no identifier has been found
+     * @param text a description of the identifier
+     */
+    protected static void errorNoIdentifier(String id, String text) {
+        Ansi buffer = Ansi.ansi();
+        buffer.fg(RED);
+        buffer.a("No ").a(text).a(" found with identifier '").a(id).a("'.");
+        buffer.reset();
+        System.out.println(buffer.toString());
+    }
+
+
 
 }
