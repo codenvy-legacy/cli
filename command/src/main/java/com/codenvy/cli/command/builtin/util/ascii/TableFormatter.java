@@ -19,4 +19,6 @@ public interface TableFormatter {
 
     String getFormatter(AsciiArrayInfo asciiArrayInfo);
 
+    String getTitleFormatter(AsciiArrayInfo asciiArrayInfo);
+
 }

@@ -174,10 +174,11 @@ public class DefaultAsciiArray implements AsciiArray {
 
         StringBuilder buffer = new StringBuilder(beginBorderLine);
         String formatter = getFormatter();
+        String titleFormatter = getTitleFormatter();
 
         // now add title
         if (titles != null) {
-            buffer.append(String.format(formatter, (Object[]) titles.toArray(new String[titles.size()])));
+            buffer.append(String.format(titleFormatter, (Object[]) titles.toArray(new String[titles.size()])));
             buffer.append(beginBorderLine);
         }
 
@@ -230,6 +231,14 @@ public class DefaultAsciiArray implements AsciiArray {
     protected String getFormatter() {
         return getFormatterMode().getFormatter(getArrayInfo());
     }
+
+    /**
+     * @return formatter used to format title content
+     */
+    protected String getTitleFormatter() {
+        return getFormatterMode().getTitleFormatter(getArrayInfo());
+    }
+
 
     /**
      * @return value used as border of the array

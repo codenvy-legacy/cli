@@ -39,4 +39,19 @@ public class ModernFormatter implements TableFormatter {
         return buffer.toString();
 
     }
+
+    public String getTitleFormatter(AsciiArrayInfo asciiArrayInfo) {
+        StringBuilder buffer = new StringBuilder();
+
+        for (Integer columnSize : asciiArrayInfo.getColumnsSize()) {
+            // uppercase
+            buffer.append("%-" + columnSize + "S");
+            buffer.append("  ");
+        }
+        buffer.append("%n");
+
+        return buffer.toString();
+
+    }
+
 }

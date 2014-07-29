@@ -42,4 +42,21 @@ public class CSVFormatter implements TableFormatter {
         return buffer.toString();
 
     }
+
+    @Override
+    public String getTitleFormatter(AsciiArrayInfo asciiArrayInfo) {
+        StringBuilder buffer = new StringBuilder();
+        int size = asciiArrayInfo.getColumnsSize().size();
+        for (int c = 1; c <= size; c++) {
+            // uppercase
+            buffer.append("%S");
+            if (c < size ) {
+                buffer.append(",");
+            }
+        }
+        buffer.append("%n");
+
+        return buffer.toString();
+
+    }
 }
