@@ -20,6 +20,7 @@ import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.RunnerStatus;
 
+import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
 
@@ -32,7 +33,10 @@ import static org.fusesource.jansi.Ansi.Color.RED;
  * @author Florent Benoit
  */
 @Command(scope = "codenvy", name = "build", description = "Build a project in Codenvy System")
-public class BuildCommand extends ScopedIDCommand {
+public class BuildCommand extends AbsCommand {
+
+    @Argument(name = "project-id", description = "Specify the project ID to use", required = true, multiValued = false)
+    private String projectID;
 
     /**
      * Execute the command
@@ -47,8 +51,7 @@ public class BuildCommand extends ScopedIDCommand {
         }
 
         // do we have the projectID ?
-        String projectShortId = getScopedProjectId();
-        if (projectShortId == null) {
+        if (projectID == null) {
             Ansi buffer = Ansi.ansi();
             buffer.fg(RED);
             buffer.a("No projectID has been set");
@@ -58,12 +61,12 @@ public class BuildCommand extends ScopedIDCommand {
         }
 
         // get project for the given shortID
-        UserProject project = getMultiEnvCodenvy().getProject(projectShortId);
+        UserProject project = getMultiEnvCodenvy().getProject(projectID);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();
             buffer.fg(RED);
-            buffer.a("No matching project for identifier '").a(projectShortId).a("'.");
+            buffer.a("No matching project for identifier '").a(projectID).a("'.");
             buffer.reset();
             System.out.println(buffer.toString());
             return null;
@@ -78,8 +81,11 @@ public class BuildCommand extends ScopedIDCommand {
         UserBuilderStatus userBuilderStatus = new DefaultUserBuilderStatus(builderStatus, project);
 
         Ansi buffer = Ansi.ansi();
-        buffer.a("Build task for project ").a(INTENSITY_BOLD).a(project.name()).a(INTENSITY_BOLD_OFF).a("' has been submitted with builder ID ").a(INTENSITY_BOLD).a(userBuilderStatus.shortId()).a(INTENSITY_BOLD_OFF).a(System.lineSeparator());
-        buffer.a("To get more details on builder ID, use the 'info ").a(INTENSITY_BOLD).a(userBuilderStatus.shortId()).a(INTENSITY_BOLD_OFF).a("' command");
+        buffer.a("Build task for project ").a(INTENSITY_BOLD).a(project.name()).a(INTENSITY_BOLD_OFF)
+              .a("' has been submitted with builder ID ").a(INTENSITY_BOLD).a(userBuilderStatus.shortId()).a(INTENSITY_BOLD_OFF)
+              .a(System.lineSeparator());
+        buffer.a("To get more details on builder ID, use the 'info ").a(INTENSITY_BOLD).a(userBuilderStatus.shortId()).a(INTENSITY_BOLD_OFF).a(
+                "' command");
         System.out.println(buffer.toString());
 
         return null;

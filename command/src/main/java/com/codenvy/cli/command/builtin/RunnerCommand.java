@@ -17,6 +17,7 @@ import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.RunnerStatus;
 
+import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
 
@@ -29,8 +30,10 @@ import static org.fusesource.jansi.Ansi.Color.RED;
  * @author Florent Benoit
  */
 @Command(scope = "codenvy", name = "run", description = "Run a project in Codenvy System")
-public class RunnerCommand extends ScopedIDCommand {
+public class RunnerCommand extends AbsCommand {
 
+    @Argument(name = "project-id", description = "Specify the project ID to use", required = true, multiValued = false)
+    private String projectId;
 
     /**
      * Execute the command
@@ -45,8 +48,7 @@ public class RunnerCommand extends ScopedIDCommand {
         }
 
         // do we have the projectID ?
-        String projectShortId = getScopedProjectId();
-        if (projectShortId == null) {
+        if (projectId == null) {
             Ansi buffer = Ansi.ansi();
             buffer.fg(RED);
             buffer.a("No projectID has been set");
@@ -56,12 +58,12 @@ public class RunnerCommand extends ScopedIDCommand {
         }
 
         // get project for the given shortID
-        UserProject project = getMultiEnvCodenvy().getProject(projectShortId);
+        UserProject project = getMultiEnvCodenvy().getProject(projectId);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();
             buffer.fg(RED);
-            buffer.a("No matching project for identifier '").a(projectShortId).a("'.");
+            buffer.a("No matching project for identifier '").a(projectId).a("'.");
             buffer.reset();
             System.out.println(buffer.toString());
             return null;

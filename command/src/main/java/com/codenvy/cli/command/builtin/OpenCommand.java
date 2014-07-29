@@ -37,7 +37,7 @@ import static org.fusesource.jansi.Ansi.Color.RED;
 @Command(scope = "codenvy", name = "open", description = "List all the projects from Codenvy System")
 public class OpenCommand extends AbsCommand {
 
-    @Argument(name = "projectID", description = "Specify the project ID to use", required = true, multiValued = false)
+    @Argument(name = "project-id", description = "Specify the project ID to use", required = true, multiValued = false)
     private String projectID;
 
 
