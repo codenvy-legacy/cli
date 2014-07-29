@@ -10,10 +10,13 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
+import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.cli.command.builtin.util.ascii.AsciiArray;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiArray;
 import com.codenvy.client.Codenvy;
+import com.codenvy.client.model.BuilderState;
 
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
@@ -54,19 +57,112 @@ public class ListCommand extends AbsCommand {
         List<String> ids = new ArrayList<>();
         List<String> workspaces = new ArrayList<>();
         List<String> projectNames = new ArrayList<>();
+        List<String> runnerIDs = new ArrayList<>();
+        List<String> builderIDs = new ArrayList<>();
 
         for (UserProject project : projects) {
-            ids.add(project.shortId());
-            workspaces.add(project.getWorkspace().name());
-            projectNames.add(project.name());
+
+            // get all runners and builders for this project
+            List<UserRunnerStatus> runners = getMultiEnvCodenvy().getRunners(project);
+            List<UserBuilderStatus> builders = getMultiEnvCodenvy().getBuilders(project);
+
+            // ok, now we need to know how many lines we need
+            int lines = 1;
+            if (runners.size() > lines) {
+                lines = runners.size();
+            }
+            if (builders.size() > lines) {
+                lines = builders.size();
+            }
+
+            // loop on items
+            for (int i = 1; i <= lines; i++) {
+                // we add basic stuff only on the first line
+                if (i == 1) {
+                    ids.add(project.shortId());
+                    workspaces.add(project.getWorkspace().name());
+                    projectNames.add(project.name());
+                } else {
+                    // blank data
+                    ids.add("");
+                    workspaces.add("");
+                    projectNames.add("");
+                }
+
+                // runners ?
+                if (i <= runners.size()) {
+                    // print runner
+                    runnerIDs.add(prettyPrint(runners.get(i - 1)));
+                } else {
+                    runnerIDs.add("");
+                }
+
+                // builders ?
+                if (i <= builders.size()) {
+                    // print builder
+                    builderIDs.add(prettyPrint(builders.get(i - 1)));
+                } else {
+                    builderIDs.add("");
+                }
+            }
+
         }
 
         // Ascii array
-        AsciiArray asciiArray = buildAsciiArray().withColumns(ids, workspaces, projectNames).withTitle("ID", "Workspace", "Project");
+        AsciiArray asciiArray = buildAsciiArray().withColumns(ids, workspaces, projectNames, runnerIDs, builderIDs).withTitle("ID", "Workspace", "Project", "RunnerID", "BuilderID");
         System.out.println(asciiArray.toAscii());
 
         return null;
     }
 
+
+
+    protected String prettyPrint(UserRunnerStatus runnerStatus) {
+        StringBuilder sb = new StringBuilder(runnerStatus.shortId());
+        sb.append("[");
+        switch (runnerStatus.getInnerStatus().status()) {
+            case RUNNING:
+                sb.append("RUN");
+                break;
+            case CANCELLED:
+                sb.append("CANCEL");
+                break;
+            case NEW:
+                sb.append("WAIT");
+                break;
+            case FAILED:
+                sb.append("FAIL");
+                break;
+            case STOPPED:
+                sb.append("STOP");
+                break;
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+    protected String prettyPrint(UserBuilderStatus builderStatus) {
+        StringBuilder sb = new StringBuilder(builderStatus.shortId());
+        sb.append("[");
+        switch (builderStatus.getInnerStatus().status()) {
+            case IN_QUEUE:
+                sb.append("WAIT");
+                break;
+            case IN_PROGRESS:
+                sb.append("RUN");
+                break;
+            case FAILED:
+                sb.append("FAIL");
+                break;
+            case CANCELLED:
+                sb.append("CANCEL");
+                break;
+            case SUCCESSFUL:
+                sb.append("OK");
+                break;
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 
 }
