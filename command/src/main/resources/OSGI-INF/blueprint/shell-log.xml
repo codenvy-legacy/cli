@@ -38,6 +38,9 @@
             <action class="com.codenvy.cli.command.builtin.EnvCommand" />
         </command>
         <command>
+            <action class="com.codenvy.cli.command.builtin.InfoCommand" />
+        </command>
+        <command>
             <action class="com.codenvy.cli.command.builtin.LogsCommand">
             </action>
         </command>

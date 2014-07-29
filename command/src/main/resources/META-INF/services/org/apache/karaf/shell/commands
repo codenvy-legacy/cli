@@ -13,5 +13,6 @@ com.codenvy.cli.command.builtin.HelpCommand
 com.codenvy.cli.command.builtin.RunnerCommand
 com.codenvy.cli.command.builtin.BuildCommand
 com.codenvy.cli.command.builtin.LogsCommand
+com.codenvy.cli.command.builtin.InfoCommand
 com.codenvy.cli.command.builtin.ListCommand
 com.codenvy.cli.command.builtin.EnvCommand
