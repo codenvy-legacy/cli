@@ -16,3 +16,4 @@ com.codenvy.cli.command.builtin.LogsCommand
 com.codenvy.cli.command.builtin.InfoCommand
 com.codenvy.cli.command.builtin.ListCommand
 com.codenvy.cli.command.builtin.EnvCommand
+com.codenvy.cli.command.builtin.OpenCommand
