@@ -109,7 +109,7 @@ public class ListCommand extends AbsCommand {
         }
 
         // Ascii array
-        AsciiArray asciiArray = buildAsciiArray().withColumns(ids, workspaces, projectNames, runnerIDs, builderIDs).withTitle("ID", "Workspace", "Project", "Runners", "Builders");
+        AsciiArray asciiArray = buildAsciiArray().withColumns(ids, workspaces, projectNames, builderIDs, runnerIDs).withTitle("ID", "Workspace", "Project", "Builders", "Runners");
         System.out.println(asciiArray.toAscii());
 
         return null;
