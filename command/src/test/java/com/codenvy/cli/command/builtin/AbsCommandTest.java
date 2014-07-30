@@ -219,7 +219,7 @@ public abstract class AbsCommandTest {
         doReturn(globalPreferences).when(commandSession).get(Preferences.class.getName());
 
         // intercept getProjects() method
-        doReturn(multiEnvCodenvy.getProjects(codenvy)).when(multiEnvCodenvy).getProjects();
+        doReturn(multiEnvCodenvy.getProjects("default", codenvy)).when(multiEnvCodenvy).getProjects();
         doReturn(true).when(multiEnvCodenvy).hasReadyEnvironments();
         doReturn(true).when(multiEnvCodenvy).hasAvailableEnvironments();
         doReturn(Collections.emptyList()).when(multiEnvCodenvy).getBuilders(any(UserProject.class));

@@ -34,4 +34,9 @@ public interface UserWorkspace {
      */
     List<UserProject> getProjects();
 
+    /**
+     * @return remote of this workspace
+     */
+    String getRemote();
+
 }

@@ -114,7 +114,7 @@ public class MultiEnvCodenvy {
         while (iterator.hasNext()) {
             Map.Entry<String, Codenvy> entry = iterator.next();
             try {
-                List<UserProject> foundProjects = getProjects(entry.getValue());
+                List<UserProject> foundProjects = getProjects(entry.getKey(), entry.getValue());
                 if (foundProjects.size() > 0) {
                     projects.addAll(foundProjects);
                 }
@@ -133,7 +133,7 @@ public class MultiEnvCodenvy {
      *         the codenvy object used to retrieve the data
      * @return the list of projects
      */
-    protected List<UserProject> getProjects(Codenvy codenvy) {
+    protected List<UserProject> getProjects(String remote, Codenvy codenvy) {
         List<UserProject> projects = new ArrayList<>();
 
         // For each workspace, search the project and compute
@@ -149,7 +149,7 @@ public class MultiEnvCodenvy {
                 continue;
             }
 
-            DefaultUserWorkspace defaultUserWorkspace = new DefaultUserWorkspace(codenvy, ref);
+            DefaultUserWorkspace defaultUserWorkspace = new DefaultUserWorkspace(remote, codenvy, ref);
 
             List<? extends Project> readProjects = codenvy.project().getWorkspaceProjects(ref.id()).execute();
             for (Project readProject : readProjects) {

@@ -46,4 +46,5 @@ public interface UserProject {
     Project getInnerProject();
 
     Codenvy getCodenvy();
+
 }

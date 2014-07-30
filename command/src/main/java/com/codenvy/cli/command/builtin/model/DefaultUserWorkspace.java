@@ -26,6 +26,11 @@ import java.util.List;
 public class DefaultUserWorkspace implements UserWorkspace {
 
     /**
+     * Remote instance.
+     */
+    private String remote;
+
+    /**
      * Codenvy object used to interact with remote API.
      */
     private Codenvy codenvy;
@@ -43,7 +48,8 @@ public class DefaultUserWorkspace implements UserWorkspace {
      * @param workspaceRef
      *         the given workspace reference
      */
-    public DefaultUserWorkspace(Codenvy codenvy, WorkspaceReference workspaceRef) {
+    public DefaultUserWorkspace(String remote, Codenvy codenvy, WorkspaceReference workspaceRef) {
+        this.remote = remote;
         this.codenvy = codenvy;
         this.linkWorkspace = workspaceRef;
     }
@@ -76,6 +82,14 @@ public class DefaultUserWorkspace implements UserWorkspace {
             projects.add(userProject);
         }
         return projects;
+    }
+
+    /**
+     * @return remote of this workspace
+     */
+    @Override
+    public String getRemote() {
+        return remote;
     }
 
 }
