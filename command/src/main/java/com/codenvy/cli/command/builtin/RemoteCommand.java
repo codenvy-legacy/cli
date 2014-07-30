@@ -10,26 +10,17 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.cli.command.builtin.model.UserProject;
-import com.codenvy.cli.command.builtin.util.ascii.AsciiArray;
-
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
-import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
-
 /**
- * Env command.
- * This command will allow to manage environments that can be connected to the CLI.
+ * Remote command.
+ * This command will allow to manage remote environments that can be connected to the CLI.
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "env", description = "Manage Codenvy environments")
-public class EnvCommand extends AbsCommand {
+@Command(scope = "codenvy", name = "remote", description = "Manage Codenvy remote environments")
+public class RemoteCommand extends AbsCommand {
 
     @Argument(name = "flag", description = "Manage environment : add/remove/rename", required = false, multiValued = false, index = 0)
     private String flag;
@@ -40,12 +31,6 @@ public class EnvCommand extends AbsCommand {
     @Argument(name = "option1", description = "option of the command", required = false, multiValued = false, index = 2)
     private String option1;
 
-    @Argument(name = "option2", description = "option of the command", required = false, multiValued = false, index = 3)
-    private String option2;
-
-    @Argument(name = "option3", description = "option of the command", required = false, multiValued = false, index = 4)
-    private String option3;
-
     /**
      * Prints the current projects per workspace
      */
@@ -54,13 +39,13 @@ public class EnvCommand extends AbsCommand {
 
         // no method, so list all environments
         if (flag == null || flag.isEmpty()) {
-            listEnvironments();
+            listRemote();
             return null;
         } else if ("add".equals(flag)) {
-            addEnvironment();
+            addRemote();
             return null;
         } else if ("remove".equals(flag)) {
-            removeEnvironment();
+            removeRemote();
             return null;
 /*        } else if ("rename".equals(flag)) {
             renameEnvironment();
@@ -70,36 +55,33 @@ public class EnvCommand extends AbsCommand {
 
         // invalid flag
         Ansi buffer = Ansi.ansi();
-            buffer.a("Invalid command '").a(flag).a(": should start with env <add|remove> [environment-name]");
+            buffer.a("Invalid command '").a(flag).a(": should start with env <add|remove> [remote-name]");
             System.out.println(buffer.toString());
             return null;
     }
 
-    protected void listEnvironments() {
+    protected void listRemote() {
         System.out.println(getMultiEnvCodenvy().listEnvironments());
-        if (!getMultiEnvCodenvy().hasEnvironments()) {
-            System.out.println("To add a new environment, use the env add <env-name> <URL> <username> <password> command");
+        if (!getMultiEnvCodenvy().hasReadyEnvironments()) {
+            System.out.println("To add a new environment, use the remote add <remote-name> <URL> command");
 
         }
     }
 
-    protected void addEnvironment() {
+    protected void addRemote() {
         String url = option1;
-        String username = option2;
-        String password = option3;
-
 
         Ansi buffer = Ansi.ansi();
-        // OK, so we need to have name, URL, username and password
-        if (!ok(name) || !ok(url) || !ok(username) || !ok(password)) {
-            buffer.a("Invalid add command: should be env add <env-name> <URL> <username> <password>");
+        // OK, so we need to have name, URL
+        if (!ok(name) || !ok(url)) {
+            buffer.a("Invalid add command: should be env add <env-name> <URL>");
             System.out.println(buffer.toString());
             return;
         }
 
-        // ok let's try to add the env
-        if (getMultiEnvCodenvy().addEnvironment(name, url, username, password)) {
-            buffer.a("The environment '").a(name).a("' has been successfully added. list command could be used to list projects of this environment.");
+        // ok let's try to add the remote
+        if (getMultiEnvCodenvy().addRemote(name, url)) {
+            buffer.a("The environment '").a(name).a("' has been added. Login on this environment needs to be performed.");
             System.out.println(buffer.toString());
             return;
         }
@@ -107,17 +89,17 @@ public class EnvCommand extends AbsCommand {
 
     }
 
-    protected void removeEnvironment() {
+    protected void removeRemote() {
         Ansi buffer = Ansi.ansi();
-        // OK, so we need to have name, URL, username and password
+        // OK, so we need to have name
         if (!ok(name)) {
-            buffer.a("Invalid remove command: should be env add <env-name>");
+            buffer.a("Invalid remove command: should be remote remove <env-name>");
             System.out.println(buffer.toString());
             return;
         }
 
         if (getMultiEnvCodenvy().removeEnvironment(name)) {
-            buffer.a("The environment '").a(name).a("'  has been successfully removed");
+            buffer.a("The remote Codenvy '").a(name).a("'  has been successfully removed");
             System.out.println(buffer.toString());
             return;
         }

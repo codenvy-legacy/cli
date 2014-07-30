@@ -35,7 +35,7 @@
             </action>
         </command>
         <command>
-            <action class="com.codenvy.cli.command.builtin.EnvCommand">
+            <action class="com.codenvy.cli.command.builtin.RemoteCommand">
             </action>
         </command>
         <command>
