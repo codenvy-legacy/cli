@@ -80,10 +80,8 @@ public class BuildCommand extends AbsCommand {
         buffer.a("Build task for project ").a(INTENSITY_BOLD).a(project.name()).a(INTENSITY_BOLD_OFF)
               .a("' has been submitted with builder ID ").a(INTENSITY_BOLD).a(userBuilderStatus.shortId()).a(INTENSITY_BOLD_OFF)
               .a(System.lineSeparator());
-        buffer.a("To get more details on builder ID, use the 'info ").a(INTENSITY_BOLD).a(userBuilderStatus.shortId()).a(INTENSITY_BOLD_OFF).a(
-                "' command");
         System.out.println(buffer.toString());
-
+        System.out.println(userBuilderStatus);
         return null;
     }
 }
