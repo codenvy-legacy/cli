@@ -149,7 +149,7 @@ public class MultiEnvCodenvy {
                 continue;
             }
 
-            DefaultUserWorkspace defaultUserWorkspace = new DefaultUserWorkspace(remote, codenvy, ref);
+            DefaultUserWorkspace defaultUserWorkspace = new DefaultUserWorkspace(remote, this, codenvy, ref);
 
             List<? extends Project> readProjects = codenvy.project().getWorkspaceProjects(ref.id()).execute();
             for (Project readProject : readProjects) {

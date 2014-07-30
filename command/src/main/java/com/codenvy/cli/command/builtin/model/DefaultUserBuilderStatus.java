@@ -10,10 +10,15 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
+import com.codenvy.client.model.BuilderState;
 import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.RunnerStatus;
 
+import org.fusesource.jansi.Ansi;
+
 import static com.codenvy.cli.command.builtin.util.SHA1.sha1;
+import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
+import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
 
 /**
  * Runner status implementation of {@link com.codenvy.cli.command.builtin.model.UserBuilderStatus}
@@ -77,5 +82,18 @@ public class DefaultUserBuilderStatus implements UserBuilderStatus {
      */
     public BuilderStatus getInnerStatus() {
         return builderStatus;
+    }
+
+    public String toString() {
+        BuilderState state = getInnerStatus().status();
+
+        Ansi buffer = Ansi.ansi();
+
+        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(shortId()).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("WORKSPACE").a(INTENSITY_BOLD_OFF).a(":").a(getProject().getWorkspace().name()).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("PROJECT").a(INTENSITY_BOLD_OFF).a(":").a(getProject().name()).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("IDE URL").a(INTENSITY_BOLD_OFF).a(":").a(getProject().getInnerProject().ideUrl()).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("STATUS").a(INTENSITY_BOLD_OFF).a(":").a(state).a(System.lineSeparator());
+        return buffer.toString();
     }
 }

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
+import com.codenvy.cli.command.builtin.MultiEnvCodenvy;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.WorkspaceReference;
@@ -24,6 +25,11 @@ import java.util.List;
  * @author Florent Benoit
  */
 public class DefaultUserWorkspace implements UserWorkspace {
+
+    /**
+     * Helper.
+     */
+    private MultiEnvCodenvy multiEnvCodenvy;
 
     /**
      * Remote instance.
@@ -48,8 +54,9 @@ public class DefaultUserWorkspace implements UserWorkspace {
      * @param workspaceRef
      *         the given workspace reference
      */
-    public DefaultUserWorkspace(String remote, Codenvy codenvy, WorkspaceReference workspaceRef) {
+    public DefaultUserWorkspace(String remote, MultiEnvCodenvy multiEnvCodenvy, Codenvy codenvy, WorkspaceReference workspaceRef) {
         this.remote = remote;
+        this.multiEnvCodenvy = multiEnvCodenvy;
         this.codenvy = codenvy;
         this.linkWorkspace = workspaceRef;
     }
@@ -92,4 +99,7 @@ public class DefaultUserWorkspace implements UserWorkspace {
         return remote;
     }
 
+    public MultiEnvCodenvy getMultiEnvCodenvy() {
+        return multiEnvCodenvy;
+    }
 }

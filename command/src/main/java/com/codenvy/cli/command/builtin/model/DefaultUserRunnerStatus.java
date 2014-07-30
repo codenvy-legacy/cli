@@ -10,9 +10,16 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
+import com.codenvy.client.model.RunnerState;
 import com.codenvy.client.model.RunnerStatus;
 
+import org.fusesource.jansi.Ansi;
+
+import java.util.Date;
+
 import static com.codenvy.cli.command.builtin.util.SHA1.sha1;
+import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
+import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
 
 /**
  * Runner status implementation of {@link com.codenvy.cli.command.builtin.model.UserRunnerStatus}
@@ -76,5 +83,39 @@ public class DefaultUserRunnerStatus implements UserRunnerStatus {
      */
     public RunnerStatus getInnerStatus() {
         return runnerStatus;
+    }
+
+
+    public String toString() {
+
+        RunnerState state = getInnerStatus().status();
+
+        Ansi buffer = Ansi.ansi();
+
+        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(shortId()).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("WORKSPACE").a(INTENSITY_BOLD_OFF).a(":").a(getProject().getWorkspace().name()).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("PROJECT").a(INTENSITY_BOLD_OFF).a(":").a(getProject().name()).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("IDE URL").a(INTENSITY_BOLD_OFF).a(":").a(getProject().getInnerProject().ideUrl()).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("STATUS").a(INTENSITY_BOLD_OFF).a(":").a(state).a(System.lineSeparator());
+
+        buffer.a(INTENSITY_BOLD).a("START TIME").a(INTENSITY_BOLD_OFF).a(":");
+        long start = getInnerStatus().startTime();
+        if (start > 0) {
+            buffer.a(new Date(start));
+        } else {
+            buffer.a("N/A");
+        }
+        buffer.a(System.lineSeparator());
+
+        buffer.a(INTENSITY_BOLD).a("STOP TIME").a(INTENSITY_BOLD_OFF).a(":");
+        long stop = getInnerStatus().stopTime();
+        if (stop > 0) {
+            buffer.a(new Date(start));
+        } else {
+            buffer.a("N/A");
+        }
+        buffer.a(System.lineSeparator());
+
+        return buffer.toString();
     }
 }

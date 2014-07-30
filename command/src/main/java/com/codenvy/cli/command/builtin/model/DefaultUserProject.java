@@ -10,15 +10,21 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
+import com.codenvy.cli.command.builtin.MultiEnvCodenvy;
 import com.codenvy.cli.command.builtin.util.SHA1;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
 
+import org.fusesource.jansi.Ansi;
+
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import static com.codenvy.cli.command.builtin.util.SHA1.sha1;
+import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
+import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
 
 /**
  * Implements the {@link com.codenvy.cli.command.builtin.model.UserProject} interface providing links between project and workspaces.
@@ -27,7 +33,7 @@ import static com.codenvy.cli.command.builtin.util.SHA1.sha1;
  */
 public class DefaultUserProject implements UserProject {
 
-    /**
+     /**
      * Current project
      */
     private Project project;
@@ -108,5 +114,35 @@ public class DefaultUserProject implements UserProject {
         return codenvy;
     }
 
+
+
+    public String toString() {
+        Ansi buffer = Ansi.ansi();
+
+        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(shortId()).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("WORKSPACE").a(INTENSITY_BOLD_OFF).a(":").a(getWorkspace().name()).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("PROJECT").a(INTENSITY_BOLD_OFF).a(":").a(name()).a(System.lineSeparator());
+        buffer.a(INTENSITY_BOLD).a("IDE URL").a(INTENSITY_BOLD_OFF).a(":").a(getInnerProject().ideUrl()).a(System.lineSeparator());
+
+        // all runners
+        buffer.a(INTENSITY_BOLD).a("RUNNERS").a(INTENSITY_BOLD_OFF).a(":");
+        List<UserRunnerStatus> runners = getWorkspace().getMultiEnvCodenvy().getRunners(this);
+        for (UserRunnerStatus runner : runners) {
+            buffer.a(runner.shortId());
+            buffer.a(" ");
+        }
+        buffer.a(System.lineSeparator());
+
+        // all builders
+        buffer.a(INTENSITY_BOLD).a("BUILDERS").a(INTENSITY_BOLD_OFF).a(":");
+        List<UserBuilderStatus> builders = getWorkspace().getMultiEnvCodenvy().getBuilders(this);
+        for (UserBuilderStatus builder: builders) {
+            buffer.a(builder.shortId());
+            buffer.a(" ");
+        }
+        buffer.a(System.lineSeparator());
+
+        return buffer.toString();
+    }
 
 }
