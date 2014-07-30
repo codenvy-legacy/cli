@@ -1,4 +1,9 @@
 {
-    "config": {},
-    "environments": {}
+    "config" : { },
+    "environments" : {
+        "codenvy.com" : {
+            "defaultEnv" : true,
+            "url" : "http://ide3.cf.codenvy-stg.com"
+        }
+    }
 }
