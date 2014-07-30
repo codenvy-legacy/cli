@@ -47,6 +47,13 @@ public class HelpCommand extends AbsCommand {
         buffer.reset();
         buffer.a(": Manage remote Codenvy instances");
 
+        // Login
+        buffer.a("\n");
+        buffer.fg(CYAN);
+        buffer.a("login");
+        buffer.reset();
+        buffer.a(": Login in remote Codenvy instance");
+
         // List
         buffer.a("\n");
         buffer.fg(CYAN);
@@ -74,6 +81,13 @@ public class HelpCommand extends AbsCommand {
         buffer.a("logs");
         buffer.reset();
         buffer.a(": Display logs for a given runner/builder");
+
+        // Open
+        buffer.a("\n");
+        buffer.fg(CYAN);
+        buffer.a("open");
+        buffer.reset();
+        buffer.a(": Open IDE URL in a browser");
 
         // Info
         buffer.a("\n");
