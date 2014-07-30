@@ -87,35 +87,7 @@ public class InfoCommand extends AbsCommand {
             return;
         }
 
-        RunnerState state = foundStatus.getInnerStatus().status();
-
-        Ansi buffer = Ansi.ansi();
-
-        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.shortId()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("WORKSPACE").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.getProject().getWorkspace().name()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("PROJECT").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.getProject().name()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("IDE URL").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.getProject().getInnerProject().ideUrl()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("STATUS").a(INTENSITY_BOLD_OFF).a(":").a(state).a(System.lineSeparator());
-
-        buffer.a(INTENSITY_BOLD).a("START TIME").a(INTENSITY_BOLD_OFF).a(":");
-        long start = foundStatus.getInnerStatus().startTime();
-        if (start > 0) {
-            buffer.a(new Date(start));
-        } else {
-            buffer.a("N/A");
-        }
-        buffer.a(System.lineSeparator());
-
-        buffer.a(INTENSITY_BOLD).a("STOP TIME").a(INTENSITY_BOLD_OFF).a(":");
-        long stop = foundStatus.getInnerStatus().stopTime();
-        if (stop > 0) {
-            buffer.a(new Date(start));
-        } else {
-            buffer.a("N/A");
-        }
-        buffer.a(System.lineSeparator());
-
-        System.out.println(buffer.toString());
+        System.out.println(foundStatus);
 
     }
 
@@ -128,16 +100,7 @@ public class InfoCommand extends AbsCommand {
             return;
         }
 
-        BuilderState state = foundStatus.getInnerStatus().status();
-
-        Ansi buffer = Ansi.ansi();
-
-        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.shortId()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("WORKSPACE").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.getProject().getWorkspace().name()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("PROJECT").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.getProject().name()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("IDE URL").a(INTENSITY_BOLD_OFF).a(":").a(foundStatus.getProject().getInnerProject().ideUrl()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("STATUS").a(INTENSITY_BOLD_OFF).a(":").a(state).a(System.lineSeparator());
-        System.out.println(buffer.toString());
+        System.out.println(foundStatus);
 
     }
 
@@ -150,32 +113,7 @@ public class InfoCommand extends AbsCommand {
             return;
         }
 
-        Ansi buffer = Ansi.ansi();
-
-        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(foundProject.shortId()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("WORKSPACE").a(INTENSITY_BOLD_OFF).a(":").a(foundProject.getWorkspace().name()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("PROJECT").a(INTENSITY_BOLD_OFF).a(":").a(foundProject.name()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("IDE URL").a(INTENSITY_BOLD_OFF).a(":").a(foundProject.getInnerProject().ideUrl()).a(System.lineSeparator());
-
-        // all runners
-        buffer.a(INTENSITY_BOLD).a("RUNNERS").a(INTENSITY_BOLD_OFF).a(":");
-        List<UserRunnerStatus> runners = getMultiEnvCodenvy().getRunners(foundProject);
-        for (UserRunnerStatus runner : runners) {
-            buffer.a(runner.shortId());
-            buffer.a(" ");
-        }
-        buffer.a(System.lineSeparator());
-
-        // all builders
-        buffer.a(INTENSITY_BOLD).a("BUILDERS").a(INTENSITY_BOLD_OFF).a(":");
-        List<UserBuilderStatus> builders = getMultiEnvCodenvy().getBuilders(foundProject);
-        for (UserBuilderStatus builder: builders) {
-            buffer.a(builder.shortId());
-            buffer.a(" ");
-        }
-        buffer.a(System.lineSeparator());
-
-        System.out.println(buffer.toString());
+        System.out.println(foundProject);
 
     }
 }
