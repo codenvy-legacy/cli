@@ -10,9 +10,16 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
+import jline.console.ConsoleReader;
+
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 /**
  * Allow to login in the default environment or a given environment
@@ -39,6 +46,25 @@ public class LoginCommand extends AbsCommand {
         // Is there any available environment ?
         if (!checkifAvailableEnvironments()) {
             return null;
+        }
+
+        // no username and no password, needs to prompt
+        if (username == null) {
+            System.out.print("Username:");
+            System.out.flush();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(session.getKeyboard(), Charset.defaultCharset()))) {
+                username = reader.readLine();
+            }
+        }
+        System.out.println(System.lineSeparator());
+
+        if (password == null) {
+            System.out.print("Password for " + username + ":");
+            System.out.flush();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(session.getKeyboard(), Charset.defaultCharset()))) {
+                password = reader.readLine();
+            }
+            System.out.println(System.lineSeparator());
         }
 
         if (getMultiEnvCodenvy().login(envName, username, password)) {
