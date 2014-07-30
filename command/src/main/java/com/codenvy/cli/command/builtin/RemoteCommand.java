@@ -19,7 +19,7 @@ import org.fusesource.jansi.Ansi;
  * This command will allow to manage remote environments that can be connected to the CLI.
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "remote", description = "Manage Codenvy remote environments")
+@Command(scope = "codenvy", name = "remote", description = "Manage remote Codenvy instances")
 public class RemoteCommand extends AbsCommand {
 
     @Argument(name = "flag", description = "Manage environment : add/remove/rename", required = false, multiValued = false, index = 0)
