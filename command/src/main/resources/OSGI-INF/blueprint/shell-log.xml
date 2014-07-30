@@ -46,6 +46,9 @@
             <action class="com.codenvy.cli.command.builtin.LoginCommand" />
         </command>
         <command>
+            <action class="com.codenvy.cli.command.builtin.StopCommand" />
+        </command>
+        <command>
             <action class="com.codenvy.cli.command.builtin.InfoCommand" />
         </command>
         <command>

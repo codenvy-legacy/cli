@@ -18,3 +18,4 @@ com.codenvy.cli.command.builtin.ListCommand
 com.codenvy.cli.command.builtin.RemoteCommand
 com.codenvy.cli.command.builtin.OpenCommand
 com.codenvy.cli.command.builtin.LoginCommand
+com.codenvy.cli.command.builtin.StopCommand

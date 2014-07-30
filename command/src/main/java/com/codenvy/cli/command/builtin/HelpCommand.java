@@ -96,6 +96,14 @@ public class HelpCommand extends AbsCommand {
         buffer.reset();
         buffer.a(": Display information on a given project/runner/builder ID");
 
+        // Stop
+        buffer.a("\n");
+        buffer.fg(CYAN);
+        buffer.a("stop");
+        buffer.reset();
+        buffer.a(": Stop the given runner ID or all runners of a given project ID");
+
+
         // Environments
         buffer.a("\n");
         buffer.a("\n");
