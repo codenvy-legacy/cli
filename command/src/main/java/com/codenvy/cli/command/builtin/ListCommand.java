@@ -14,9 +14,6 @@ import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.cli.command.builtin.util.ascii.AsciiArray;
-import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiArray;
-import com.codenvy.client.Codenvy;
-import com.codenvy.client.model.BuilderState;
 
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
@@ -39,7 +36,7 @@ public class ListCommand extends AbsCommand {
         init();
 
         // not logged in
-        if (!checkifEnvironments()) {
+        if (!checkifEnabledEnvironments()) {
             return null;
         }
 

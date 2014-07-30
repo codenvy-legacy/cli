@@ -27,12 +27,10 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
 import com.codenvy.cli.preferences.Preferences;
 import com.codenvy.client.Codenvy;
@@ -222,7 +220,8 @@ public abstract class AbsCommandTest {
 
         // intercept getProjects() method
         doReturn(multiEnvCodenvy.getProjects(codenvy)).when(multiEnvCodenvy).getProjects();
-        doReturn(true).when(multiEnvCodenvy).hasEnvironments();
+        doReturn(true).when(multiEnvCodenvy).hasReadyEnvironments();
+        doReturn(true).when(multiEnvCodenvy).hasAvailableEnvironments();
         doReturn(Collections.emptyList()).when(multiEnvCodenvy).getBuilders(any(UserProject.class));
         doReturn(Collections.emptyList()).when(multiEnvCodenvy).getRunners(any(UserProject.class));
 

@@ -11,14 +11,10 @@
 package com.codenvy.cli.command.builtin;
 
 import com.codenvy.cli.command.builtin.model.DefaultUserBuilderStatus;
-import com.codenvy.cli.command.builtin.model.DefaultUserRunnerStatus;
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
-import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
-import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.Project;
-import com.codenvy.client.model.RunnerStatus;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
@@ -46,7 +42,7 @@ public class BuildCommand extends AbsCommand {
         init();
 
         // not logged in
-        if (!checkifEnvironments()) {
+        if (!checkifEnabledEnvironments()) {
             return null;
         }
 

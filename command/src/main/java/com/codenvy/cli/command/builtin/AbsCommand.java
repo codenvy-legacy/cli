@@ -15,14 +15,10 @@ import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiArray;
 import com.codenvy.cli.command.builtin.util.ascii.FormatterMode;
 import com.codenvy.cli.preferences.Preferences;
 import com.codenvy.cli.preferences.PreferencesAPI;
-import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyClient;
-import com.codenvy.client.model.Project;
-import com.codenvy.client.model.Workspace;
 
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.fusesource.jansi.Ansi;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -35,7 +31,6 @@ import java.util.Properties;
 
 import static com.codenvy.cli.command.builtin.Constants.CODENVY_CONFIG_FILE;
 import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.MODERN;
-import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
  * Abstract command which should be extended by all Codenvy commands.
@@ -102,20 +97,43 @@ public abstract class AbsCommand extends OsgiCommandSupport {
                 codenvySettings = new Properties();
                 codenvySettings.load(reader);
             } catch (IOException e) {
-                System.out.println("Unable to load condenvy settings" + e.getMessage());
+                System.out.println("Unable to load codenvy settings" + e.getMessage());
                 throw new IllegalStateException("Unable to load codenvy settings", e);
             }
         }
         return codenvySettings.getProperty(property);
     }
 
-    protected boolean checkifEnvironments() {
-        if (!multiEnvCodenvy.hasEnvironments()) {
-            System.out.println("There is no Codenvy environment. Manage environments with env command.");
+    /**
+     * Checks that there are available codenvy environments
+     * @return
+     */
+    protected boolean checkifAvailableEnvironments() {
+        if (!multiEnvCodenvy.hasAvailableEnvironments()) {
+            System.out.println("There is no Codenvy environment. Manage environments with remote command.");
+            return false;
         }
 
 
-        return multiEnvCodenvy.hasEnvironments();
+        return multiEnvCodenvy.hasAvailableEnvironments();
+    }
+    /**
+     * Checks that there are enabled codenvy environments
+     * @return
+     */
+    protected boolean checkifEnabledEnvironments() {
+        if (!multiEnvCodenvy.hasAvailableEnvironments()) {
+            System.out.println("There is no Codenvy environment. Manage environments with remote command.");
+            return false;
+        }
+
+        if (!multiEnvCodenvy.hasReadyEnvironments()) {
+            System.out.println("Need to login in an environment to continue.");
+            return false;
+        }
+
+
+        return multiEnvCodenvy.hasReadyEnvironments();
     }
 
     /**

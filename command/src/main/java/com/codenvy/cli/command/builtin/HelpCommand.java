@@ -40,12 +40,12 @@ public class HelpCommand extends AbsCommand {
 
         buffer.a(INTENSITY_BOLD).a("COMMANDS").a(INTENSITY_BOLD_OFF);
 
-        // env
+        // remote
         buffer.a("\n");
         buffer.fg(CYAN);
-        buffer.a("env");
+        buffer.a("remote");
         buffer.reset();
-        buffer.a(": Manage Codenvy environments");
+        buffer.a(": Manage remote Codenvy instances");
 
         // List
         buffer.a("\n");
@@ -87,7 +87,7 @@ public class HelpCommand extends AbsCommand {
         buffer.a("\n");
         buffer.a(getMultiEnvCodenvy().listEnvironments());
 
-        buffer.a("To manage environments, use the env command");
+        buffer.a("To manage remote instances, use the remote command");
 
 
         System.out.println(buffer.toString());

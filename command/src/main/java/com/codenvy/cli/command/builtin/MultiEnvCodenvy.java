@@ -58,45 +58,48 @@ public class MultiEnvCodenvy {
 
     private CodenvyClient codenvyClient;
 
-    private ConcurrentMap<String, Codenvy> environments;
+    private ConcurrentMap<String, Codenvy> readyEnvironments;
+    private ConcurrentMap<String, Environment> availableEnvironments;
 
     private Preferences globalPreferences;
-
-    private boolean hasEnvironments = false;
 
     public MultiEnvCodenvy(CodenvyClient codenvyClient, Preferences globalPreferences) {
         this.codenvyClient = codenvyClient;
         this.globalPreferences = globalPreferences;
-        this.environments = new ConcurrentHashMap<String, Codenvy>();
+        this.readyEnvironments = new ConcurrentHashMap<>();
+        this.availableEnvironments = new ConcurrentHashMap<>();
         init();
     }
 
     protected void init() {
-        environments.clear();
+        readyEnvironments.clear();
+        availableEnvironments.clear();
         // now read envionments and add a new datastore for each env
         Map preferencesEnvironments = globalPreferences.get("environments", Map.class);
         if (preferencesEnvironments != null) {
             Iterator<String> environmentIterator = preferencesEnvironments.keySet().iterator();
             Preferences environmentsPreferences = globalPreferences.path("environments");
             while (environmentIterator.hasNext()) {
-                hasEnvironments = true;
                 String environment = environmentIterator.next();
                 // create store
                 PreferencesDataStore preferencesDataStore = new PreferencesDataStore(environmentsPreferences, environment, codenvyClient);
 
                 // read environment
+                Environment environmentData = environmentsPreferences.get(environment, Environment.class);
                 EnvironmentCredentials environmentCredentials = environmentsPreferences.get(environment, EnvironmentCredentials.class);
 
+                // If token is available, add it
+                if (!environmentCredentials.getToken().isEmpty()) {
+                    // add remote env
+                    // Manage credentials
+                    Codenvy codenvy = codenvyClient.newCodenvyBuilder(environmentData.getUrl(), environmentCredentials.getUsername())
+                                                   .withCredentialsProvider(preferencesDataStore)
+                                                   .withCredentialsStoreFactory(preferencesDataStore)
+                                                   .build();
+                    readyEnvironments.put(environment, codenvy);
+                }
 
-                // add remote env
-                // Manage credentials
-                Codenvy codenvy = codenvyClient.newCodenvyBuilder(environmentCredentials.getUrl(), environmentCredentials.getUsername())
-                                               .withCredentialsProvider(preferencesDataStore)
-                                               .withCredentialsStoreFactory(preferencesDataStore)
-                                               .build();
-
-
-                environments.put(environment, codenvy);
+                availableEnvironments.put(environment, environmentData);
 
             }
         }
@@ -106,7 +109,7 @@ public class MultiEnvCodenvy {
     protected List<UserProject> getProjects() {
         List<UserProject> projects = new ArrayList<>();
 
-        Set<Map.Entry<String, Codenvy>> entries = environments.entrySet();
+        Set<Map.Entry<String, Codenvy>> entries = readyEnvironments.entrySet();
         Iterator<Map.Entry<String, Codenvy>> iterator = entries.iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, Codenvy> entry = iterator.next();
@@ -197,13 +200,19 @@ public class MultiEnvCodenvy {
 
     }
 
+    public boolean hasAvailableEnvironments() {
+        return !availableEnvironments.isEmpty();
+    }
 
-    public boolean hasEnvironments() {
-        return hasEnvironments;
+    public boolean hasReadyEnvironments() {
+        return !readyEnvironments.isEmpty();
     }
 
     public Collection<String> getEnvironmentNames() {
-        return environments.keySet();
+        return availableEnvironments.keySet();
+    }
+    public Map<String, Environment> getAvailableEnvironments() {
+        return availableEnvironments;
     }
 
     public String listEnvironments() {
@@ -211,40 +220,133 @@ public class MultiEnvCodenvy {
         buffer.a(INTENSITY_BOLD).a("ENVIRONMENTS\n").a(INTENSITY_BOLD_OFF);
         buffer.reset();
 
-        Collection<String> envs = getEnvironmentNames();
+        Map<String, Environment> envs = getAvailableEnvironments();
         if (envs.size() == 1) {
-            buffer.a("There is ").a(envs.size()).a(" Codenvy environment");
+            buffer.a("There is ").a(envs.size()).a(" Codenvy environment:");
         } else if (envs.size() > 1) {
-            buffer.a("There are ").a(envs.size()).a(" Codenvy environments");
+            buffer.a("There are ").a(envs.size()).a(" Codenvy environments:");
         } else {
-            buffer.a("There is no Codenvy environment");
+            buffer.a("There is no Codenvy environment.");
         }
         buffer.a(System.lineSeparator());
-        for (String env : getEnvironmentNames()) {
-            buffer.a("\t").a(env).a(System.lineSeparator());
+        Iterator<Map.Entry<String, Environment>> it = envs.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Environment> entry = it.next();
+            buffer.a(entry.getKey()).a("  [").a(entry.getValue().getUrl()).a("]");
+            if (entry.getValue().isDefaultEnv()) {
+                buffer.a("*");
+            }
+            buffer.a(System.lineSeparator());
         }
         return buffer.toString();
     }
 
 
-    protected boolean addEnvironment(String name, String url, String username, String password) {
+    public boolean addRemote(String name, String url) {
         // check env doesn't exists
         if (getEnvironmentNames().contains(name)) {
             System.out.println("The environment with name '" + name + "' already exists");
             return false;
         }
 
+        Preferences preferencesEnvironments = globalPreferences.path("environments");
+
+
+        // add the new environment
+        Environment environment = new Environment();
+        environment.setUrl(url);
+        preferencesEnvironments.put(name, environment);
+
+        // refresh current links
+        refresh();
+
+        return true;
+
+    }
+
+    public Environment getEnvironment(String environmentName) {
+        // it exists, get it
+        Preferences preferencesEnvironments = globalPreferences.path("environments");
+
+
+        if (!getEnvironmentNames().contains(environmentName)) {
+            return null;
+        }
+
+        return preferencesEnvironments.get(environmentName, Environment.class);
+    }
+
+
+    public Environment getDefaultEnvironment() {
+        Map preferencesEnvironments = globalPreferences.get("environments", Map.class);
+        if (preferencesEnvironments != null) {
+            Iterator<String> environmentIterator = preferencesEnvironments.keySet().iterator();
+            Preferences environmentsPreferences = globalPreferences.path("environments");
+            while (environmentIterator.hasNext()) {
+                String environment = environmentIterator.next();
+
+                Environment tmpEnv = environmentsPreferences.get(environment, Environment.class);
+                if (tmpEnv.isDefaultEnv()) {
+                    return tmpEnv;
+                }
+            }
+        }
+        return null;
+    }
+
+    public String getDefaultEnvironmentName() {
+        Map preferencesEnvironments = globalPreferences.get("environments", Map.class);
+        if (preferencesEnvironments != null) {
+            Iterator<String> environmentIterator = preferencesEnvironments.keySet().iterator();
+            Preferences environmentsPreferences = globalPreferences.path("environments");
+            while (environmentIterator.hasNext()) {
+                String environment = environmentIterator.next();
+
+                Environment tmpEnv = environmentsPreferences.get(environment, Environment.class);
+                if (tmpEnv.isDefaultEnv()) {
+                    return environment;
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public boolean login(String environmentName, String username, String password) {
+
+        // get URL of the environment
+        Environment environment;
+
+        if (environmentName == null) {
+            environment = getDefaultEnvironment();
+            if (environment == null) {
+                System.out.println("No default environment found'");
+                return false;
+            }
+            environmentName = getDefaultEnvironmentName();
+        } else {
+            environment = getEnvironment(environmentName);
+        }
+
+        if (environment == null) {
+            System.out.println("Unable to find the given environment '" + environmentName + "'");
+            return false;
+        }
+
+
+        String url = environment.getUrl();
+
         TokenRetrieverDatastore tokenRetrieverDatastore = new TokenRetrieverDatastore();
 
         // check that this is valid
         Credentials codenvyCredentials = codenvyClient.newCredentialsBuilder()
-                                                    .withUsername(username)
-                                                    .withPassword(password)
-                                                    .build();
+                                                      .withUsername(username)
+                                                      .withPassword(password)
+                                                      .build();
         Codenvy codenvy = codenvyClient.newCodenvyBuilder(url, username)
-                                            .withCredentials(codenvyCredentials)
-                                            .withCredentialsStoreFactory(tokenRetrieverDatastore)
-                                            .build();
+                                       .withCredentials(codenvyCredentials)
+                                       .withCredentialsStoreFactory(tokenRetrieverDatastore)
+                                       .build();
 
         // try to connect to the remote side
         try {
@@ -255,6 +357,7 @@ public class MultiEnvCodenvy {
             return false;
         }
 
+        // get token
         Token token = tokenRetrieverDatastore.getToken();
         if (token == null) {
             System.out.println("Unable to get token for the given credentials on URL '" + url + "'");
@@ -262,22 +365,21 @@ public class MultiEnvCodenvy {
             return false;
         }
 
+
+        // Save credentials
         Preferences preferencesEnvironments = globalPreferences.path("environments");
-
-        // add the new environment
-        EnvironmentCredentials credentials = new EnvironmentCredentials();
-        credentials.setUrl(url);
-        credentials.setUsername(username);
-        credentials.setToken(token.value());
-
-        preferencesEnvironments.put(name, credentials);
+        EnvironmentCredentials environmentCredentials = new EnvironmentCredentials();
+        environmentCredentials.setToken(token.value());
+        environmentCredentials.setUsername(username);
+        // by merging
+        preferencesEnvironments.merge(environmentName, environmentCredentials);
 
         // refresh current links
         refresh();
 
         return true;
-
     }
+
 
     protected void refresh() {
         init();

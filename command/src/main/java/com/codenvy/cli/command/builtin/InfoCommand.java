@@ -10,23 +10,16 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.cli.command.builtin.model.DefaultUserRunnerStatus;
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
-import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiArray;
-import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.BuilderState;
-import com.codenvy.client.model.Link;
 import com.codenvy.client.model.RunnerState;
-import com.codenvy.client.model.RunnerStatus;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.commands.Option;
 import org.fusesource.jansi.Ansi;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -50,7 +43,7 @@ public class InfoCommand extends AbsCommand {
         init();
 
         // not logged in
-        if (!checkifEnvironments()) {
+        if (!checkifEnabledEnvironments()) {
             return null;
         }
 

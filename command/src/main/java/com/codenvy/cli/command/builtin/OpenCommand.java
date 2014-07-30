@@ -11,10 +11,7 @@
 
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
-import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
-import com.codenvy.cli.command.builtin.util.ascii.AsciiArray;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
@@ -24,8 +21,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.fusesource.jansi.Ansi.Color.RED;
 
@@ -48,7 +43,7 @@ public class OpenCommand extends AbsCommand {
         init();
 
         // not logged in
-        if (!checkifEnvironments()) {
+        if (!checkifEnabledEnvironments()) {
             return null;
         }
 

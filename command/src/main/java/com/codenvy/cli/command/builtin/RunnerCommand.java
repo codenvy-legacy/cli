@@ -13,7 +13,6 @@ package com.codenvy.cli.command.builtin;
 import com.codenvy.cli.command.builtin.model.DefaultUserRunnerStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
-import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.RunnerStatus;
 
@@ -43,7 +42,7 @@ public class RunnerCommand extends AbsCommand {
         init();
 
         // not logged in
-        if (!checkifEnvironments()) {
+        if (!checkifEnabledEnvironments()) {
             return null;
         }
 

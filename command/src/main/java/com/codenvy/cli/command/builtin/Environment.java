@@ -8,30 +8,29 @@
  * Contributors:
  *   Codenvy, S.A. - initial API and implementation
  *******************************************************************************/
-package com.codenvy.cli.security;
+package com.codenvy.cli.command.builtin;
 
 /**
  * @author Florent Benoit
  */
-public class EnvironmentCredentials {
+public class Environment {
 
-    String token = "";
-    String username = "";
+    private boolean defaultEnv = false;
+    public String url;
 
-    public String getToken() {
-        return token;
+    public String getUrl() {
+        return url;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public String getUsername() {
-        return username;
+    public boolean isDefaultEnv() {
+        return defaultEnv;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setDefaultEnv(boolean defaultEnv) {
+        this.defaultEnv = defaultEnv;
     }
-
 }
