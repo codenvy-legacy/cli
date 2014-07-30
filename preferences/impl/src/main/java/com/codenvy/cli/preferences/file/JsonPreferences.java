@@ -114,7 +114,7 @@ public class JsonPreferences implements Preferences, LifecycleCallback {
     protected void put(String key, Object value, boolean overwrite) {
         Object previousValue = innerPreferences.get(key);
         if (previousValue != null && !overwrite) {
-            ObjectReader updater = mapper.readerForUpdating(innerPreferences);
+            ObjectReader updater = mapper.readerForUpdating(previousValue);
             try {
                 updater.readValue(this.mapper.valueToTree(value));
             } catch (IllegalArgumentException | IOException e) {
