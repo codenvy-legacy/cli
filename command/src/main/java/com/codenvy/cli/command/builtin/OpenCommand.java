@@ -43,11 +43,11 @@ public class OpenCommand extends AbsCommand {
         init();
 
         // not logged in
-        if (!checkifEnabledEnvironments()) {
+        if (!checkifEnabledRemotes()) {
             return null;
         }
 
-        UserProject project = getMultiEnvCodenvy().getProject(projectID);
+        UserProject project = getMultiRemoteCodenvy().getProject(projectID);
         if (project == null) {
             Ansi buffer = Ansi.ansi();
             buffer.fg(RED);

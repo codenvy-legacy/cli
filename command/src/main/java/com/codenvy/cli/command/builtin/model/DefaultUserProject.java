@@ -10,18 +10,12 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
-import com.codenvy.cli.command.builtin.MultiEnvCodenvy;
-import com.codenvy.cli.command.builtin.util.SHA1;
-import com.codenvy.cli.command.builtin.util.ascii.AsciiForm;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
 
 import org.fusesource.jansi.Ansi;
 
-import java.nio.charset.Charset;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import static com.codenvy.cli.command.builtin.util.SHA1.sha1;
@@ -124,13 +118,13 @@ public class DefaultUserProject implements UserProject {
 
     public String toString() {
         String runnersList = "";
-        List<UserRunnerStatus> runners = getWorkspace().getMultiEnvCodenvy().getRunners(this);
+        List<UserRunnerStatus> runners = getWorkspace().getMultiRemoteCodenvy().getRunners(this);
         for (UserRunnerStatus runner : runners) {
             runnersList = runnersList.concat(runner.shortId()).concat(" ");
         }
 
         String buildersList = "";
-        List<UserBuilderStatus> builders = getWorkspace().getMultiEnvCodenvy().getBuilders(this);
+        List<UserBuilderStatus> builders = getWorkspace().getMultiRemoteCodenvy().getBuilders(this);
         for (UserBuilderStatus builder : builders) {
             buildersList = buildersList.concat(builder.shortId()).concat(" ");
         }

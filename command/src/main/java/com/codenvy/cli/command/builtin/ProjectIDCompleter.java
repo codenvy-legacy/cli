@@ -11,22 +11,13 @@
 
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.cli.command.builtin.model.DefaultUserProject;
-import com.codenvy.cli.command.builtin.model.DefaultUserWorkspace;
 import com.codenvy.cli.command.builtin.model.UserProject;
-import com.codenvy.client.Codenvy;
-import com.codenvy.client.Request;
-import com.codenvy.client.WorkspaceClient;
-import com.codenvy.client.model.Project;
-import com.codenvy.client.model.Workspace;
-import com.codenvy.client.model.WorkspaceReference;
 
 import org.apache.felix.service.command.CommandSession;
 import org.apache.karaf.shell.console.CommandSessionHolder;
 import org.apache.karaf.shell.console.Completer;
 import org.apache.karaf.shell.console.completer.StringsCompleter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,11 +38,11 @@ public class ProjectIDCompleter implements Completer {
         StringsCompleter delegate = new StringsCompleter();
 
         // get current client
-        MultiEnvCodenvy multiEnvCodenvy = (MultiEnvCodenvy)commandSession.get(MultiEnvCodenvy.class.getName());
+        MultiRemoteCodenvy multiRemoteCodenvy = (MultiRemoteCodenvy)commandSession.get(MultiRemoteCodenvy.class.getName());
 
-        if (multiEnvCodenvy != null) {
+        if (multiRemoteCodenvy != null) {
             // get current projects
-            List<UserProject> projects = multiEnvCodenvy.getProjects();
+            List<UserProject> projects = multiRemoteCodenvy.getProjects();
             for (UserProject project : projects) {
                 delegate.getStrings().add(project.shortId());
             }

@@ -35,23 +35,23 @@ public class PreferencesDataStore implements DataStoreFactory<String, Credential
     private CredentialsHelper credentialsHelper;
 
     /**
-     * Nma of the environment
+     * Nma of the remote
      */
-    private String environment;
+    private String remote;
 
     /**
      * Basic constructor that initializes an empty {@link DataStore} cache.
      */
-    public PreferencesDataStore(Preferences preferences, String environment, CodenvyClient codenvyClient) {
+    public PreferencesDataStore(Preferences preferences, String remote, CodenvyClient codenvyClient) {
         this.preferences = preferences;
-        this.environment = environment;
+        this.remote = remote;
         this.credentialsHelper = new CredentialsHelper(codenvyClient);
     }
 
 
     // Navigate to the right preferences node
-    private EnvironmentCredentials getEnvironmentCredentials() {
-        return this.preferences.get(environment, EnvironmentCredentials.class);
+    private RemoteCredentials getRemoteCredentials() {
+        return this.preferences.get(remote, RemoteCredentials.class);
     }
 
     /**
@@ -62,7 +62,7 @@ public class PreferencesDataStore implements DataStoreFactory<String, Credential
      */
     @Override
     public Credentials get(String key) {
-        return credentialsHelper.convert(getEnvironmentCredentials());
+        return credentialsHelper.convert(getRemoteCredentials());
     }
 
     /**
@@ -74,7 +74,7 @@ public class PreferencesDataStore implements DataStoreFactory<String, Credential
      */
     @Override
     public synchronized Credentials put(String key, Credentials credentials) {
-        this.preferences.put(environment, credentialsHelper.convert(credentials));
+        this.preferences.put(remote, credentialsHelper.convert(credentials));
         return get(key);
     }
 
@@ -90,11 +90,11 @@ public class PreferencesDataStore implements DataStoreFactory<String, Credential
 
 
         // we delete the token in this case
-        EnvironmentCredentials empty = new EnvironmentCredentials();
+        RemoteCredentials empty = new RemoteCredentials();
         empty.setToken("");
-        preferences.merge(environment, empty);
+        preferences.merge(remote, empty);
 
-        return credentialsHelper.convert(getEnvironmentCredentials());
+        return credentialsHelper.convert(getRemoteCredentials());
     }
 
     @Override
@@ -105,6 +105,6 @@ public class PreferencesDataStore implements DataStoreFactory<String, Credential
 
     @Override
     public Credentials getCredentials(String s) {
-        return credentialsHelper.convert(getEnvironmentCredentials());
+        return credentialsHelper.convert(getRemoteCredentials());
     }
 }

@@ -42,7 +42,7 @@ public class BuildCommand extends AbsCommand {
         init();
 
         // not logged in
-        if (!checkifEnabledEnvironments()) {
+        if (!checkifEnabledRemotes()) {
             return null;
         }
 
@@ -57,7 +57,7 @@ public class BuildCommand extends AbsCommand {
         }
 
         // get project for the given shortID
-        UserProject project = getMultiEnvCodenvy().getProject(projectID);
+        UserProject project = getMultiRemoteCodenvy().getProject(projectID);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();

@@ -60,7 +60,7 @@ public abstract class AbsCommandTest {
     public static final String DEFAULT_URL = "http://ide3.cf.codenvy-stg.com";
 
 
-    private MultiEnvCodenvy multiEnvCodenvy;
+    private MultiRemoteCodenvy multiRemoteCodenvy;
 
     @Mock
     private Preferences globalPreferences;
@@ -200,7 +200,7 @@ public abstract class AbsCommandTest {
 
         doReturn(codenvy).when(commandSession).get(Codenvy.class.getName());
 
-        this.multiEnvCodenvy = Mockito.spy(new MultiEnvCodenvy(codenvyClient, globalPreferences));
+        this.multiRemoteCodenvy = Mockito.spy(new MultiRemoteCodenvy(codenvyClient, globalPreferences));
 
     }
 
@@ -215,15 +215,15 @@ public abstract class AbsCommandTest {
      */
     protected void prepare(AbsCommand command) {
         command.setCodenvyClient(codenvyClient);
-        doReturn(multiEnvCodenvy).when(commandSession).get(MultiEnvCodenvy.class.getName());
+        doReturn(multiRemoteCodenvy).when(commandSession).get(MultiRemoteCodenvy.class.getName());
         doReturn(globalPreferences).when(commandSession).get(Preferences.class.getName());
 
         // intercept getProjects() method
-        doReturn(multiEnvCodenvy.getProjects("default", codenvy)).when(multiEnvCodenvy).getProjects();
-        doReturn(true).when(multiEnvCodenvy).hasReadyEnvironments();
-        doReturn(true).when(multiEnvCodenvy).hasAvailableEnvironments();
-        doReturn(Collections.emptyList()).when(multiEnvCodenvy).getBuilders(any(UserProject.class));
-        doReturn(Collections.emptyList()).when(multiEnvCodenvy).getRunners(any(UserProject.class));
+        doReturn(multiRemoteCodenvy.getProjects("default", codenvy)).when(multiRemoteCodenvy).getProjects();
+        doReturn(true).when(multiRemoteCodenvy).hasReadyRemotes();
+        doReturn(true).when(multiRemoteCodenvy).hasAvailableRemotes();
+        doReturn(Collections.emptyList()).when(multiRemoteCodenvy).getBuilders(any(UserProject.class));
+        doReturn(Collections.emptyList()).when(multiRemoteCodenvy).getRunners(any(UserProject.class));
 
     }
 

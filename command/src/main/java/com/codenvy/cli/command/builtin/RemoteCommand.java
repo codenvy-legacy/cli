@@ -16,19 +16,19 @@ import org.fusesource.jansi.Ansi;
 
 /**
  * Remote command.
- * This command will allow to manage remote environments that can be connected to the CLI.
+ * This command will allow to manage remote remotes that can be connected to the CLI.
  * @author Florent Benoit
  */
 @Command(scope = "codenvy", name = "remote", description = "Manage remote Codenvy instances")
 public class RemoteCommand extends AbsCommand {
 
-    @Argument(name = "flag", description = "Manage environment : add/remove/rename", required = false, multiValued = false, index = 0)
+    @Argument(name = "flag", description = "Manage remote : add/remove/rename", required = false, multiValued = false, index = 0)
     private String flag;
 
-    @Argument(name = "name", description = "name of the environment", required = false, multiValued = false, index = 1)
+    @Argument(name = "name", description = "name of the remote", required = false, multiValued = false, index = 1)
     private String name;
 
-    @Argument(name = "option1", description = "option of the command", required = false, multiValued = false, index = 2)
+    @Argument(name = "option1", description = "option of the remote", required = false, multiValued = false, index = 2)
     private String option1;
 
     /**
@@ -37,7 +37,7 @@ public class RemoteCommand extends AbsCommand {
     protected Object doExecute() {
         init();
 
-        // no method, so list all environments
+        // no method, so list all remotes
         if (flag == null || flag.isEmpty()) {
             listRemote();
             return null;
@@ -48,22 +48,22 @@ public class RemoteCommand extends AbsCommand {
             removeRemote();
             return null;
 /*        } else if ("rename".equals(flag)) {
-            renameEnvironment();
+            renameRemote();
             return null;
             */
         }
 
         // invalid flag
         Ansi buffer = Ansi.ansi();
-            buffer.a("Invalid command '").a(flag).a(": should start with env <add|remove> [remote-name]");
+            buffer.a("Invalid command '").a(flag).a(": should start with remote <add|remove> [remote-name]");
             System.out.println(buffer.toString());
             return null;
     }
 
     protected void listRemote() {
-        System.out.println(getMultiEnvCodenvy().listEnvironments());
-        if (!getMultiEnvCodenvy().hasReadyEnvironments()) {
-            System.out.println("To add a new environment, use the remote add <remote-name> <URL> command");
+        System.out.println(getMultiRemoteCodenvy().listRemotes());
+        if (!getMultiRemoteCodenvy().hasReadyRemotes()) {
+            System.out.println("To add a new remote, use the remote add <remote-name> <URL> command");
 
         }
     }
@@ -80,8 +80,8 @@ public class RemoteCommand extends AbsCommand {
         }
 
         // ok let's try to add the remote
-        if (getMultiEnvCodenvy().addRemote(name, url)) {
-            buffer.a("The environment '").a(name).a("' has been added. Login on this environment needs to be performed.");
+        if (getMultiRemoteCodenvy().addRemote(name, url)) {
+            buffer.a("The remote '").a(name).a("' has been added. Login on this remote needs to be performed.");
             System.out.println(buffer.toString());
             return;
         }
@@ -98,7 +98,7 @@ public class RemoteCommand extends AbsCommand {
             return;
         }
 
-        if (getMultiEnvCodenvy().removeEnvironment(name)) {
+        if (getMultiRemoteCodenvy().removeRemote(name)) {
             buffer.a("The remote Codenvy '").a(name).a("'  has been successfully removed");
             System.out.println(buffer.toString());
             return;

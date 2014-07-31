@@ -21,7 +21,7 @@ import org.fusesource.jansi.Ansi;
 
 import java.util.List;
 
-import static com.codenvy.cli.command.builtin.MultiEnvCodenvy.checkOnlyOne;
+import static com.codenvy.cli.command.builtin.MultiRemoteCodenvy.checkOnlyOne;
 import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
@@ -44,7 +44,7 @@ public class LogsCommand extends AbsCommand {
         init();
 
         // not logged in
-        if (!checkifEnabledEnvironments()) {
+        if (!checkifEnabledRemotes()) {
             return null;
         }
 
@@ -80,7 +80,7 @@ public class LogsCommand extends AbsCommand {
      */
     protected void displayRunnerLog() {
 
-        List<UserRunnerStatus> matchingStatuses = getMultiEnvCodenvy().findRunners(processID);
+        List<UserRunnerStatus> matchingStatuses = getMultiRemoteCodenvy().findRunners(processID);
 
         UserRunnerStatus foundStatus = checkOnlyOne(matchingStatuses, processID, "runner", "runners");
 
@@ -121,7 +121,7 @@ public class LogsCommand extends AbsCommand {
      */
     protected void displayBuilderLog() {
 
-        List<UserBuilderStatus> matchingStatuses = getMultiEnvCodenvy().findBuilders(processID);
+        List<UserBuilderStatus> matchingStatuses = getMultiRemoteCodenvy().findBuilders(processID);
 
         UserBuilderStatus foundStatus = checkOnlyOne(matchingStatuses, processID, "builder", "builders");
         // not found, errors already printed

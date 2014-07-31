@@ -36,14 +36,14 @@ public class ListCommand extends AbsCommand {
         init();
 
         // not logged in
-        if (!checkifEnabledEnvironments()) {
+        if (!checkifEnabledRemotes()) {
             return null;
         }
 
         Ansi buffer = Ansi.ansi();
 
 
-        List<UserProject> projects = getMultiEnvCodenvy().getProjects();
+        List<UserProject> projects = getMultiRemoteCodenvy().getProjects();
         if (projects.isEmpty()) {
             buffer.a("No projects");
             System.out.println(buffer.toString());
@@ -61,8 +61,8 @@ public class ListCommand extends AbsCommand {
         for (UserProject project : projects) {
 
             // get all runners and builders for this project
-            List<UserRunnerStatus> runners = getMultiEnvCodenvy().getRunners(project);
-            List<UserBuilderStatus> builders = getMultiEnvCodenvy().getBuilders(project);
+            List<UserRunnerStatus> runners = getMultiRemoteCodenvy().getRunners(project);
+            List<UserBuilderStatus> builders = getMultiRemoteCodenvy().getBuilders(project);
 
             // ok, now we need to know how many lines we need
             int lines = 1;

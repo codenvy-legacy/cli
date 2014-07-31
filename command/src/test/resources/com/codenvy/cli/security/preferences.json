@@ -1,6 +1,6 @@
 {
     "config" : {},
-    "environments" : {
+    "remotes" : {
         "florent_dev" : {
             "url" : "http://dev.codenvy.com",
             "username" : "florent",

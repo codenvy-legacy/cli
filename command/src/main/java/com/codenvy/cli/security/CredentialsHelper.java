@@ -24,17 +24,17 @@ public final class CredentialsHelper {
         this.codenvyClient = codenvyClient;
     }
 
-    public EnvironmentCredentials convert(Credentials credentials) {
-        EnvironmentCredentials environmentCredentials = new EnvironmentCredentials();
-        environmentCredentials.setUsername(credentials.username());
-        environmentCredentials.setToken(credentials.token().value());
-        return environmentCredentials;
+    public RemoteCredentials convert(Credentials credentials) {
+        RemoteCredentials remoteCredentials = new RemoteCredentials();
+        remoteCredentials.setUsername(credentials.username());
+        remoteCredentials.setToken(credentials.token().value());
+        return remoteCredentials;
     }
 
-    public Credentials convert(EnvironmentCredentials environmentCredentials) {
-        return environmentCredentials != null ? codenvyClient.newCredentialsBuilder()
-                                                        .withUsername(environmentCredentials.getUsername())
-                                                        .withToken(codenvyClient.newTokenBuilder(environmentCredentials.getToken())
+    public Credentials convert(RemoteCredentials remoteCredentials) {
+        return remoteCredentials != null ? codenvyClient.newCredentialsBuilder()
+                                                        .withUsername(remoteCredentials.getUsername())
+                                                        .withToken(codenvyClient.newTokenBuilder(remoteCredentials.getToken())
                                                                                 .build())
                                                         .build() : null;
     }

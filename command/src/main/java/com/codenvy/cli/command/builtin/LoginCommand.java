@@ -10,19 +10,16 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
-import jline.console.ConsoleReader;
-
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 /**
- * Allow to login in the default environment or a given environment
+ * Allow to login in the default remote or a given remote
  * @author Florent Benoit
  */
 @Command(scope = "codenvy", name = "login", description = "Login into a remote Codenvy system")
@@ -31,10 +28,10 @@ public class LoginCommand extends AbsCommand {
     @Option(name = "--env", description = "Name of the remote codenvy", required = false)
     private String envName;
 
-    @Argument(name = "username", description = "username of the remote environment", required = false, multiValued = false, index = 0)
+    @Argument(name = "username", description = "username of the remote instance", required = false, multiValued = false, index = 0)
     private String username;
 
-    @Argument(name = "password", description = "password of the remote environment", required = false, multiValued = false, index = 1)
+    @Argument(name = "password", description = "password of the remote instance", required = false, multiValued = false, index = 1)
     private String password;
 
 
@@ -43,8 +40,8 @@ public class LoginCommand extends AbsCommand {
 
         init();
 
-        // Is there any available environment ?
-        if (!checkifAvailableEnvironments()) {
+        // Is there any available remote ?
+        if (!checkifAvailableRemotes()) {
             return null;
         }
 
@@ -67,9 +64,9 @@ public class LoginCommand extends AbsCommand {
             System.out.println(System.lineSeparator());
         }
 
-        if (getMultiEnvCodenvy().login(envName, username, password)) {
+        if (getMultiRemoteCodenvy().login(envName, username, password)) {
             if (envName == null) {
-                System.out.println("Login success on default remote '" + getMultiEnvCodenvy().getDefaultEnvironmentName() + "'.");
+                System.out.println("Login success on default remote '" + getMultiRemoteCodenvy().getDefaultRemoteName() + "'.");
             } else {
                 System.out.println("Login success on remote '" + envName + "'.");
             }

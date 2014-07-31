@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
-import com.codenvy.cli.command.builtin.MultiEnvCodenvy;
+import com.codenvy.cli.command.builtin.MultiRemoteCodenvy;
 
 import java.util.List;
 
@@ -41,6 +41,6 @@ public interface UserWorkspace {
      */
     String getRemote();
 
-    MultiEnvCodenvy getMultiEnvCodenvy();
+    MultiRemoteCodenvy getMultiRemoteCodenvy();
 
 }

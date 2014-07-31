@@ -1,8 +1,8 @@
 {
     "config" : { },
-    "environments" : {
+    "remotes" : {
         "codenvy.com" : {
-            "defaultEnv" : true,
+            "defaultRemote" : true,
             "url" : "http://ide3.cf.codenvy-stg.com"
         }
     }

@@ -42,7 +42,7 @@ public class RunnerCommand extends AbsCommand {
         init();
 
         // not logged in
-        if (!checkifEnabledEnvironments()) {
+        if (!checkifEnabledRemotes()) {
             return null;
         }
 
@@ -57,7 +57,7 @@ public class RunnerCommand extends AbsCommand {
         }
 
         // get project for the given shortID
-        UserProject project = getMultiEnvCodenvy().getProject(projectId);
+        UserProject project = getMultiRemoteCodenvy().getProject(projectId);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();

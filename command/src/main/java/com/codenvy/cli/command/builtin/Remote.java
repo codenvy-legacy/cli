@@ -13,9 +13,9 @@ package com.codenvy.cli.command.builtin;
 /**
  * @author Florent Benoit
  */
-public class Environment {
+public class Remote {
 
-    private boolean defaultEnv = false;
+    private boolean defaultRemote = false;
     public String url;
 
     public String getUrl() {
@@ -26,11 +26,11 @@ public class Environment {
         this.url = url;
     }
 
-    public boolean isDefaultEnv() {
-        return defaultEnv;
+    public boolean isDefaultRemote() {
+        return defaultRemote;
     }
 
-    public void setDefaultEnv(boolean defaultEnv) {
-        this.defaultEnv = defaultEnv;
+    public void setDefaultRemote(boolean defaultRemote) {
+        this.defaultRemote = defaultRemote;
     }
 }

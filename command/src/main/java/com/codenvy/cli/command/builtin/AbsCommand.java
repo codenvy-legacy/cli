@@ -51,9 +51,9 @@ public abstract class AbsCommand extends OsgiCommandSupport {
     private CodenvyClient codenvyClient;
 
     /**
-     * Manage environments that can be used.
+     * Manage remotes that can be used.
      */
-    private MultiEnvCodenvy multiEnvCodenvy;
+    private MultiRemoteCodenvy multiRemoteCodenvy;
 
     /**
      * Global preferences instance
@@ -63,26 +63,26 @@ public abstract class AbsCommand extends OsgiCommandSupport {
     @PostConstruct
     public void init() {
         // Do we have existing preferences ?
-        this.globalPreferences = (Preferences) session.get(Preferences.class.getName());
+        this.globalPreferences = (Preferences)session.get(Preferences.class.getName());
         if (globalPreferences == null) {
             globalPreferences = PreferencesAPI.getPreferences(new File(Constants.PREFERENCES_STORE_FILE).toURI());
             session.put(Preferences.class.getName(), globalPreferences);
         }
 
         // Do we have multi env ?
-        this.multiEnvCodenvy = (MultiEnvCodenvy)session.get(MultiEnvCodenvy.class.getName());
-        if (multiEnvCodenvy == null) {
+        this.multiRemoteCodenvy = (MultiRemoteCodenvy)session.get(MultiRemoteCodenvy.class.getName());
+        if (multiRemoteCodenvy == null) {
             // build a new one
-            multiEnvCodenvy = new MultiEnvCodenvy(getCodenvyClient(), globalPreferences);
-            session.put(MultiEnvCodenvy.class.getName(), multiEnvCodenvy);
+            multiRemoteCodenvy = new MultiRemoteCodenvy(getCodenvyClient(), globalPreferences);
+            session.put(MultiRemoteCodenvy.class.getName(), multiRemoteCodenvy);
         }
     }
 
     /**
-     * @return multi environment
+     * @return multi remote
      */
-    protected MultiEnvCodenvy getMultiEnvCodenvy() {
-        return multiEnvCodenvy;
+    protected MultiRemoteCodenvy getMultiRemoteCodenvy() {
+        return multiRemoteCodenvy;
     }
 
 
@@ -107,35 +107,35 @@ public abstract class AbsCommand extends OsgiCommandSupport {
     }
 
     /**
-     * Checks that there are available codenvy environments
+     * Checks that there are available codenvy remotes
      * @return
      */
-    protected boolean checkifAvailableEnvironments() {
-        if (!multiEnvCodenvy.hasAvailableEnvironments()) {
-            System.out.println("There is no Codenvy environment. Manage environments with remote command.");
+    protected boolean checkifAvailableRemotes() {
+        if (!multiRemoteCodenvy.hasAvailableRemotes()) {
+            System.out.println("There is no Codenvy remote. Manage remotes with remote command.");
             return false;
         }
 
 
-        return multiEnvCodenvy.hasAvailableEnvironments();
+        return multiRemoteCodenvy.hasAvailableRemotes();
     }
     /**
-     * Checks that there are enabled codenvy environments
+     * Checks that there are enabled codenvy remotes
      * @return
      */
-    protected boolean checkifEnabledEnvironments() {
-        if (!multiEnvCodenvy.hasAvailableEnvironments()) {
-            System.out.println("There is no Codenvy environment. Manage environments with remote command.");
+    protected boolean checkifEnabledRemotes() {
+        if (!multiRemoteCodenvy.hasAvailableRemotes()) {
+            System.out.println("There is no Codenvy remote. Manage remotes with remote command.");
             return false;
         }
 
-        if (!multiEnvCodenvy.hasReadyEnvironments()) {
-            System.out.println("Need to login in an environment to continue.");
+        if (!multiRemoteCodenvy.hasReadyRemotes()) {
+            System.out.println("Need to login in an remote to continue.");
             return false;
         }
 
 
-        return multiEnvCodenvy.hasReadyEnvironments();
+        return multiRemoteCodenvy.hasReadyRemotes();
     }
 
     /**

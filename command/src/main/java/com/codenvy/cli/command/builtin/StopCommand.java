@@ -19,16 +19,10 @@ import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
 
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 
-import static com.codenvy.cli.command.builtin.MultiEnvCodenvy.checkOnlyOne;
-import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
-import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
+import static com.codenvy.cli.command.builtin.MultiRemoteCodenvy.checkOnlyOne;
 import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
@@ -50,7 +44,7 @@ public class StopCommand extends AbsCommand {
         init();
 
         // not logged in
-        if (!checkifEnabledEnvironments()) {
+        if (!checkifEnabledRemotes()) {
             return null;
         }
 
@@ -84,7 +78,7 @@ public class StopCommand extends AbsCommand {
      * Stop the given runner ID
      */
     protected void stopRunnerProcess() {
-        java.util.List<UserRunnerStatus> matchingStatuses = getMultiEnvCodenvy().findRunners(id);
+        java.util.List<UserRunnerStatus> matchingStatuses = getMultiRemoteCodenvy().findRunners(id);
 
         UserRunnerStatus foundStatus = checkOnlyOne(matchingStatuses, id, "runner", "runners");
 
@@ -114,7 +108,7 @@ public class StopCommand extends AbsCommand {
 
     protected void stopProjectProcesses() {
         // needs to find all run processes of the project
-        UserProject foundProject = getMultiEnvCodenvy().getProject(id);
+        UserProject foundProject = getMultiRemoteCodenvy().getProject(id);
 
         // not found, errors already printed
         if (foundProject == null) {
@@ -122,7 +116,7 @@ public class StopCommand extends AbsCommand {
         }
 
         List<String> runnersStopped = new ArrayList<>();
-        List<UserRunnerStatus> statusList = getMultiEnvCodenvy().getRunners(foundProject);
+        List<UserRunnerStatus> statusList = getMultiRemoteCodenvy().getRunners(foundProject);
         if (statusList.isEmpty()) {
             System.out.println("No active runners for the given project.");
             return;

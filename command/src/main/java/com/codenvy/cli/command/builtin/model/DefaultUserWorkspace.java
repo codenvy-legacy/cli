@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
-import com.codenvy.cli.command.builtin.MultiEnvCodenvy;
+import com.codenvy.cli.command.builtin.MultiRemoteCodenvy;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.WorkspaceReference;
@@ -29,7 +29,7 @@ public class DefaultUserWorkspace implements UserWorkspace {
     /**
      * Helper.
      */
-    private MultiEnvCodenvy multiEnvCodenvy;
+    private MultiRemoteCodenvy multiRemoteCodenvy;
 
     /**
      * Remote instance.
@@ -54,9 +54,9 @@ public class DefaultUserWorkspace implements UserWorkspace {
      * @param workspaceRef
      *         the given workspace reference
      */
-    public DefaultUserWorkspace(String remote, MultiEnvCodenvy multiEnvCodenvy, Codenvy codenvy, WorkspaceReference workspaceRef) {
+    public DefaultUserWorkspace(String remote, MultiRemoteCodenvy multiRemoteCodenvy, Codenvy codenvy, WorkspaceReference workspaceRef) {
         this.remote = remote;
-        this.multiEnvCodenvy = multiEnvCodenvy;
+        this.multiRemoteCodenvy = multiRemoteCodenvy;
         this.codenvy = codenvy;
         this.linkWorkspace = workspaceRef;
     }
@@ -99,7 +99,7 @@ public class DefaultUserWorkspace implements UserWorkspace {
         return remote;
     }
 
-    public MultiEnvCodenvy getMultiEnvCodenvy() {
-        return multiEnvCodenvy;
+    public MultiRemoteCodenvy getMultiRemoteCodenvy() {
+        return multiRemoteCodenvy;
     }
 }

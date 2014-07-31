@@ -11,17 +11,12 @@
 package com.codenvy.cli.command.builtin;
 
 
-import com.codenvy.cli.command.builtin.util.ascii.AsciiForm;
-
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
-
-import java.util.Collection;
 
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
 import static org.fusesource.jansi.Ansi.Color.CYAN;
-import static org.fusesource.jansi.Ansi.Color.DEFAULT;
 
 /**
  * Defines a global help for Codenvy commands available.
@@ -62,7 +57,7 @@ public class HelpCommand extends AbsCommand {
         // Remotes
         buffer.a("\n");
         buffer.a("\n");
-        buffer.a(getMultiEnvCodenvy().listEnvironments());
+        buffer.a(getMultiRemoteCodenvy().listRemotes());
 
         buffer.a("To manage remote instances, use the remote command");
 

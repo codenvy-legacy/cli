@@ -13,19 +13,14 @@ package com.codenvy.cli.command.builtin;
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
-import com.codenvy.client.model.BuilderState;
-import com.codenvy.client.model.RunnerState;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
 
-import java.util.Date;
 import java.util.List;
 
-import static com.codenvy.cli.command.builtin.MultiEnvCodenvy.checkOnlyOne;
-import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
-import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
+import static com.codenvy.cli.command.builtin.MultiRemoteCodenvy.checkOnlyOne;
 import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
@@ -43,7 +38,7 @@ public class InfoCommand extends AbsCommand {
         init();
 
         // not logged in
-        if (!checkifEnabledEnvironments()) {
+        if (!checkifEnabledRemotes()) {
             return null;
         }
 
@@ -79,7 +74,7 @@ public class InfoCommand extends AbsCommand {
 
 
     protected void displayRunner() {
-        List<UserRunnerStatus> matchingStatuses = getMultiEnvCodenvy().findRunners(id);
+        List<UserRunnerStatus> matchingStatuses = getMultiRemoteCodenvy().findRunners(id);
         UserRunnerStatus foundStatus = checkOnlyOne(matchingStatuses, id, "runner", "runners");
 
         // not found, errors already printed
@@ -92,7 +87,7 @@ public class InfoCommand extends AbsCommand {
     }
 
     protected void displayBuilder() {
-        List<UserBuilderStatus> matchingStatuses = getMultiEnvCodenvy().findBuilders(id);
+        List<UserBuilderStatus> matchingStatuses = getMultiRemoteCodenvy().findBuilders(id);
         UserBuilderStatus foundStatus = checkOnlyOne(matchingStatuses, id, "builder", "builders");
 
         // not found, errors already printed
@@ -106,7 +101,7 @@ public class InfoCommand extends AbsCommand {
 
 
     protected void displayProject() {
-        UserProject foundProject = getMultiEnvCodenvy().getProject(id);
+        UserProject foundProject = getMultiRemoteCodenvy().getProject(id);
 
         // not found, errors already printed
         if (foundProject == null) {

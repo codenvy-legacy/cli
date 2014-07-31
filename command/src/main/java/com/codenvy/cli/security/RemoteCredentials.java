@@ -13,7 +13,7 @@ package com.codenvy.cli.security;
 /**
  * @author Florent Benoit
  */
-public class EnvironmentCredentials {
+public class RemoteCredentials {
 
     String token = "";
     String username = "";

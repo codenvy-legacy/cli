@@ -45,8 +45,8 @@ public class PreferencesDataStoreTest extends AbsCommandTest {
                 new FilePreferences(new File(PreferencesDataStoreTest.class.getResource("preferences.json").toURI()));
         assertNotNull(filePreferences);
 
-        // keep environments
-        this.preferences = filePreferences.walk("environments");
+        // keep remotes
+        this.preferences = filePreferences.walk("remotes");
         assertNotNull(preferences);
 
         this.dataStoreFlorent = new PreferencesDataStore(preferences, "florent_dev", getCodenvyClient());
