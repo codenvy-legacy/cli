@@ -28,7 +28,7 @@ import static org.fusesource.jansi.Ansi.Color.RED;
  * Allows to print the logs of a given runner/builder
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "logs", description = "Show the logs of the given runner/builder ID")
+@Command(scope = "codenvy", name = "logs", description = "Display output logs for a runner or builder")
 public class LogsCommand extends AbsCommand {
 
     /**

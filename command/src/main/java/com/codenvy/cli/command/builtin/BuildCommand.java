@@ -28,7 +28,7 @@ import static org.fusesource.jansi.Ansi.Color.RED;
  * Allows to build a given project
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "build", description = "Build a project in Codenvy System")
+@Command(scope = "codenvy", name = "build", description = "Build a project")
 public class BuildCommand extends AbsCommand {
 
     @Argument(name = "project-id", description = "Specify the project ID to use", required = true, multiValued = false)

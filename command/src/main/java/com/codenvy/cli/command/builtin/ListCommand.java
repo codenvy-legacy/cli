@@ -26,7 +26,7 @@ import java.util.List;
  * This command will list all projects used in Codenvy.
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "list", description = "List all the projects from Codenvy System")
+@Command(scope = "codenvy", name = "list", description = "List workspaces, projects and processes")
 public class ListCommand extends AbsCommand {
 
     /**

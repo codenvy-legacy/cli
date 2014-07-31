@@ -36,7 +36,7 @@ import static org.fusesource.jansi.Ansi.Color.RED;
  * This command will open browser on the IDE URL of a given project, or access URL or download URL
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "open", description = "Open the link of the given ID")
+@Command(scope = "codenvy", name = "open", description = "Starts a browser session to access a project, builder or runner")
 public class OpenCommand extends AbsCommand {
 
     @Argument(name = "id", description = "Specify the project/builder/runner ID to use", required = true, multiValued = false)

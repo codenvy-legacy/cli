@@ -130,7 +130,7 @@ public abstract class AbsCommand extends OsgiCommandSupport {
         }
 
         if (!multiRemoteCodenvy.hasReadyRemotes()) {
-            System.out.println("Need to login in an remote to continue.");
+            System.out.println("Please login to continue.");
             return false;
         }
 

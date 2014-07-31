@@ -30,7 +30,7 @@ import static org.fusesource.jansi.Ansi.Color.RED;
  * This command will stop a  given runner or all the runners of a given project.
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "stop", description = "Stop the given runner or all the runners of a given project")
+@Command(scope = "codenvy", name = "stop", description = "Stop one or more runner processes")
 public class StopCommand extends AbsCommand {
 
     @Argument(name = "id", description = "Specify the runnerID or projectID to use", required = true, multiValued = false)

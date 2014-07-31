@@ -19,7 +19,7 @@ import org.fusesource.jansi.Ansi;
  * This command will allow to manage remote remotes that can be connected to the CLI.
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "remote", description = "Manage remote Codenvy instances")
+@Command(scope = "codenvy", name = "remote", description = "Add or remove remote Codenvy cloud references")
 public class RemoteCommand extends AbsCommand {
 
     @Argument(name = "flag", description = "Manage remote : add/remove/rename", required = false, multiValued = false, index = 0)

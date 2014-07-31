@@ -27,7 +27,7 @@ import static org.fusesource.jansi.Ansi.Color.RED;
  * Allows to list all processes or processes of a given project
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "info", description = "Show information on a given ID")
+@Command(scope = "codenvy", name = "info", description = "Display information for a project, runner, or builder")
 public class InfoCommand extends AbsCommand {
 
 

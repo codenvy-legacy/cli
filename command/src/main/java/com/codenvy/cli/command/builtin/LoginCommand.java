@@ -22,7 +22,7 @@ import java.nio.charset.Charset;
  * Allow to login in the default remote or a given remote
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "login", description = "Login into a remote Codenvy system")
+@Command(scope = "codenvy", name = "login", description = "Login to a remote Codenvy cloud")
 public class LoginCommand extends AbsCommand {
 
     @Option(name = "--remote", description = "Name of the remote codenvy", required = false)

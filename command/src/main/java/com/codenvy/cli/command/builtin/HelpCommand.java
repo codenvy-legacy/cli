@@ -42,14 +42,15 @@ public class HelpCommand extends AbsCommand {
 
         buffer.a(INTENSITY_BOLD).a("COMMANDS").a(INTENSITY_BOLD_OFF).a("\n");
 
-        String value = buildAsciiForm().withEntry(color("remote"), "Manage remote Codenvy instances")
-                                       .withEntry(color("login"), "Login in remote Codenvy instance")
-                                       .withEntry(color("list"), "List all projects from Codenvy")
-                                       .withEntry(color("build"), "Build a given project")
-                                       .withEntry(color("run"), "Run a given project")
-                                       .withEntry(color("logs"), "Display logs for a given runner/builder")
-                                       .withEntry(color("info"), "Display information on a given project/runner/builder ID")
-                                       .withEntry(color("stop"), "Stop the given runner ID or all runners of a given project ID")
+        String value = buildAsciiForm().withEntry(color("remote"), "Add or remove remote Codenvy cloud references")
+                                       .withEntry(color("login"), "Login to a remote Codenvy cloud")
+                                       .withEntry(color("list"), "List workspaces, projects and processes")
+                                       .withEntry(color("build"), "Build a project")
+                                       .withEntry(color("run"), "Run a project")
+                                       .withEntry(color("logs"), "Display output logs for a runner or builder")
+                                       .withEntry(color("info"), "Display information for a project, runner, or builder")
+                                       .withEntry(color("open"), "Starts a browser session to access a project, builder or runner")
+                                       .withEntry(color("stop"), "Stop one or more runner processes")
                                        .alphabeticalSort().toAscii();
 
         buffer.a(value);

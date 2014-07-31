@@ -30,7 +30,7 @@ import static org.fusesource.jansi.Ansi.Color.RED;
  * Allows to run a given project
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "run", description = "Run a project in Codenvy System")
+@Command(scope = "codenvy", name = "run", description = "Run a project")
 public class RunnerCommand extends AbsCommand {
 
     @Argument(name = "project-id", description = "Specify the project ID to use", required = true, multiValued = false)
