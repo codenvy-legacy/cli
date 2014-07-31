@@ -11,6 +11,8 @@
 package com.codenvy.cli.command.builtin;
 
 
+import com.codenvy.cli.command.builtin.util.ascii.AsciiForm;
+
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
 
@@ -29,6 +31,11 @@ import static org.fusesource.jansi.Ansi.Color.DEFAULT;
 @Command(scope = "codenvy", name = "", description = "Help")
 public class HelpCommand extends AbsCommand {
 
+
+    protected String color(String name) {
+        return Ansi.ansi().fg(CYAN).a(name).reset().toString();
+    }
+
     /**
      * Display the current commands.
      * @return nothing
@@ -38,73 +45,21 @@ public class HelpCommand extends AbsCommand {
 
         Ansi buffer = Ansi.ansi();
 
-        buffer.a(INTENSITY_BOLD).a("COMMANDS").a(INTENSITY_BOLD_OFF);
+        buffer.a(INTENSITY_BOLD).a("COMMANDS").a(INTENSITY_BOLD_OFF).a("\n");
 
-        // remote
-        buffer.a("\n");
-        buffer.fg(CYAN);
-        buffer.a("remote");
-        buffer.reset();
-        buffer.a(": Manage remote Codenvy instances");
+        String value = buildAsciiForm().withEntry(color("remote"), "Manage remote Codenvy instances")
+                                       .withEntry(color("login"), "Login in remote Codenvy instance")
+                                       .withEntry(color("list"), "List all projects from Codenvy")
+                                       .withEntry(color("build"), "Build a given project")
+                                       .withEntry(color("run"), "Run a given project")
+                                       .withEntry(color("logs"), "Display logs for a given runner/builder")
+                                       .withEntry(color("info"), "Display information on a given project/runner/builder ID")
+                                       .withEntry(color("stop"), "Stop the given runner ID or all runners of a given project ID")
+                                       .alphabeticalSort().toAscii();
 
-        // Login
-        buffer.a("\n");
-        buffer.fg(CYAN);
-        buffer.a("login");
-        buffer.reset();
-        buffer.a(": Login in remote Codenvy instance");
+        buffer.a(value);
 
-        // List
-        buffer.a("\n");
-        buffer.fg(CYAN);
-        buffer.a("list");
-        buffer.reset();
-        buffer.a(": List all projects from Codenvy");
-
-        // Build
-        buffer.a("\n");
-        buffer.fg(CYAN);
-        buffer.a("build");
-        buffer.reset();
-        buffer.a(": Build a given project");
-
-        // Run
-        buffer.a("\n");
-        buffer.fg(CYAN);
-        buffer.a("run");
-        buffer.reset();
-        buffer.a(": Run a given project");
-
-        // Logs
-        buffer.a("\n");
-        buffer.fg(CYAN);
-        buffer.a("logs");
-        buffer.reset();
-        buffer.a(": Display logs for a given runner/builder");
-
-        // Open
-        buffer.a("\n");
-        buffer.fg(CYAN);
-        buffer.a("open");
-        buffer.reset();
-        buffer.a(": Open IDE URL in a browser");
-
-        // Info
-        buffer.a("\n");
-        buffer.fg(CYAN);
-        buffer.a("info");
-        buffer.reset();
-        buffer.a(": Display information on a given project/runner/builder ID");
-
-        // Stop
-        buffer.a("\n");
-        buffer.fg(CYAN);
-        buffer.a("stop");
-        buffer.reset();
-        buffer.a(": Stop the given runner ID or all runners of a given project ID");
-
-
-        // Environments
+        // Remotes
         buffer.a("\n");
         buffer.a("\n");
         buffer.a(getMultiEnvCodenvy().listEnvironments());

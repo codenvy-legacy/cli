@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
+import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.client.model.BuilderState;
 import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.RunnerStatus;
@@ -68,6 +69,9 @@ public class DefaultUserBuilderStatus implements UserBuilderStatus {
         return sha1Id.substring(0, 7);
     }
 
+    protected String bold(String name) {
+        return Ansi.ansi().a(INTENSITY_BOLD).a(name).a(INTENSITY_BOLD_OFF).toString();
+    }
 
     /**
      * @return the linked project
@@ -87,13 +91,12 @@ public class DefaultUserBuilderStatus implements UserBuilderStatus {
     public String toString() {
         BuilderState state = getInnerStatus().status();
 
-        Ansi buffer = Ansi.ansi();
-
-        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(shortId()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("WORKSPACE").a(INTENSITY_BOLD_OFF).a(":").a(getProject().getWorkspace().name()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("PROJECT").a(INTENSITY_BOLD_OFF).a(":").a(getProject().name()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("IDE URL").a(INTENSITY_BOLD_OFF).a(":").a(getProject().getInnerProject().ideUrl()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("STATUS").a(INTENSITY_BOLD_OFF).a(":").a(state).a(System.lineSeparator());
-        return buffer.toString();
+        return new DefaultAsciiForm().withEntry(bold("id"), shortId())
+                                     .withEntry(bold("workspace"), getProject().getWorkspace().name())
+                                     .withEntry(bold("project"), getProject().name())
+                                     .withEntry(bold("ide url"), getProject().getInnerProject().ideUrl())
+                                     .withEntry(bold("status"), state.toString())
+                                     .withUppercasePropertyName()
+                                     .toAscii();
     }
 }

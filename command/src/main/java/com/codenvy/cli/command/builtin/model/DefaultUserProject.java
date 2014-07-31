@@ -12,6 +12,8 @@ package com.codenvy.cli.command.builtin.model;
 
 import com.codenvy.cli.command.builtin.MultiEnvCodenvy;
 import com.codenvy.cli.command.builtin.util.SHA1;
+import com.codenvy.cli.command.builtin.util.ascii.AsciiForm;
+import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
 
@@ -33,7 +35,7 @@ import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
  */
 public class DefaultUserProject implements UserProject {
 
-     /**
+    /**
      * Current project
      */
     private Project project;
@@ -115,34 +117,33 @@ public class DefaultUserProject implements UserProject {
     }
 
 
+    protected String bold(String name) {
+        return Ansi.ansi().a(INTENSITY_BOLD).a(name).a(INTENSITY_BOLD_OFF).toString();
+    }
+
 
     public String toString() {
-        Ansi buffer = Ansi.ansi();
-
-        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(shortId()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("WORKSPACE").a(INTENSITY_BOLD_OFF).a(":").a(getWorkspace().name()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("PROJECT").a(INTENSITY_BOLD_OFF).a(":").a(name()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("IDE URL").a(INTENSITY_BOLD_OFF).a(":").a(getInnerProject().ideUrl()).a(System.lineSeparator());
-
-        // all runners
-        buffer.a(INTENSITY_BOLD).a("RUNNERS").a(INTENSITY_BOLD_OFF).a(":");
+        String runnersList = "";
         List<UserRunnerStatus> runners = getWorkspace().getMultiEnvCodenvy().getRunners(this);
         for (UserRunnerStatus runner : runners) {
-            buffer.a(runner.shortId());
-            buffer.a(" ");
+            runnersList = runnersList.concat(runner.shortId()).concat(" ");
         }
-        buffer.a(System.lineSeparator());
 
-        // all builders
-        buffer.a(INTENSITY_BOLD).a("BUILDERS").a(INTENSITY_BOLD_OFF).a(":");
+        String buildersList = "";
         List<UserBuilderStatus> builders = getWorkspace().getMultiEnvCodenvy().getBuilders(this);
-        for (UserBuilderStatus builder: builders) {
-            buffer.a(builder.shortId());
-            buffer.a(" ");
+        for (UserBuilderStatus builder : builders) {
+            buildersList = buildersList.concat(builder.shortId()).concat(" ");
         }
-        buffer.a(System.lineSeparator());
 
-        return buffer.toString();
+        return new DefaultAsciiForm().withEntry(bold("id"), shortId())
+                                     .withEntry(bold("workspace"), getWorkspace().name())
+                                     .withEntry(bold("project"), name())
+                                     .withEntry(bold("ide url"), getInnerProject().ideUrl())
+                                     .withEntry(bold("runners"), runnersList)
+                                     .withEntry(bold("builders"), buildersList)
+                                     .withUppercasePropertyName()
+                                     .toAscii();
+
     }
 
 }

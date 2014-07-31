@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
+import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.client.model.RunnerState;
 import com.codenvy.client.model.RunnerStatus;
 
@@ -86,36 +87,39 @@ public class DefaultUserRunnerStatus implements UserRunnerStatus {
     }
 
 
+    protected String bold(String name) {
+        return Ansi.ansi().a(INTENSITY_BOLD).a(name).a(INTENSITY_BOLD_OFF).toString();
+    }
+
     public String toString() {
 
         RunnerState state = getInnerStatus().status();
 
-        Ansi buffer = Ansi.ansi();
-
-        buffer.a(INTENSITY_BOLD).a("ID").a(INTENSITY_BOLD_OFF).a(":").a(shortId()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("WORKSPACE").a(INTENSITY_BOLD_OFF).a(":").a(getProject().getWorkspace().name()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("PROJECT").a(INTENSITY_BOLD_OFF).a(":").a(getProject().name()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("IDE URL").a(INTENSITY_BOLD_OFF).a(":").a(getProject().getInnerProject().ideUrl()).a(System.lineSeparator());
-        buffer.a(INTENSITY_BOLD).a("STATUS").a(INTENSITY_BOLD_OFF).a(":").a(state).a(System.lineSeparator());
-
-        buffer.a(INTENSITY_BOLD).a("START TIME").a(INTENSITY_BOLD_OFF).a(":");
+        String startTime;
         long start = getInnerStatus().startTime();
         if (start > 0) {
-            buffer.a(new Date(start));
+            startTime = new Date(start).toString();
         } else {
-            buffer.a("N/A");
+            startTime = "N/A";
         }
-        buffer.a(System.lineSeparator());
 
-        buffer.a(INTENSITY_BOLD).a("STOP TIME").a(INTENSITY_BOLD_OFF).a(":");
+        String stopTime;
         long stop = getInnerStatus().stopTime();
         if (stop > 0) {
-            buffer.a(new Date(start));
+            stopTime = new Date(start).toString();
         } else {
-            buffer.a("N/A");
+            stopTime = "N/A";
         }
-        buffer.a(System.lineSeparator());
 
-        return buffer.toString();
+        return new DefaultAsciiForm().withEntry(bold("id"), shortId())
+                                     .withEntry(bold("workspace"), getProject().getWorkspace().name())
+                                     .withEntry(bold("project"), getProject().name())
+                                     .withEntry(bold("ide url"), getProject().getInnerProject().ideUrl())
+                                     .withEntry(bold("status"), state.toString())
+                                     .withEntry(bold("start time"), startTime)
+                                     .withEntry(bold("stop time"), stopTime)
+                                     .withUppercasePropertyName()
+                                     .toAscii();
+
     }
 }
