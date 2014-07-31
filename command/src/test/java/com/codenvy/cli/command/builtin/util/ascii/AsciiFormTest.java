@@ -67,8 +67,6 @@ public class AsciiFormTest {
         AsciiForm asciiForm = new DefaultAsciiForm().withEntry(bold("id"), "value1").withEntry(bold("a very long Id"), "123456789").withEntry(bold("short id"), "abc").withUppercasePropertyName();
         String result = asciiForm.toAscii();
         assertTrue(result.length() > 0);
-
-        System.out.println(asciiForm.toAscii());
         assertEquals(format("\u001B[1mID\u001B[22m:             value1%n" +
                             "\u001B[1mA VERY LONG ID\u001B[22m: 123456789%n" +
                             "\u001B[1mSHORT ID\u001B[22m:       abc%n"), result);
