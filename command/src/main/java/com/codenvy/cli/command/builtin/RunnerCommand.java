@@ -13,11 +13,13 @@ package com.codenvy.cli.command.builtin;
 import com.codenvy.cli.command.builtin.model.DefaultUserRunnerStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
+import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.RunnerStatus;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
+import org.apache.karaf.shell.console.SessionProperties;
 import org.fusesource.jansi.Ansi;
 
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
@@ -68,11 +70,22 @@ public class RunnerCommand extends AbsCommand {
             return null;
         }
 
-
         final Project projectToRun = project.getInnerProject();
 
-        // Ok now we have the project
-        final RunnerStatus runnerStatus = project.getCodenvy().runner().run(projectToRun).execute();
+        // Ok now we have the project, run it
+        final RunnerStatus runnerStatus;
+        try {
+            runnerStatus = project.getCodenvy().runner().run(projectToRun).execute();
+        } catch (CodenvyErrorException e) {
+            Boolean val= (Boolean) session.get(SessionProperties.PRINT_STACK_TRACES);
+            if (val != null && val.booleanValue()) {
+                // let print trace
+                throw e;
+            }
+            // display only the message
+            System.out.println(e.getMessage());
+            return null;
+        }
 
         UserRunnerStatus userRunnerStatus = new DefaultUserRunnerStatus(runnerStatus, project);
 
