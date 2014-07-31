@@ -25,8 +25,8 @@ import java.nio.charset.Charset;
 @Command(scope = "codenvy", name = "login", description = "Login into a remote Codenvy system")
 public class LoginCommand extends AbsCommand {
 
-    @Option(name = "--env", description = "Name of the remote codenvy", required = false)
-    private String envName;
+    @Option(name = "--remote", description = "Name of the remote codenvy", required = false)
+    private String remoteName;
 
     @Argument(name = "username", description = "username of the remote instance", required = false, multiValued = false, index = 0)
     private String username;
@@ -64,11 +64,11 @@ public class LoginCommand extends AbsCommand {
             System.out.println(System.lineSeparator());
         }
 
-        if (getMultiRemoteCodenvy().login(envName, username, password)) {
-            if (envName == null) {
+        if (getMultiRemoteCodenvy().login(remoteName, username, password)) {
+            if (remoteName == null) {
                 System.out.println("Login success on default remote '" + getMultiRemoteCodenvy().getDefaultRemoteName() + "'.");
             } else {
-                System.out.println("Login success on remote '" + envName + "'.");
+                System.out.println("Login success on remote '" + remoteName + "'.");
             }
         } else {
             System.out.println("Login failed: please check the credentials.");
