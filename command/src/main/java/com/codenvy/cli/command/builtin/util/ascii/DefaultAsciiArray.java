@@ -39,9 +39,14 @@ public class DefaultAsciiArray implements AsciiArray {
     private List<String> titles;
 
     /**
+     * Left Mode.
+     */
+
+
+    /**
      * Formatters.
      */
-    private Map<FormatterMode, TableFormatter> formatters;
+    private Map<FormatterMode, AsciiFormatter> formatters;
 
     /**
      * Formatter
@@ -215,7 +220,7 @@ public class DefaultAsciiArray implements AsciiArray {
     /**
      * @return formatter
      */
-    protected TableFormatter getFormatterMode() {
+    protected AsciiFormatter getFormatterMode() {
         return formatters.get(formatterMode);
     }
 

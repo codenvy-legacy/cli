@@ -11,7 +11,9 @@
 package com.codenvy.cli.command.builtin;
 
 import com.codenvy.cli.command.builtin.util.ascii.AsciiArray;
+import com.codenvy.cli.command.builtin.util.ascii.AsciiForm;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiArray;
+import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.cli.command.builtin.util.ascii.FormatterMode;
 import com.codenvy.cli.preferences.Preferences;
 import com.codenvy.cli.preferences.PreferencesAPI;
@@ -173,6 +175,13 @@ public abstract class AbsCommand extends OsgiCommandSupport {
         return new DefaultAsciiArray().withFormatter(getFormatterMode());
     }
 
+    /**
+     * Build a new Ascii array instance with the selected formatter mode
+     * @return a new instance of the ascii array
+     */
+    protected AsciiForm buildAsciiForm() {
+        return new DefaultAsciiForm().withFormatter(getFormatterMode());
+    }
 
     /**
      * Defines the codenvy settings.

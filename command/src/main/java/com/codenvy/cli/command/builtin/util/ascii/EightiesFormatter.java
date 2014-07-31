@@ -16,7 +16,7 @@ import java.util.List;
  * Eighties formatter with +---+ columns
  * @author Florent Benoit
  */
-public class EightiesFormatter implements TableFormatter {
+public class EightiesFormatter implements AsciiFormatter {
 
 
     @Override
@@ -61,4 +61,15 @@ public class EightiesFormatter implements TableFormatter {
         return buffer.toString();
 
     }
+
+    @Override
+    public String formatFormTitle(String name, AsciiFormInfo asciiFormInfo) {
+        return null;
+    }
+
+    @Override
+    public String formatFormValue(String value, AsciiFormInfo asciiFormInfo) {
+        return null;
+    }
+
 }

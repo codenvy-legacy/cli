@@ -10,10 +10,17 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.util.ascii;
 
+import org.fusesource.jansi.Ansi;
+
+import java.nio.charset.Charset;
+import java.util.Locale;
+
+import static com.codenvy.cli.command.builtin.util.ascii.AnsiHelper.removeAnsi;
+
 /**
  * @author Florent Benoit
  */
-public class ModernFormatter implements TableFormatter {
+public class ModernFormatter implements AsciiFormatter {
 
 
     /**
@@ -53,5 +60,38 @@ public class ModernFormatter implements TableFormatter {
         return buffer.toString();
 
     }
+
+    @Override
+    public String formatFormTitle(String name, AsciiFormInfo asciiFormInfo) {
+        // ok we are expecting to have full form rendering :
+        // ENTRY1:........value1
+        // ANOTHER ENTRY:.value2
+
+        String withoutAnsi = removeAnsi(name);
+        String entryName = name.concat(":");
+
+        // format it
+        String line = String.format("%-" + (asciiFormInfo.getTitleColumnSize()) + "s", withoutAnsi);
+
+        // replace value by the the ansi version
+        if (asciiFormInfo.isUppercasePropertyName()) {
+            // replace word by ansi line
+            line = line.replaceAll(withoutAnsi, entryName);
+
+            // replace lowercase by uppercase
+            return line.replaceAll(withoutAnsi, withoutAnsi.toUpperCase(Locale.getDefault()));
+        } else {
+            return line.replaceAll(withoutAnsi, entryName);
+        }
+
+    }
+
+    @Override
+    public String formatFormValue(String value, AsciiFormInfo asciiFormInfo) {
+        // just adding text after adding a space
+
+        return " ".concat(value);
+    }
+
 
 }

@@ -14,7 +14,7 @@ package com.codenvy.cli.command.builtin.util.ascii;
  * CSV Formatter
  * @author Florent Benoit
  */
-public class CSVFormatter implements TableFormatter {
+public class CSVFormatter implements AsciiFormatter {
 
 
     /**
@@ -59,4 +59,15 @@ public class CSVFormatter implements TableFormatter {
         return buffer.toString();
 
     }
+
+    @Override
+    public String formatFormTitle(String name, AsciiFormInfo asciiFormInfo) {
+        return null;
+    }
+
+    @Override
+    public String formatFormValue(String value, AsciiFormInfo asciiFormInfo) {
+        return null;
+    }
+
 }

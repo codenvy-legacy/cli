@@ -13,12 +13,11 @@ package com.codenvy.cli.command.builtin.util.ascii;
 /**
  * @author Florent Benoit
  */
-public interface TableFormatter {
+public interface AsciiFormInfo {
 
-    String getBorderLine(AsciiArrayInfo asciiArrayInfo);
+    int getTitleColumnSize();
+    int getValueColumnSize();
 
-    String getFormatter(AsciiArrayInfo asciiArrayInfo);
-
-    String getTitleFormatter(AsciiArrayInfo asciiArrayInfo);
+    boolean isUppercasePropertyName();
 
 }
