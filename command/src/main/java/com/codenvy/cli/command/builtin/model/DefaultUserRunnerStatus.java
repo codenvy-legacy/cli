@@ -111,10 +111,18 @@ public class DefaultUserRunnerStatus implements UserRunnerStatus {
             stopTime = "N/A";
         }
 
+
+        String access;
+        if (getInnerStatus().getWebLink() != null) {
+            access = getInnerStatus().getWebLink().href();
+        } else {
+            access = "N/A";
+        }
+
         return new DefaultAsciiForm().withEntry(bold("id"), shortId())
                                      .withEntry(bold("workspace"), getProject().getWorkspace().name())
                                      .withEntry(bold("project"), getProject().name())
-                                     .withEntry(bold("ide url"), getProject().getInnerProject().ideUrl())
+                                     .withEntry(bold("run url"), access)
                                      .withEntry(bold("status"), state.toString())
                                      .withEntry(bold("start time"), startTime)
                                      .withEntry(bold("stop time"), stopTime)
