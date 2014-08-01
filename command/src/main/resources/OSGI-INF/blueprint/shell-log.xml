@@ -52,6 +52,9 @@
             <action class="com.codenvy.cli.command.builtin.InfoCommand" />
         </command>
         <command>
+        <command>
+            <action class="com.codenvy.cli.command.builtin.PushCommand" />
+        </command>
             <action class="com.codenvy.cli.command.builtin.LogsCommand">
             </action>
         </command>

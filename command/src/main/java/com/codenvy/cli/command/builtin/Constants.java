@@ -21,6 +21,17 @@ import java.io.File;
 public class Constants {
 
     /**
+     * CLI metadata filename
+     */
+    public static final String METADATA_FILENAME = "cli";
+
+    /**
+     * Codenvy foldername.
+     */
+    public static final String CODENVY_FOLDERNAME = ".codenvy";
+
+
+    /**
      * Path to the configuration file of Codenvy.
      */
     public static final String CODENVY_CONFIG_FILE   =
