@@ -13,6 +13,7 @@ package com.codenvy.cli.command.builtin.model;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.client.model.BuilderState;
 import com.codenvy.client.model.BuilderStatus;
+import com.codenvy.client.model.Link;
 import com.codenvy.client.model.RunnerStatus;
 
 import org.fusesource.jansi.Ansi;
@@ -91,10 +92,26 @@ public class DefaultUserBuilderStatus implements UserBuilderStatus {
     public String toString() {
         BuilderState state = getInnerStatus().status();
 
+        String downloadString = "download result";
+        Link downloadLink = null;
+        for (Link link : getInnerStatus().links()) {
+            if (downloadString.equals(link.rel())) {
+                downloadLink = link;
+                break;
+            }
+        }
+        String artifact;
+        if (downloadLink != null) {
+            artifact = downloadLink.href();
+        } else {
+            artifact = "N/A";
+        }
+
+
         return new DefaultAsciiForm().withEntry(bold("id"), shortId())
                                      .withEntry(bold("workspace"), getProject().getWorkspace().name())
                                      .withEntry(bold("project"), getProject().name())
-                                     .withEntry(bold("ide url"), getProject().getInnerProject().ideUrl())
+                                     .withEntry(bold("artifact"), artifact)
                                      .withEntry(bold("status"), state.toString())
                                      .withUppercasePropertyName()
                                      .toAscii();
