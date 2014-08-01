@@ -52,8 +52,8 @@ public class LoginCommand extends AbsCommand {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(session.getKeyboard(), Charset.defaultCharset()))) {
                 username = reader.readLine();
             }
+            System.out.println(System.lineSeparator());
         }
-        System.out.println(System.lineSeparator());
 
         if (password == null) {
             System.out.print("Password for " + username + ":");
