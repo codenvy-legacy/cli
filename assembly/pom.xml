@@ -140,6 +140,11 @@ cellar       =]]></replacevalue>
                                     <replacetoken><![CDATA[completionMode = GLOBAL]]></replacetoken>
                                     <replacevalue><![CDATA[completionMode = SUBSHELL]]></replacevalue>
                                 </replace>
+                                <!-- Disable the change of the current directory of the codenvy runtime -->
+                                <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/bin/karaf">
+                                    <replacetoken><![CDATA[cd "$KARAF_BASE"]]></replacetoken>
+                                    <replacevalue><![CDATA[]]></replacevalue>
+                                </replace>
                                 <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/bin/shell">
                                     <replacetoken><![CDATA[CLASSPATH="$CLASSPATH:$KARAF_HOME/system/jline/jline/2.11/jline-2.11.jar"]]></replacetoken>
                                     <replacevalue><![CDATA[CLASSPATH="$CLASSPATH:$KARAF_HOME/lib/codenvy-branding.jar"

@@ -1,7 +1,8 @@
 #!/bin/sh
-VERSION=`basename assembly/target/codenvy-cli-*/`
+BASEDIR=$(dirname $0)
+VERSION=`basename $BASEDIR/assembly/target/codenvy-cli-*/`
 
-ASSEMBLY_BIN_DIR=assembly/target/$VERSION/$VERSION/bin
+ASSEMBLY_BIN_DIR=$BASEDIR/assembly/target/$VERSION/$VERSION/bin
 
 if [ ! -d "${ASSEMBLY_BIN_DIR}" ]
 then
@@ -9,5 +10,4 @@ then
   exit 1
 fi
 
-cd $ASSEMBLY_BIN_DIR
-./codenvy $*
+$ASSEMBLY_BIN_DIR/codenvy $*
