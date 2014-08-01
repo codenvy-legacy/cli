@@ -59,7 +59,7 @@ public class HelpCommand extends AbsCommand {
         buffer.a("\n");
         buffer.a("\n");
         buffer.a(getMultiRemoteCodenvy().listRemotes());
-
+        buffer.a("\n");
         buffer.a("To manage remote instances, use the remote command");
 
 
