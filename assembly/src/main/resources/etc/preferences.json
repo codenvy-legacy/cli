@@ -1,7 +1,7 @@
 {
     "config" : { },
     "remotes" : {
-        "codenvy.com" : {
+        "default" : {
             "defaultRemote" : true,
             "url" : "http://ide3.cf.codenvy-stg.com"
         }
