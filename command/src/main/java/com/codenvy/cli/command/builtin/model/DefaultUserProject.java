@@ -122,11 +122,17 @@ public class DefaultUserProject implements UserProject {
         for (UserRunnerStatus runner : runners) {
             runnersList = runnersList.concat(runner.shortId()).concat(" ");
         }
+        if (runners.isEmpty()) {
+            runnersList = "none";
+        }
 
         String buildersList = "";
         List<UserBuilderStatus> builders = getWorkspace().getMultiRemoteCodenvy().getBuilders(this);
         for (UserBuilderStatus builder : builders) {
             buildersList = buildersList.concat(builder.shortId()).concat(" ");
+        }
+        if (builders.isEmpty()) {
+            buildersList = "none";
         }
 
         return new DefaultAsciiForm().withEntry(bold("id"), shortId())

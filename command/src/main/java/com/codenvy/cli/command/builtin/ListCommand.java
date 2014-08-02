@@ -90,7 +90,9 @@ public class ListCommand extends AbsCommand {
                 }
 
                 // runners ?
-                if (i <= runners.size()) {
+                if (runners.isEmpty() && i == 1) {
+                    runnerIDs.add("none");
+                } else if (i <= runners.size()) {
                     // print runner
                     runnerIDs.add(prettyPrint(runners.get(i - 1)));
                 } else {
@@ -98,7 +100,9 @@ public class ListCommand extends AbsCommand {
                 }
 
                 // builders ?
-                if (i <= builders.size()) {
+                if (builders.isEmpty() && i == 1) {
+                    builderIDs.add("none");
+                } else if (i <= builders.size()) {
                     // print builder
                     builderIDs.add(prettyPrint(builders.get(i - 1)));
                 } else {
