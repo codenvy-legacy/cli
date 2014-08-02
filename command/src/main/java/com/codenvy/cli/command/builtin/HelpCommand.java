@@ -12,6 +12,7 @@ package com.codenvy.cli.command.builtin;
 
 
 import org.apache.karaf.shell.commands.Command;
+import org.apache.karaf.shell.console.impl.jline.Branding;
 import org.fusesource.jansi.Ansi;
 
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
@@ -40,6 +41,10 @@ public class HelpCommand extends AbsCommand {
 
         Ansi buffer = Ansi.ansi();
 
+        // add the branding banner
+        buffer.a(Branding.loadBrandingProperties().getProperty("banner"));
+
+        // display commands
         buffer.a(INTENSITY_BOLD).a("COMMANDS").a(INTENSITY_BOLD_OFF).a("\n");
 
         String value = buildAsciiForm().withEntry(color("remote"), "Add or remove remote Codenvy cloud references")
@@ -51,11 +56,12 @@ public class HelpCommand extends AbsCommand {
                                        .withEntry(color("info"), "Display information for a project, runner, or builder")
                                        .withEntry(color("open"), "Starts a browser session to access a project, builder or runner")
                                        .withEntry(color("stop"), "Stop one or more runner processes")
+                                       .withEntry(color("push"), "Push a project")
+                                       .withEntry(color("pull"), "Pull a project")
                                        .alphabeticalSort().toAscii();
-
         buffer.a(value);
 
-        // Remotes
+        // Display Remotes
         buffer.a("\n");
         buffer.a("\n");
         buffer.a(getMultiRemoteCodenvy().listRemotes());
