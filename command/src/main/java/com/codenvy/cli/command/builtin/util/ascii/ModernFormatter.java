@@ -68,7 +68,7 @@ public class ModernFormatter implements AsciiFormatter {
         // ANOTHER ENTRY:.value2
 
         String withoutAnsi = removeAnsi(name);
-        String entryName = name.concat(":");
+        String entryName = name;//.concat(":");
 
         // format it
         String line = String.format("%-" + (asciiFormInfo.getTitleColumnSize()) + "s", withoutAnsi);
