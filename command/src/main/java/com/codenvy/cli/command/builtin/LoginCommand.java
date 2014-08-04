@@ -10,6 +10,8 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
+import jline.console.ConsoleReader;
+
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
@@ -49,21 +51,29 @@ public class LoginCommand extends AbsCommand {
 
         // no username and no password, needs to prompt
         if (username == null) {
-            System.out.print("Username:");
-            System.out.flush();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(session.getKeyboard(), Charset.defaultCharset()))) {
-                username = reader.readLine();
+            if (isInteractive()) {
+                System.out.print("Username:");
+                System.out.flush();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(session.getKeyboard(), Charset.defaultCharset()))) {
+                    username = reader.readLine();
+                }
+                System.out.println(System.lineSeparator());
+            } else {
+                username = new ConsoleReader().readLine("Username:");
             }
-            System.out.println(System.lineSeparator());
         }
 
         if (password == null) {
-            System.out.print("Password for " + username + ":");
-            System.out.flush();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(session.getKeyboard(), Charset.defaultCharset()))) {
-                password = reader.readLine();
+            if (isInteractive()) {
+                System.out.print("Password for " + username + ":");
+                System.out.flush();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(session.getKeyboard(), Charset.defaultCharset()))) {
+                    password = reader.readLine();
+                }
+                System.out.println(System.lineSeparator());
+            } else {
+                password = new ConsoleReader().readLine(String.format("Password for %s:", username), Character.valueOf('*'));
             }
-            System.out.println(System.lineSeparator());
         }
 
         if (getMultiRemoteCodenvy().login(remoteName, username, password)) {

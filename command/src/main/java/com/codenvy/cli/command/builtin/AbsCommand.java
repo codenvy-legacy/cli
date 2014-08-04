@@ -23,6 +23,7 @@ import com.codenvy.client.CodenvyClient;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.apache.karaf.shell.console.SessionProperties;
 import org.fusesource.jansi.Ansi;
+import org.osgi.framework.FrameworkUtil;
 
 import javax.annotation.PostConstruct;
 import java.awt.*;
@@ -256,5 +257,13 @@ public abstract class AbsCommand extends OsgiCommandSupport {
             System.out.println(buffer.toString());
             return;
         }
+    }
+
+
+    /**
+     * @return true if the command is used in interactive mode, else false.
+     */
+    protected boolean isInteractive() {
+        return FrameworkUtil.getBundle(AbsCommand.class) != null;
     }
 }
