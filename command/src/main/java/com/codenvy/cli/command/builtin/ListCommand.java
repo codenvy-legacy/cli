@@ -47,9 +47,13 @@ public class ListCommand extends AbsCommand {
 
         Ansi buffer = Ansi.ansi();
 
-        new ConsoleReader().resetPromptLine("Retrieving projects...", "", 0);
+        if (isProgressEnabled()) {
+            new ConsoleReader().resetPromptLine("Retrieving projects...", "", 0);
+        }
         List<UserProject> projects = getMultiRemoteCodenvy().getProjects();
-        new ConsoleReader().resetPromptLine("", "", 0);
+        if (isProgressEnabled()) {
+            new ConsoleReader().resetPromptLine("", "", 0);
+        }
         if (projects.isEmpty()) {
             buffer.a("No projects");
             System.out.println(buffer.toString());
@@ -70,9 +74,11 @@ public class ListCommand extends AbsCommand {
         for (UserProject project : projects) {
 
             // get all runners and builders for this project
-            count++;
-            String percent = (count * 100) / projects.size() + "/100";
-            new ConsoleReader().resetPromptLine("Collecting projects data...", percent, percent.length());
+            if (isProgressEnabled()) {
+                count++;
+                String percent = (count * 100) / projects.size() + "/100";
+                new ConsoleReader().resetPromptLine("Collecting projects data...", percent, percent.length());
+            }
             List<UserRunnerStatus> runners = getMultiRemoteCodenvy().getRunners(project);
             List<UserBuilderStatus> builders = getMultiRemoteCodenvy().getBuilders(project);
 
@@ -127,7 +133,9 @@ public class ListCommand extends AbsCommand {
             }
 
         }
-        new ConsoleReader().resetPromptLine("", "", 0);
+        if (isProgressEnabled()) {
+            new ConsoleReader().resetPromptLine("", "", 0);
+        }
         // Ascii array
         AsciiArray asciiArray = buildAsciiArray().withColumns(ids, remotes, workspaces, projectNames, types, privacies, builderIDs, runnerIDs).withTitle("ID", "Remote", "Workspace", "Project", "Type", "Privacy", "Builders", "Runners");
         System.out.println(asciiArray.toAscii());

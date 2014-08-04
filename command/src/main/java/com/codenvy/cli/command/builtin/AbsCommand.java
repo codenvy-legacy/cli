@@ -82,6 +82,9 @@ public abstract class AbsCommand extends OsgiCommandSupport {
             multiRemoteCodenvy = new MultiRemoteCodenvy(getCodenvyClient(), globalPreferences);
             session.put(MultiRemoteCodenvy.class.getName(), multiRemoteCodenvy);
         }
+
+        session.put("PROGRESS_MONITOR", Boolean.TRUE);
+
     }
 
     /**
@@ -201,6 +204,14 @@ public abstract class AbsCommand extends OsgiCommandSupport {
 
     protected boolean isStackTraceEnabled() {
         Boolean val= (Boolean) session.get(SessionProperties.PRINT_STACK_TRACES);
+        if (val != null && val.booleanValue()) {
+            return true;
+        }
+        return false;
+    }
+
+    protected boolean isProgressEnabled() {
+        Boolean val= (Boolean) session.get("PROGRESS_MONITOR");
         if (val != null && val.booleanValue()) {
             return true;
         }
