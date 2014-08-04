@@ -21,18 +21,24 @@ import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyClient;
 
 import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.console.SessionProperties;
+import org.fusesource.jansi.Ansi;
 
 import javax.annotation.PostConstruct;
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
 import static com.codenvy.cli.command.builtin.Constants.CODENVY_CONFIG_FILE;
 import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.MODERN;
+import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
  * Abstract command which should be extended by all Codenvy commands.
@@ -193,4 +199,51 @@ public abstract class AbsCommand extends OsgiCommandSupport {
 
 
 
+    protected boolean isStackTraceEnabled() {
+        Boolean val= (Boolean) session.get(SessionProperties.PRINT_STACK_TRACES);
+        if (val != null && val.booleanValue()) {
+            return true;
+        }
+        return false;
+    }
+
+
+    protected void openURL(String url) {
+        if (!Desktop.getDesktop().isDesktopSupported()) {
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a("Unable to open the URL of the project '").a(url).a("' as this system is not supported.");
+            buffer.reset();
+            System.out.println(buffer.toString());
+            return;
+        }
+
+        // open the default web browser for the HTML page
+        URI uri;
+        try {
+            uri = new URI(url);
+        } catch (URISyntaxException e) {
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a("Invalid URL of the project found: '").a(url).a("'.");
+            buffer.reset();
+            System.out.println(buffer.toString());
+            return;
+        }
+
+
+        try {
+            Desktop.getDesktop().browse(uri);
+            Ansi buffer = Ansi.ansi();
+            buffer.a("URL '").a(url).a("' has been opened in the web browser");
+            System.out.println(buffer.toString());
+        } catch (IOException e) {
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a("Unable to open URL '").a(url).a("'.");
+            buffer.reset();
+            System.out.println(buffer.toString());
+            return;
+        }
+    }
 }

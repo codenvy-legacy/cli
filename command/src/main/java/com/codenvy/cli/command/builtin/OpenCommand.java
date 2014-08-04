@@ -22,11 +22,9 @@ import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
 
 import java.awt.*;
-import java.awt.List;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
 
 import static com.codenvy.cli.command.builtin.MultiRemoteCodenvy.checkOnlyOne;
 import static org.fusesource.jansi.Ansi.Color.RED;
@@ -67,11 +65,11 @@ public class OpenCommand extends AbsCommand {
 
         // processId is beginning with a r --> runner ID
         if (id.startsWith("r")) {
-            displayRunner();
+            openRunner();
         } else if (id.startsWith("b")) {
-            displayBuilder();
+            openBuilder();
         } else if (id.startsWith("p")) {
-            displayProject();
+            openProject();
         } else {
             // invalid id
             Ansi buffer = Ansi.ansi();
@@ -86,7 +84,7 @@ public class OpenCommand extends AbsCommand {
 
 
 
-    protected void displayProject() {
+    protected void openProject() {
         UserProject project = getMultiRemoteCodenvy().getProject(id);
         if (project == null) {
             Ansi buffer = Ansi.ansi();
@@ -101,7 +99,7 @@ public class OpenCommand extends AbsCommand {
         openURL(ideURL);
     }
 
-    protected void displayRunner() {
+    protected void openRunner() {
         java.util.List<UserRunnerStatus> matchingStatuses = getMultiRemoteCodenvy().findRunners(id);
         UserRunnerStatus foundStatus = checkOnlyOne(matchingStatuses, id, "runner", "runners");
 
@@ -125,7 +123,7 @@ public class OpenCommand extends AbsCommand {
 
     }
 
-    protected void displayBuilder() {
+    protected void openBuilder() {
         java.util.List<UserBuilderStatus> matchingStatuses = getMultiRemoteCodenvy().findBuilders(id);
         UserBuilderStatus foundStatus = checkOnlyOne(matchingStatuses, id, "builder", "builders");
 
@@ -151,44 +149,6 @@ public class OpenCommand extends AbsCommand {
     }
 
 
-    protected void openURL(String url) {
-        if (!Desktop.getDesktop().isDesktopSupported()) {
-            Ansi buffer = Ansi.ansi();
-            buffer.fg(RED);
-            buffer.a("Unable to open the URL of the project '").a(url).a("' as this system is not supported.");
-            buffer.reset();
-            System.out.println(buffer.toString());
-            return;
-        }
-
-        // open the default web browser for the HTML page
-        URI uri;
-        try {
-            uri = new URI(url);
-        } catch (URISyntaxException e) {
-            Ansi buffer = Ansi.ansi();
-            buffer.fg(RED);
-            buffer.a("Invalid URL of the project found: '").a(url).a("'.");
-            buffer.reset();
-            System.out.println(buffer.toString());
-            return;
-        }
-
-
-        try {
-            Desktop.getDesktop().browse(uri);
-            Ansi buffer = Ansi.ansi();
-            buffer.a("URL '").a(url).a("' has been opened in the web browser");
-            System.out.println(buffer.toString());
-        } catch (IOException e) {
-            Ansi buffer = Ansi.ansi();
-            buffer.fg(RED);
-            buffer.a("Unable to open URL '").a(url).a("'.");
-            buffer.reset();
-            System.out.println(buffer.toString());
-            return;
-        }
-    }
 
 
 }

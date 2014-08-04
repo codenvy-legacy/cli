@@ -17,12 +17,14 @@ import com.codenvy.cli.command.builtin.model.DefaultUserWorkspace;
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
+import com.codenvy.cli.command.builtin.model.UserWorkspace;
 import com.codenvy.cli.preferences.Preferences;
 import com.codenvy.cli.security.RemoteCredentials;
 import com.codenvy.cli.security.PreferencesDataStore;
 import com.codenvy.cli.security.TokenRetrieverDatastore;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyClient;
+import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.CodenvyException;
 import com.codenvy.client.Request;
 import com.codenvy.client.WorkspaceClient;
@@ -35,6 +37,9 @@ import com.codenvy.client.model.RunnerStatus;
 import com.codenvy.client.model.Workspace;
 import com.codenvy.client.model.WorkspaceReference;
 
+import org.apache.felix.service.command.CommandSession;
+import org.apache.karaf.shell.console.CommandSessionHolder;
+import org.apache.karaf.shell.console.SessionProperties;
 import org.fusesource.jansi.Ansi;
 
 import java.util.ArrayList;
@@ -46,6 +51,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import static com.codenvy.cli.command.builtin.Constants.DEFAULT_CREATE_PROJECT_TYPE;
+import static java.lang.String.format;
+import static org.apache.karaf.shell.console.SessionProperties.PRINT_STACK_TRACES;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
 import static org.fusesource.jansi.Ansi.Color.RED;
@@ -124,6 +132,59 @@ public class MultiRemoteCodenvy {
         return projects;
     }
 
+    /**
+     * Find the workspace with the specified name
+     *
+     * @param name
+     *         the workspace name
+     * @param remote
+     *         the remote name
+     * @param codenvy
+     *         the codenvy object used to retrieve the data
+     * @return the list of workspaces
+     */
+    protected UserWorkspace getWorkspaceWithName(String name, String remote, Codenvy codenvy) {
+        WorkspaceClient workspaceClient = codenvy.workspace();
+        Request<? extends WorkspaceReference> request = workspaceClient.withName(name);
+        WorkspaceReference workspaceReference = request.execute();
+
+        if (workspaceReference.isTemporary()) {
+            return null;
+        }
+
+        return new DefaultUserWorkspace(remote, this, codenvy, workspaceReference);
+    }
+
+    /**
+     * Gets list of all workspaces for the current user
+     *
+     * @param remote
+     *         the remote name
+     * @param codenvy
+     *         the codenvy object used to retrieve the data
+     * @return the list of workspaces
+     */
+    protected List<UserWorkspace> getWorkspaces(String remote, Codenvy codenvy) {
+        List<UserWorkspace> workspaces = new ArrayList<>();
+
+        // get all workspaces
+
+        WorkspaceClient workspaceClient = codenvy.workspace();
+        Request<List<? extends Workspace>> request = workspaceClient.all();
+        List<? extends Workspace> readWorkspaces = request.execute();
+
+        for (Workspace workspace : readWorkspaces) {
+            WorkspaceReference ref = workspace.workspaceReference();
+            // Now skip all temporary workspaces
+            if (ref.isTemporary()) {
+                continue;
+            }
+
+            workspaces.add(new DefaultUserWorkspace(remote, this, codenvy, ref));
+
+        }
+        return workspaces;
+    }
 
     /**
      * Gets list of all projects for the current user
@@ -507,6 +568,99 @@ public class MultiRemoteCodenvy {
         System.out.println(buffer.toString());
     }
 
+
+    protected UserProject createProject(String name, String workspaceName, String remoteName, String projectType) {
+
+        // Remote ?
+        if (remoteName == null) {
+            remoteName = getDefaultRemoteName();
+        }
+
+        // try to connect to the remote
+        if (getRemote(remoteName) == null) {
+            System.out.println(format("The remote named %s doesn't exists", remoteName));
+            return null;
+        }
+
+        // check if remote is ready
+        Codenvy remoteCodenvy = readyRemotes.get(remoteName);
+        if (remoteCodenvy == null) {
+            System.out.println(format("The remote named %s is not yet available. Need to login first", remoteName));
+            return null;
+        }
+
+        UserWorkspace userWorkspace;
+
+        if (workspaceName == null) {
+            List<UserWorkspace> workspaces = getWorkspaces(remoteName, remoteCodenvy);
+            if (workspaces.size() > 1) {
+                System.out.println(format("Too many workspaces in the remote %s. Please specify the name of the workspace", remoteName));
+                return null;
+            } else if (workspaces.size() == 0) {
+                System.out.println("No workspace found in the remote %s. Please specify another remote or create a workspace first");
+                return null;
+            }
+            userWorkspace = workspaces.get(0);
+        } else {
+            // needs to find the workspace
+            userWorkspace = getWorkspaceWithName(workspaceName, remoteName, remoteCodenvy);
+            if (userWorkspace == null) {
+                System.out.println(format("The workspace with name %s has not been found in the remote %s", workspaceName, remoteName));
+                return null;
+            }
+        }
+
+        if (projectType == null) {
+            projectType = DEFAULT_CREATE_PROJECT_TYPE;
+        }
+
+
+        // OK, now we have everything, we can create the project
+        Project projectToCreate = codenvyClient.newProjectBuilder().withName(name).withWorkspaceId(userWorkspace.id()).withWorkspaceName(
+                workspaceName).withProjectTypeId(projectType).withDescription(name).build();
+
+        try {
+            remoteCodenvy.project().create(projectToCreate).execute();
+        } catch (CodenvyErrorException e) {
+            if (isStackTraceEnabled()) {
+                throw e;
+            }
+            System.out.println("Unable to create the project:" + e.getMessage());
+            return null;
+        }
+
+        List<? extends Project> projects = remoteCodenvy.project().getWorkspaceProjects(userWorkspace.id()).execute();
+        Project newProject = null;
+        for (Project project : projects) {
+            if (name.equals(project.name())) {
+                newProject = project;
+                break;
+            }
+        }
+
+        if (newProject == null) {
+            return null;
+        }
+
+        UserProject builtUserProject = new DefaultUserProject(remoteCodenvy, newProject, userWorkspace);
+
+        System.out.println(builtUserProject);
+
+        return builtUserProject;
+
+    }
+
+    protected boolean isStackTraceEnabled() {
+        // gets the current session
+        CommandSession commandSession = CommandSessionHolder.getSession();
+        if (commandSession != null) {
+            Boolean val = (Boolean)commandSession.get(PRINT_STACK_TRACES);
+            if (val != null && val.booleanValue()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
 }
