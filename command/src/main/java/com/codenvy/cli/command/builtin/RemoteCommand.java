@@ -74,7 +74,7 @@ public class RemoteCommand extends AbsCommand {
         Ansi buffer = Ansi.ansi();
         // OK, so we need to have name, URL
         if (!ok(name) || !ok(url)) {
-            buffer.a("Invalid add command: should be env add <env-name> <URL>");
+            buffer.a("Invalid add command: should be remote add <env-name> <URL>");
             System.out.println(buffer.toString());
             return;
         }
