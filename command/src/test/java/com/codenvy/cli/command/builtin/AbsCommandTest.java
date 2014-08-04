@@ -299,6 +299,8 @@ public abstract class AbsCommandTest {
     protected Project addProject(String workspaceName, String projectName) {
         Project project = mock(Project.class);
         doReturn(projectName).when(project).name();
+        doReturn(String.valueOf(true)).when(project).visibility();
+        doReturn("java").when(project).projectTypeId();
 
         getProjects(workspaceName).add(project);
 

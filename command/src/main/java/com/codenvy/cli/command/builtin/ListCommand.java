@@ -57,6 +57,8 @@ public class ListCommand extends AbsCommand {
         List<String> projectNames = new ArrayList<>();
         List<String> runnerIDs = new ArrayList<>();
         List<String> builderIDs = new ArrayList<>();
+        List<String> types = new ArrayList<>();
+        List<String> privacies = new ArrayList<>();
 
         for (UserProject project : projects) {
 
@@ -81,12 +83,16 @@ public class ListCommand extends AbsCommand {
                     remotes.add(project.getWorkspace().getRemote());
                     workspaces.add(project.getWorkspace().name());
                     projectNames.add(project.name());
+                    types.add(project.getInnerProject().projectTypeId());
+                    privacies.add(project.getInnerProject().visibility());
                 } else {
                     // blank data
                     ids.add("");
                     remotes.add("");
                     workspaces.add("");
                     projectNames.add("");
+                    types.add("");
+                    privacies.add("");
                 }
 
                 // runners ?
@@ -113,7 +119,7 @@ public class ListCommand extends AbsCommand {
         }
 
         // Ascii array
-        AsciiArray asciiArray = buildAsciiArray().withColumns(ids, remotes, workspaces, projectNames, builderIDs, runnerIDs).withTitle("ID", "Remote", "Workspace", "Project", "Builders", "Runners");
+        AsciiArray asciiArray = buildAsciiArray().withColumns(ids, remotes, workspaces, projectNames, types, privacies, builderIDs, runnerIDs).withTitle("ID", "Remote", "Workspace", "Project", "Type", "Privacy", "Builders", "Runners");
         System.out.println(asciiArray.toAscii());
 
         return null;
