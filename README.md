@@ -8,8 +8,12 @@
                                                      __/ |
                                                     |___/
 ```
+
 Codenvy command line interface V2
 =================================
+
+
+![CLI](http://codenvy.github.io/cli/img/cli.gif)
 
 
 # Quick Start for the developer
