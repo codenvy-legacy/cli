@@ -12,7 +12,10 @@
 Bundle-Activator com.codenvy.cli.command.builtin.activator.CodenvyActivator
 Export-Package com.codenvy.cli.command.builtin*;version=${project.version}
 
+# org.apache.karaf.shell.console.impl.jline (only used in non interactive mode)
+
 Import-Package !com.codenvy.cli.command.builtin*, \
+               !org.apache.karaf.shell.console.impl.jline, \
                             org.apache.aries.blueprint, \
                             org.osgi.service.blueprint.container, \
                             org.osgi.service.blueprint.reflect, \
