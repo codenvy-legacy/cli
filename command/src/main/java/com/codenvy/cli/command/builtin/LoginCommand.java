@@ -18,6 +18,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
+import static java.lang.String.format;
+
 /**
  * Allow to login in the default remote or a given remote
  * @author Florent Benoit
@@ -66,9 +68,10 @@ public class LoginCommand extends AbsCommand {
 
         if (getMultiRemoteCodenvy().login(remoteName, username, password)) {
             if (remoteName == null) {
-                System.out.println("Login success on default remote '" + getMultiRemoteCodenvy().getDefaultRemoteName() + "'.");
+                System.out.println(format("Login success on default remote '%s' [%s]", getMultiRemoteCodenvy().getDefaultRemoteName(),
+                                          getMultiRemoteCodenvy().getDefaultRemote().getUrl()));
             } else {
-                System.out.println("Login success on remote '" + remoteName + "'.");
+                System.out.println(format("Login success on remote '%s' [%s]", remoteName, getMultiRemoteCodenvy().getRemote(remoteName).getUrl()));
             }
         } else {
             System.out.println("Login failed: please check the credentials.");
