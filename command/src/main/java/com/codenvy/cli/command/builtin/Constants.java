@@ -34,24 +34,30 @@ public class Constants {
     /**
      * Path to the configuration file of Codenvy.
      */
-    public static final String CODENVY_CONFIG_FILE   =
-                                                       System.getProperty("karaf.home") + File.separatorChar + "etc" + File.separatorChar
-                                                           + "codenvy.cfg";
+    public static final String CODENVY_CONFIG_FILE =
+            System.getProperty("karaf.home") + File.separatorChar + "etc" + File.separatorChar
+            + "codenvy.cfg";
 
     /**
      * Path to the configuration file of Codenvy.
      */
     public static final String PREFERENCES_STORE_FILE =
-                                                       System.getProperty("karaf.home") + File.separatorChar + "etc" + File.separatorChar
-                                                           + "preferences.json";
+            System.getProperty("karaf.home") + File.separatorChar + "etc" + File.separatorChar
+            + "preferences.json";
 
     /**
      * Define the <b>host</b> property which is defined in the codenvy configuration file.
      */
-    public static final String HOST_PROPERTY         = "host";
+    public static final String HOST_PROPERTY = "host";
 
     /**
      * Define the <b>username</b> property which is defined in the codenvy configuration file.
      */
-    public static final String USERNAME_PROPERTY     = "username";
+    public static final String USERNAME_PROPERTY = "username";
+
+
+    /**
+     * Default project type for creating projects.
+     */
+    public static final String DEFAULT_CREATE_PROJECT_TYPE = "maven";
 }
