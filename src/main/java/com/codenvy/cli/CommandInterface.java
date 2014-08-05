@@ -17,7 +17,7 @@
  */
 package com.codenvy.cli;
 
-interface CommandInterface {
+public interface CommandInterface {
 	boolean getHelp();
 	boolean hasSubCommands();
 	boolean hasMandatoryParameters();
