@@ -77,14 +77,22 @@
                             <goal>copy</goal>
                         </goals>
                         <configuration>
-                            <!-- The branding jar -->
                             <artifactItems>
+                                <!-- The branding jar -->
                                 <artifactItem>
                                     <groupId>com.codenvy.cli</groupId>
                                     <artifactId>cli-shell-branding</artifactId>
                                     <version>${project.version}</version>
                                     <outputDirectory>target/dependencies</outputDirectory>
                                     <destFileName>codenvy-branding.jar</destFileName>
+                                </artifactItem>
+                                <!-- The main jar -->
+                                <artifactItem>
+                                    <groupId>com.codenvy.cli</groupId>
+                                    <artifactId>cli-shell-main</artifactId>
+                                    <version>${project.version}</version>
+                                    <outputDirectory>target/dependencies</outputDirectory>
+                                    <destFileName>codenvy-main.jar</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -148,6 +156,7 @@ cellar       =]]></replacevalue>
                                 <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/bin/shell">
                                     <replacetoken><![CDATA[CLASSPATH="$CLASSPATH:$KARAF_HOME/system/jline/jline/2.11/jline-2.11.jar"]]></replacetoken>
                                     <replacevalue><![CDATA[CLASSPATH="$CLASSPATH:$KARAF_HOME/lib/codenvy-branding.jar"
+CLASSPATH="$CLASSPATH:$KARAF_HOME/lib/codenvy-main.jar"
 CLASSPATH="$CLASSPATH:$KARAF_HOME/lib/karaf-org.osgi.core.jar"
 CLASSPATH="$CLASSPATH:$KARAF_HOME/system/com/codenvy/cli/cli-command/${project.version}/cli-command-${project.version}.jar"
 CLASSPATH="$CLASSPATH:$KARAF_HOME/system/com/codenvy/cli/cli-preferences-impl/${project.version}/cli-preferences-impl-${project.version}.jar"
@@ -157,6 +166,7 @@ CLASSPATH="$CLASSPATH:$KARAF_HOME/system/jline/jline/2.11/jline-2.11.jar"]]></re
                                 <replace file="target/classes/bin/windows/codenvy.bat">
                                     <replacetoken><![CDATA[set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\jline\jline\2.11\jline-2.11.jar]]></replacetoken>
                                     <replacevalue><![CDATA[set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\lib\codenvy-branding.jar
+set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\lib\codenvy-main.jar
 set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\lib\karaf-org.osgi.core.jar
 set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\com\codenvy\cli\cli-command\${project.version}\cli-command-${project.version}.jar
 set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\com\codenvy\cli\cli-preferences-impl\${project.version}\cli-preferences-impl-${project.version}.jar
