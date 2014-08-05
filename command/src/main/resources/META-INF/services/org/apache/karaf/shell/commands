@@ -22,3 +22,4 @@ com.codenvy.cli.command.builtin.StopCommand
 com.codenvy.cli.command.builtin.PullCommand
 com.codenvy.cli.command.builtin.PushCommand
 com.codenvy.cli.command.builtin.CreateProjectCommand
+com.codenvy.cli.command.builtin.DestroyCommand

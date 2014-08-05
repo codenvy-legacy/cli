@@ -64,6 +64,13 @@
             <action class="com.codenvy.cli.command.builtin.ExitCommand" />
         </command>
         <command>
+            <action class="com.codenvy.cli.command.builtin.DestroyCommand" />
+            <completers>
+                <ref component-id="projectIDCompleter"/>
+                <null/>
+            </completers>
+        </command>
+        <command>
             <action class="com.codenvy.cli.command.builtin.LogsCommand">
             </action>
         </command>
