@@ -138,6 +138,7 @@ public class DefaultUserProject implements UserProject {
         return new DefaultAsciiForm().withEntry(bold("id"), shortId())
                                      .withEntry(bold("workspace"), getWorkspace().name())
                                      .withEntry(bold("project"), name())
+                                     .withEntry(bold("visibility"), getInnerProject().visibility())
                                      .withEntry(bold("ide url"), getInnerProject().ideUrl())
                                      .withEntry(bold("runners"), runnersList)
                                      .withEntry(bold("builders"), buildersList)

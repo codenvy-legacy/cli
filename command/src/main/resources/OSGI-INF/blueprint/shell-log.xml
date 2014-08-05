@@ -71,6 +71,13 @@
             </completers>
         </command>
         <command>
+            <action class="com.codenvy.cli.command.builtin.PrivacyCommand" />
+            <completers>
+                <ref component-id="projectIDCompleter"/>
+                <null/>
+            </completers>
+        </command>
+        <command>
             <action class="com.codenvy.cli.command.builtin.LogsCommand">
             </action>
         </command>
