@@ -281,18 +281,11 @@ public class MultiRemoteCodenvy {
         buffer.reset();
 
         Map<String, Remote> envs = getAvailableRemotes();
-        if (envs.size() == 1) {
-            buffer.a("There is ").a(envs.size()).a(" Codenvy remote:");
-        } else if (envs.size() > 1) {
-            buffer.a("There are ").a(envs.size()).a(" Codenvy remotes:");
-        } else {
-            buffer.a("There is no Codenvy remote.");
-        }
         buffer.a(System.lineSeparator());
         Iterator<Map.Entry<String, Remote>> it = envs.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, Remote> entry = it.next();
-            buffer.a(entry.getKey()).a("  [").a(entry.getValue().getUrl()).a("]");
+            buffer.a("  ").a(entry.getKey()).a("  [").a(entry.getValue().getUrl()).a("]");
             if (entry.getValue().isDefaultRemote()) {
                 buffer.a("*");
             }

@@ -57,6 +57,8 @@ public class HelpCommand extends AbsCommand {
                                        .withEntry(color("open"), "Starts a browser session to access a project, builder or runner")
                                        .withEntry(color("stop"), "Stop one or more runner processes")
                                        .withEntry(color("create-project"), "Create a project")
+                                       .withEntry(color("privacy"), "Change privacy for a project")
+                                       .withEntry(color("destroy"), "Destroy a project")
                                        .withEntry(color("push"), "Push a project")
                                        .withEntry(color("pull"), "Pull a project")
                                        .alphabeticalSort().toAscii();
@@ -67,7 +69,7 @@ public class HelpCommand extends AbsCommand {
         buffer.a("\n");
         buffer.a(getMultiRemoteCodenvy().listRemotes());
         buffer.a("\n");
-        buffer.a("To manage remote instances, use the remote command");
+        buffer.a("To add a new remote, use 'remote add <remote-name> <URL>'");
 
 
         System.out.println(buffer.toString());
