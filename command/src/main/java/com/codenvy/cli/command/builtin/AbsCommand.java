@@ -80,7 +80,7 @@ public abstract class AbsCommand extends OsgiCommandSupport {
         this.multiRemoteCodenvy = (MultiRemoteCodenvy)session.get(MultiRemoteCodenvy.class.getName());
         if (multiRemoteCodenvy == null) {
             // build a new one
-            multiRemoteCodenvy = new MultiRemoteCodenvy(getCodenvyClient(), globalPreferences);
+            multiRemoteCodenvy = new MultiRemoteCodenvy(getCodenvyClient(), globalPreferences, session);
             session.put(MultiRemoteCodenvy.class.getName(), multiRemoteCodenvy);
         }
 

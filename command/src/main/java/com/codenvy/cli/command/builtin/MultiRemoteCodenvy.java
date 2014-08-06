@@ -18,9 +18,14 @@ import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.cli.command.builtin.model.UserWorkspace;
+import com.codenvy.cli.command.builtin.util.ascii.AsciiArray;
+import com.codenvy.cli.command.builtin.util.ascii.AsciiForm;
+import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiArray;
+import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
+import com.codenvy.cli.command.builtin.util.ascii.FormatterMode;
 import com.codenvy.cli.preferences.Preferences;
-import com.codenvy.cli.security.RemoteCredentials;
 import com.codenvy.cli.security.PreferencesDataStore;
+import com.codenvy.cli.security.RemoteCredentials;
 import com.codenvy.cli.security.TokenRetrieverDatastore;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyClient;
@@ -39,7 +44,6 @@ import com.codenvy.client.model.WorkspaceReference;
 
 import org.apache.felix.service.command.CommandSession;
 import org.apache.karaf.shell.console.CommandSessionHolder;
-import org.apache.karaf.shell.console.SessionProperties;
 import org.fusesource.jansi.Ansi;
 
 import java.util.ArrayList;
@@ -52,6 +56,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import static com.codenvy.cli.command.builtin.Constants.DEFAULT_CREATE_PROJECT_TYPE;
+import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.MODERN;
 import static java.lang.String.format;
 import static org.apache.karaf.shell.console.SessionProperties.PRINT_STACK_TRACES;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
@@ -65,14 +70,17 @@ public class MultiRemoteCodenvy {
 
     private CodenvyClient codenvyClient;
 
+    private CommandSession session;
+
     private ConcurrentMap<String, Codenvy> readyRemotes;
     private ConcurrentMap<String, Remote>  availableRemotes;
 
     private Preferences globalPreferences;
 
-    public MultiRemoteCodenvy(CodenvyClient codenvyClient, Preferences globalPreferences) {
+    public MultiRemoteCodenvy(CodenvyClient codenvyClient, Preferences globalPreferences, CommandSession session) {
         this.codenvyClient = codenvyClient;
         this.globalPreferences = globalPreferences;
+        this.session = session;
         this.readyRemotes = new ConcurrentHashMap<>();
         this.availableRemotes = new ConcurrentHashMap<>();
         init();
@@ -281,16 +289,21 @@ public class MultiRemoteCodenvy {
         buffer.reset();
 
         Map<String, Remote> envs = getAvailableRemotes();
-        buffer.a(System.lineSeparator());
+
+        AsciiForm asciiForm = buildAsciiForm();
+
         Iterator<Map.Entry<String, Remote>> it = envs.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, Remote> entry = it.next();
-            buffer.a("  ").a(entry.getKey()).a("  [").a(entry.getValue().getUrl()).a("]");
+            String isDefault = "";
             if (entry.getValue().isDefaultRemote()) {
-                buffer.a("*");
+                isDefault = "*";
             }
-            buffer.a(System.lineSeparator());
+            asciiForm.withEntry("  ".concat(entry.getKey().concat(isDefault)), "[".concat(entry.getValue().getUrl().concat("]")));
         }
+
+        buffer.a(asciiForm.toAscii());
+
         return buffer.toString();
     }
 
@@ -653,6 +666,34 @@ public class MultiRemoteCodenvy {
             }
         }
         return false;
+    }
+
+
+    /**
+     * @return the current formatter mode used at runtime
+     */
+    protected FormatterMode getFormatterMode() {
+        FormatterMode formatterMode = (FormatterMode) session.get(FormatterMode.class.getName());
+        if (formatterMode == null) {
+            formatterMode = MODERN;
+        }
+        return formatterMode;
+    }
+
+    /**
+     * Build a new Ascii array instance with the selected formatter mode
+     * @return a new instance of the ascii array
+     */
+    protected AsciiArray buildAsciiArray() {
+        return new DefaultAsciiArray().withFormatter(getFormatterMode());
+    }
+
+    /**
+     * Build a new Ascii array instance with the selected formatter mode
+     * @return a new instance of the ascii array
+     */
+    protected AsciiForm buildAsciiForm() {
+        return new DefaultAsciiForm().withFormatter(getFormatterMode());
     }
 
 

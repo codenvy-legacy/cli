@@ -200,7 +200,7 @@ public abstract class AbsCommandTest {
 
         doReturn(codenvy).when(commandSession).get(Codenvy.class.getName());
 
-        this.multiRemoteCodenvy = Mockito.spy(new MultiRemoteCodenvy(codenvyClient, globalPreferences));
+        this.multiRemoteCodenvy = Mockito.spy(new MultiRemoteCodenvy(codenvyClient, globalPreferences, commandSession));
 
     }
 
