@@ -76,12 +76,12 @@ public class ModernFormatter implements AsciiFormatter {
         // replace value by the the ansi version
         if (asciiFormInfo.isUppercasePropertyName()) {
             // replace word by ansi line
-            line = line.replaceAll(withoutAnsi, entryName);
+            line = line.replace(withoutAnsi, entryName);
 
             // replace lowercase by uppercase
-            return line.replaceAll(withoutAnsi, withoutAnsi.toUpperCase(Locale.getDefault()));
+            return line.replace(withoutAnsi, withoutAnsi.toUpperCase(Locale.getDefault()));
         } else {
-            return line.replaceAll(withoutAnsi, entryName);
+            return line.replace(withoutAnsi, entryName);
         }
 
     }
