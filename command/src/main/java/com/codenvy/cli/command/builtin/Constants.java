@@ -59,5 +59,5 @@ public class Constants {
     /**
      * Default project type for creating projects.
      */
-    public static final String DEFAULT_CREATE_PROJECT_TYPE = "maven";
+    public static final String DEFAULT_CREATE_PROJECT_TYPE = "blank";
 }
