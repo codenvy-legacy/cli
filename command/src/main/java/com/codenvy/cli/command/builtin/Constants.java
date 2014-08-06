@@ -46,17 +46,6 @@ public class Constants {
             + "preferences.json";
 
     /**
-     * Define the <b>host</b> property which is defined in the codenvy configuration file.
-     */
-    public static final String HOST_PROPERTY = "host";
-
-    /**
-     * Define the <b>username</b> property which is defined in the codenvy configuration file.
-     */
-    public static final String USERNAME_PROPERTY = "username";
-
-
-    /**
      * Default project type for creating projects.
      */
     public static final String DEFAULT_CREATE_PROJECT_TYPE = "blank";
