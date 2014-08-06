@@ -147,8 +147,8 @@ public class PullCommand extends AbsCommand {
                         fileoutputstream.write(buf, 0, n);
                     }
                 }
-                // getSize() is available once all has been read in the entry
-                total += zipEntry.getSize();
+                // get Compressed size (as this is what is downloaded)
+                total += zipEntry.getCompressedSize();
 
                 //
                 String prettyTotal = "";
