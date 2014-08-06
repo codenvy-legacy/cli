@@ -14,6 +14,7 @@ import jline.console.ConsoleReader;
 
 import com.codenvy.cli.command.builtin.model.UserProject;
 import com.codenvy.cli.command.builtin.util.metadata.CodenvyMetadata;
+import com.codenvy.client.Response;
 import com.codenvy.client.model.Project;
 
 import org.apache.karaf.shell.commands.Argument;
@@ -27,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -112,7 +114,32 @@ public class PullCommand extends AbsCommand {
         // Ok now we have the project, checkout it
         System.out.println(String.format("Pulling project %s into %s", projectToPull.name(), dest.getAbsolutePath()));
 
-        try (ZipInputStream zipInputStream = project.getCodenvy().project().exportResources(projectToPull, null).execute()) {
+        Response<ZipInputStream> response = project.getCodenvy().project().exportResources(projectToPull, null).response();
+
+        long length = 0;
+        Map<String, List<Object>> headers = response.getHeaders();
+        if (headers != null) {
+            List<Object> contentLength = headers.get("Content-Length");
+            if (contentLength != null && contentLength.size() == 1) {
+                length = Long.parseLong(contentLength.get(0).toString());
+            }
+        }
+
+        String outLength = "";
+        if (length > 0) {
+            String fullLength = "";
+            if (length < 1024) {
+                fullLength = String.valueOf(length);
+            } else if (length > 1024) {
+                fullLength = String.valueOf(length / 1024).concat(" KB");
+            } else if (length > 1048576) {
+                fullLength = String.valueOf(length / 1048576).concat(" MB");
+            }
+            outLength = " / ".concat(fullLength);
+        }
+
+
+        try (ZipInputStream zipInputStream = response.getValue()) {
             byte[] buf = new byte[1024];
             ZipEntry zipEntry = zipInputStream.getNextEntry();
             int total = 0;
@@ -160,7 +187,7 @@ public class PullCommand extends AbsCommand {
                     prettyTotal = String.valueOf(total / 1048576).concat(" MB");
                 }
 
-                new ConsoleReader().resetPromptLine("Pulling...", prettyTotal, 0);
+                new ConsoleReader().resetPromptLine("Pulling...", prettyTotal.concat(outLength), 0);
                 zipInputStream.closeEntry();
                 zipEntry = zipInputStream.getNextEntry();
 
@@ -197,8 +224,8 @@ public class PullCommand extends AbsCommand {
                     continue;
                 }
 
-                // check resources exists on the remote side
-                if (!project.getCodenvy().project().isResource(projectToPull, f.getPath().substring(project.name().concat("/").length()))
+                // check file exists on the remote side
+                if (!project.getCodenvy().project().hasFile(projectToPull, f.getPath().substring(project.name().concat("/").length()))
                             .execute().booleanValue()) {
                     if (!f.delete()) {
                         System.out.println("Unable to remove local file " + f);
