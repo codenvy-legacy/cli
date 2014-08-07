@@ -158,7 +158,6 @@ public class RunnerCommand extends AbsCommand {
             if (isStackTraceEnabled()) {
                 throw new IllegalStateException(e);
             }
-            e.printStackTrace();
             System.out.println("Unable to get updated status for runner " + userRunnerStatus);
             return;
         }
