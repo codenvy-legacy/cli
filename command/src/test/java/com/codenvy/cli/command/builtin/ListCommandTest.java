@@ -12,13 +12,13 @@ package com.codenvy.cli.command.builtin;
 
 import com.codenvy.cli.command.builtin.util.ascii.FormatterMode;
 
+import org.junit.Test;
+
 import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.CSV;
 import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
-
-import org.junit.Test;
 
 /**
  * Test of the list command

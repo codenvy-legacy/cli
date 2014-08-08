@@ -50,11 +50,6 @@ import static org.fusesource.jansi.Ansi.Color.RED;
 public abstract class AbsCommand extends OsgiCommandSupport {
 
     /**
-     * Codenvy settings read from its configuration file.
-     */
-    private Properties codenvySettings;
-
-    /**
      * Codenvy client instance.
      */
     private CodenvyClient codenvyClient;
@@ -195,15 +190,6 @@ public abstract class AbsCommand extends OsgiCommandSupport {
         return new DefaultAsciiForm().withFormatter(getFormatterMode());
     }
 
-    /**
-     * Defines the codenvy settings.
-     * @param codenvySettings the settings that will replace the existing
-     */
-    protected void setCodenvySettings(Properties codenvySettings) {
-        this.codenvySettings = codenvySettings;
-    }
-
-
 
     protected boolean isStackTraceEnabled() {
         Boolean val= (Boolean) session.get(SessionProperties.PRINT_STACK_TRACES);
@@ -237,6 +223,9 @@ public abstract class AbsCommand extends OsgiCommandSupport {
         try {
             uri = new URI(url);
         } catch (URISyntaxException e) {
+            if (isStackTraceEnabled()) {
+                throw new IllegalStateException("Unable to open URL", e);
+            }
             Ansi buffer = Ansi.ansi();
             buffer.fg(RED);
             buffer.a("Invalid URL of the project found: '").a(url).a("'.");
@@ -252,6 +241,9 @@ public abstract class AbsCommand extends OsgiCommandSupport {
             buffer.a("URL '").a(url).a("' has been opened in the web browser");
             System.out.println(buffer.toString());
         } catch (IOException e) {
+            if (isStackTraceEnabled()) {
+                throw new IllegalStateException("Unable to open URL", e);
+            }
             Ansi buffer = Ansi.ansi();
             buffer.fg(RED);
             buffer.a("Unable to open URL '").a(url).a("'.");
@@ -268,4 +260,6 @@ public abstract class AbsCommand extends OsgiCommandSupport {
     protected boolean isInteractive() {
         return FrameworkUtil.getBundle(AbsCommand.class) != null;
     }
+
+
 }

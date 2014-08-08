@@ -13,16 +13,10 @@ package com.codenvy.cli.command.builtin.util.ascii;
 import org.fusesource.jansi.Ansi;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.CSV;
-import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.MODERN;
 import static java.lang.String.format;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**

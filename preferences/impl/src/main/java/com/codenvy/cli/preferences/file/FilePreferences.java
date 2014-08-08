@@ -10,13 +10,13 @@
  *******************************************************************************/
 package com.codenvy.cli.preferences.file;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.codenvy.cli.preferences.Preferences;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Entry point to globally manage all cli preferences. Load a preferences file in JSON format in memory and dump it when preferences are

@@ -10,16 +10,6 @@
  *******************************************************************************/
 package com.codenvy.cli.preferences.file;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import com.codenvy.cli.preferences.Preferences;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -29,6 +19,16 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.type.MapLikeType;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import static com.codenvy.cli.preferences.file.LifecycleEvent.CREATE;
 import static com.codenvy.cli.preferences.file.LifecycleEvent.DELETE;
@@ -118,7 +118,7 @@ public class JsonPreferences implements Preferences, LifecycleCallback {
             try {
                 updater.readValue(this.mapper.valueToTree(value));
             } catch (IllegalArgumentException | IOException e) {
-                e.printStackTrace();
+                throw new IllegalStateException("Unable to put the value", e);
             }
         } else {
             if (!shouldMapUnmap(value.getClass())) {

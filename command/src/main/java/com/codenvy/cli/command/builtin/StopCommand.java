@@ -19,7 +19,7 @@ import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
 
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.codenvy.cli.command.builtin.MultiRemoteCodenvy.checkOnlyOne;

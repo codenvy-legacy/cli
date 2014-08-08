@@ -11,8 +11,6 @@
 package com.codenvy.cli.command.builtin;
 
 import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.fusesource.jansi.Ansi;
 
 /**
  * This command will use codenvy subshell and then default commands to codenvy namespace

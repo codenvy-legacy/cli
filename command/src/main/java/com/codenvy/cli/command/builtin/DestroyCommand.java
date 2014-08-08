@@ -11,18 +11,13 @@
 
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
-import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
-import com.codenvy.client.model.Link;
 import com.codenvy.client.model.Project;
-import com.codenvy.client.model.RunnerState;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
 
-import static com.codenvy.cli.command.builtin.MultiRemoteCodenvy.checkOnlyOne;
 import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**

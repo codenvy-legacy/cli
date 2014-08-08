@@ -30,7 +30,7 @@ public class AnsiHelper {
             aos.flush();
             return baos.toString("UTF-8");
         } catch (IOException e) {
-            return content;
+            throw new IllegalArgumentException("Unable to remove ansi", e);
         }
     }
 }

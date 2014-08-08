@@ -11,20 +11,8 @@
 
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.cli.command.builtin.model.DefaultUserBuilderStatus;
-import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
-import com.codenvy.cli.command.builtin.model.UserProject;
-import com.codenvy.client.model.BuilderStatus;
-import com.codenvy.client.model.Project;
-
-import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
-import org.fusesource.jansi.Ansi;
 import org.osgi.framework.Bundle;
-
-import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
-import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
-import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
  * Exit of the current CLI

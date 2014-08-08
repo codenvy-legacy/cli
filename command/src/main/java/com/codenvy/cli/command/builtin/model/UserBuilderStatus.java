@@ -11,7 +11,6 @@
 package com.codenvy.cli.command.builtin.model;
 
 import com.codenvy.client.model.BuilderStatus;
-import com.codenvy.client.model.RunnerStatus;
 
 /**
  * Represents builder status and its local identifier

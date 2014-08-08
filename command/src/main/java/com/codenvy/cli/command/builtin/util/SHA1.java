@@ -25,7 +25,7 @@ public final class SHA1 {
         try {
             md = MessageDigest.getInstance("SHA-1");
         } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("Unable to find SHA-1 message digest");
+            throw new IllegalStateException("Unable to find SHA-1 message digest", e);
         }
 
         Charset utf8 = Charset.forName("UTF-8");

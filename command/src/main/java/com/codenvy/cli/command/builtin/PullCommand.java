@@ -24,12 +24,10 @@ import org.fusesource.jansi.Ansi;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -149,21 +147,17 @@ public class PullCommand extends AbsCommand {
                 File entryFile = new File(dest, zipEntry.getName());
                 // Create directory
                 if (zipEntry.isDirectory()) {
-                    if (!entryFile.exists()) {
-                        // create parent directories (with mkdirs)
-                        if (!entryFile.mkdirs()) {
-                            throw new IllegalStateException("Can not create directory " + entryFile + ", Check the write access.");
-                        }
+                    // create parent directories (with mkdirs)
+                    if (!entryFile.exists() && !entryFile.mkdirs()) {
+                        throw new IllegalStateException("Can not create directory " + entryFile + ", Check the write access.");
                     }
                     zipEntry = zipInputStream.getNextEntry();
                     continue;
                 }
                 // If it's a file, we must extract the file
                 // Ensure that the directory exists.
-                if (!entryFile.getParentFile().exists()) {
-                    if (!entryFile.getParentFile().mkdirs()) {
-                        throw new IllegalStateException("Unable to create directory" + entryFile.getParentFile());
-                    }
+                if (!entryFile.getParentFile().exists() && !entryFile.getParentFile().mkdirs()) {
+                    throw new IllegalStateException("Unable to create directory" + entryFile.getParentFile());
                 }
 
 

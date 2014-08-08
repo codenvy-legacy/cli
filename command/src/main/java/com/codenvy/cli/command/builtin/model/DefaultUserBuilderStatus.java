@@ -14,7 +14,6 @@ import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.client.model.BuilderState;
 import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.Link;
-import com.codenvy.client.model.RunnerStatus;
 
 import org.fusesource.jansi.Ansi;
 

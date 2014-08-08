@@ -155,8 +155,8 @@ public class DefaultAsciiArray implements AsciiArray {
         checkIntegrity();
 
         // handle empty
-        if (columns.size() == 0) {
-            if (titles != null && titles.size() == 0) {
+        if (columns.isEmpty()) {
+            if (titles != null && titles.isEmpty()) {
                 return "";
             }
             if (titles == null) {
@@ -188,7 +188,7 @@ public class DefaultAsciiArray implements AsciiArray {
         }
 
         // data ?
-        if (columns.size() > 0) {
+        if (!columns.isEmpty()) {
             int nbRows = columns.get(0).size();
             for (int row = 0; row < nbRows; row++) {
                 buffer.append(String.format(formatter, (Object[]) getRow(row)));
@@ -291,7 +291,7 @@ public class DefaultAsciiArray implements AsciiArray {
      */
     protected void checkIntegrity() {
         // check that columns have the same row length
-        if (columns.size() > 0) {
+        if (!columns.isEmpty()) {
             int size = columns.get(0).size();
             Iterator<List<String>> it = columns.iterator();
             while (it.hasNext()) {
@@ -303,8 +303,8 @@ public class DefaultAsciiArray implements AsciiArray {
         }
 
         // if there are titles check that we've the same number of columns
-        if (titles != null && titles.size() > 0) {
-            if (columns.size() > 0) {
+        if (titles != null && !titles.isEmpty()) {
+            if (!columns.isEmpty()) {
                 if (titles.size() != columns.size()) {
                     throw new IllegalArgumentException(
                             "Invalid expected titles. There are " + columns.size() + " while there are " + titles.size() + " titles.");

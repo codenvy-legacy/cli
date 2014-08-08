@@ -13,17 +13,13 @@ package com.codenvy.cli.command.builtin;
 import jline.console.ConsoleReader;
 
 import com.codenvy.cli.command.builtin.model.DefaultUserBuilderStatus;
-import com.codenvy.cli.command.builtin.model.DefaultUserRunnerStatus;
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
-import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.model.BuilderState;
 import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.Link;
 import com.codenvy.client.model.Project;
-import com.codenvy.client.model.RunnerState;
-import com.codenvy.client.model.RunnerStatus;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
@@ -44,7 +40,6 @@ import static com.codenvy.client.model.BuilderState.CANCELLED;
 import static com.codenvy.client.model.BuilderState.FAILED;
 import static com.codenvy.client.model.BuilderState.IN_PROGRESS;
 import static com.codenvy.client.model.BuilderState.SUCCESSFUL;
-
 import static java.lang.String.format;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;

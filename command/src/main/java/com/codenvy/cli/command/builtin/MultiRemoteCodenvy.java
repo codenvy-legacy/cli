@@ -130,10 +130,13 @@ public class MultiRemoteCodenvy {
             Map.Entry<String, Codenvy> entry = iterator.next();
             try {
                 List<UserProject> foundProjects = getProjects(entry.getKey(), entry.getValue());
-                if (foundProjects.size() > 0) {
+                if (!foundProjects.isEmpty()) {
                     projects.addAll(foundProjects);
                 }
             } catch (CodenvyAuthenticationException e) {
+                if (isStackTraceEnabled()) {
+                    throw e;
+                }
                 System.err.println("Authentication problem on remote '" + entry.getKey() + "'");
             }
         }
@@ -242,7 +245,7 @@ public class MultiRemoteCodenvy {
         List<UserProject> projects = getProjects();
 
         // no projects
-        if (projects.size() == 0) {
+        if (projects.isEmpty()) {
             return null;
         }
 
@@ -256,7 +259,7 @@ public class MultiRemoteCodenvy {
         }
 
         // No matching project
-        if (matchingProjects.size() == 0) {
+        if (matchingProjects.isEmpty()) {
             return null;
         } else if (matchingProjects.size() == 1) {
             // one matching project
@@ -418,6 +421,9 @@ public class MultiRemoteCodenvy {
         try {
             codenvy.user().current().execute();
         } catch (CodenvyException e) {
+            if (isStackTraceEnabled()) {
+                throw e;
+            }
             System.out.println("Unable to authenticate for the given credentials on URL '" + url + "'. Check the username and password.");
             // invalid login so we don't add env
             return false;
@@ -538,7 +544,7 @@ public class MultiRemoteCodenvy {
 
 
     protected static <T> T checkOnlyOne(List<T> list, String id, String textNoIdentifier, String textTooManyIDs) {
-        if (list.size() == 0) {
+        if (list.isEmpty()) {
             errorNoIdentifier(id, textNoIdentifier);
             return null;
         } else if (list.size() > 1) {
@@ -602,7 +608,7 @@ public class MultiRemoteCodenvy {
             if (workspaces.size() > 1) {
                 System.out.println(format("Too many workspaces in the remote %s. Please specify the name of the workspace", remoteName));
                 return null;
-            } else if (workspaces.size() == 0) {
+            } else if (workspaces.isEmpty()) {
                 System.out.println("No workspace found in the remote %s. Please specify another remote or create a workspace first");
                 return null;
             }

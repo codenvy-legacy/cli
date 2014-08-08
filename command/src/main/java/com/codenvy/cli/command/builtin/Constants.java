@@ -11,7 +11,6 @@
 package com.codenvy.cli.command.builtin;
 
 import java.io.File;
-import java.net.URI;
 
 /**
  * Define some constants used in the commands.

@@ -10,9 +10,6 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.util.ascii;
 
-import org.fusesource.jansi.Ansi;
-
-import java.nio.charset.Charset;
 import java.util.Locale;
 
 import static com.codenvy.cli.command.builtin.util.ascii.AnsiHelper.removeAnsi;

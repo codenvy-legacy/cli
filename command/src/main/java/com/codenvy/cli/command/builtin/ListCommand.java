@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static java.lang.String.format;
-
 /**
  * List command.
  * This command will list all projects used in Codenvy.
