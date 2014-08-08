@@ -151,7 +151,7 @@ cellar       =]]></replacevalue>
                                 <!-- Disable the change of the current directory of the codenvy runtime -->
                                 <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/bin/karaf">
                                     <replacetoken><![CDATA[cd "$KARAF_BASE"]]></replacetoken>
-                                    <replacevalue><![CDATA[]]></replacevalue>
+                                    <replacevalue />
                                 </replace>
                                 <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/bin/shell">
                                     <replacetoken><![CDATA[CLASSPATH="$CLASSPATH:$KARAF_HOME/system/jline/jline/2.11/jline-2.11.jar"]]></replacetoken>
