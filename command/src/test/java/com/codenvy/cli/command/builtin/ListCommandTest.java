@@ -71,7 +71,31 @@ public class ListCommandTest extends AbsCommandTest {
      * Expect it works when there is one workspace with one project
      */
     @Test
-    public void testOneWorkspaceOneProject() throws Exception {
+    public void testOneWorkspaceOneProjectVerbose() throws Exception {
+
+
+        String workspaceName = "WORKSPACE1";
+        addWorkspace(workspaceName);
+        addProject(workspaceName, "project1");
+
+        CommandInvoker commandInvoker = getInvoker().option("-v", true);
+
+        // use CSV format
+        doReturn(CSV).when(getCommandSession()).get(FormatterMode.class.getName());
+
+        CommandInvoker.Result result = commandInvoker.invoke(getCommandSession());
+
+        assertEquals(format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY,BUILDERS,RUNNERS%n" +
+                            "p10ff33,default,WORKSPACE1,project1,java,true,none,none%n" +
+                            "%n"), result.disableAnsi().getOutputStream());
+
+    }
+
+    /**
+     * Expect it works when there is one workspace with one project
+     */
+    @Test
+    public void testOneWorkspaceOneProjectDefault() throws Exception {
 
 
         String workspaceName = "WORKSPACE1";
@@ -85,11 +109,12 @@ public class ListCommandTest extends AbsCommandTest {
 
         CommandInvoker.Result result = commandInvoker.invoke(getCommandSession());
 
-        assertEquals(format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY,BUILDERS,RUNNERS%n" +
-                            "p10ff33,default,WORKSPACE1,project1,java,true,none,none%n" +
+        assertEquals(format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY%n" +
+                            "p10ff33,default,WORKSPACE1,project1,java,true%n" +
                             "%n"), result.disableAnsi().getOutputStream());
 
     }
+
 
 
 }

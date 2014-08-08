@@ -18,10 +18,12 @@ import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.cli.command.builtin.util.ascii.AsciiArray;
 
 import org.apache.karaf.shell.commands.Command;
+import org.apache.karaf.shell.commands.Option;
 import org.fusesource.jansi.Ansi;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -33,6 +35,10 @@ import static java.lang.String.format;
  */
 @Command(scope = "codenvy", name = "list", description = "List workspaces, projects and processes")
 public class ListCommand extends AbsCommand {
+
+    @Option(name="-v", aliases = {"--verbose"}, description = "Verbose output")
+    private boolean verbose;
+
 
     /**
      * Prints the current projects per workspace
@@ -65,10 +71,10 @@ public class ListCommand extends AbsCommand {
         List<String> remotes = new ArrayList<>();
         List<String> workspaces = new ArrayList<>();
         List<String> projectNames = new ArrayList<>();
-        List<String> runnerIDs = new ArrayList<>();
-        List<String> builderIDs = new ArrayList<>();
         List<String> types = new ArrayList<>();
         List<String> privacies = new ArrayList<>();
+        List<String> runnerIDs = new ArrayList<>();
+        List<String> builderIDs = new ArrayList<>();
 
         int count = 0;
         for (UserProject project : projects) {
@@ -79,8 +85,15 @@ public class ListCommand extends AbsCommand {
                 String percent = (count * 100) / projects.size() + "/100";
                 new ConsoleReader().resetPromptLine("Collecting projects data...", percent, percent.length());
             }
-            List<UserRunnerStatus> runners = getMultiRemoteCodenvy().getRunners(project);
-            List<UserBuilderStatus> builders = getMultiRemoteCodenvy().getBuilders(project);
+            List<UserRunnerStatus> runners;
+            List<UserBuilderStatus> builders;
+            if (verbose) {
+                 runners = getMultiRemoteCodenvy().getRunners(project);
+                 builders = getMultiRemoteCodenvy().getBuilders(project);
+            } else {
+                runners = Collections.emptyList();
+                builders = Collections.emptyList();
+            }
 
             // ok, now we need to know how many lines we need
             int lines = 1;
@@ -137,7 +150,15 @@ public class ListCommand extends AbsCommand {
             new ConsoleReader().resetPromptLine("", "", 0);
         }
         // Ascii array
-        AsciiArray asciiArray = buildAsciiArray().withColumns(ids, remotes, workspaces, projectNames, types, privacies, builderIDs, runnerIDs).withTitle("ID", "Remote", "Workspace", "Project", "Type", "Privacy", "Builders", "Runners");
+        AsciiArray asciiArray;
+
+        // verbose mode : add runners and builders
+        if (verbose) {
+            asciiArray = buildAsciiArray().withColumns(ids, remotes, workspaces, projectNames, types, privacies, builderIDs, runnerIDs).withTitle("ID", "Remote", "Workspace", "Project", "Type", "Privacy", "Builders", "Runners");
+        } else {
+            asciiArray = buildAsciiArray().withColumns(ids, remotes, workspaces, projectNames, types, privacies).withTitle("ID", "Remote", "Workspace", "Project", "Type", "Privacy");
+        }
+
         System.out.println(asciiArray.toAscii());
 
         return null;
