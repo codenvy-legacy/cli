@@ -11,6 +11,7 @@
 package com.codenvy.cli.command.builtin;
 
 import java.io.File;
+import java.net.URI;
 
 /**
  * Define some constants used in the commands.
@@ -30,20 +31,20 @@ public class Constants {
      */
     public static final String CODENVY_FOLDERNAME = ".codenvy";
 
+    /**
+     * Preferences folder
+     */
+    public static final String PREFERENCES_FOLDER = System.getProperty("user.home") + File.separator + ".codenvy";
+
+    /**
+     * Default preferences resource name
+     */
+    public static final String DEFAULT_PREFERENCES_RESOURCENAME = "/" + Constants.class.getPackage().getName().replace(".", "/") + "/" + "default-preferences.json";
 
     /**
      * Path to the configuration file of Codenvy.
      */
-    public static final String CODENVY_CONFIG_FILE =
-            System.getProperty("karaf.home") + File.separatorChar + "etc" + File.separatorChar
-            + "codenvy.cfg";
-
-    /**
-     * Path to the configuration file of Codenvy.
-     */
-    public static final String PREFERENCES_STORE_FILE =
-            System.getProperty("karaf.home") + File.separatorChar + "etc" + File.separatorChar
-            + "preferences.json";
+    public static final String PREFERENCES_STORE_FILE = PREFERENCES_FOLDER + File.separator + "preferences.json";
 
     /**
      * Default project type for creating projects.

@@ -26,19 +26,21 @@ import org.fusesource.jansi.Ansi;
 import org.osgi.framework.FrameworkUtil;
 
 import javax.annotation.PostConstruct;
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
-import static com.codenvy.cli.command.builtin.Constants.CODENVY_CONFIG_FILE;
+import static com.codenvy.cli.command.builtin.Constants.DEFAULT_PREFERENCES_RESOURCENAME;
+import static com.codenvy.cli.command.builtin.Constants.PREFERENCES_FOLDER;
+import static com.codenvy.cli.command.builtin.Constants.PREFERENCES_STORE_FILE;
 import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.MODERN;
+import static java.lang.String.format;
 import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
@@ -72,7 +74,28 @@ public abstract class AbsCommand extends OsgiCommandSupport {
         // Do we have existing preferences ?
         this.globalPreferences = (Preferences)session.get(Preferences.class.getName());
         if (globalPreferences == null) {
-            globalPreferences = PreferencesAPI.getPreferences(new File(Constants.PREFERENCES_STORE_FILE).toURI());
+
+            // preferences folder exists ?
+            File codenvyPreferencesFolder = new File(PREFERENCES_FOLDER);
+            if (!codenvyPreferencesFolder.exists()) {
+                boolean create = codenvyPreferencesFolder.mkdirs();
+                if (!create) {
+                    throw new IllegalStateException(format("Unable to create preferences folder %s", codenvyPreferencesFolder));
+                }
+            }
+
+            // Do we have a preferences file ?
+            File codenvyPreferences = new File(PREFERENCES_STORE_FILE);
+            if (!codenvyPreferences.exists()) {
+                // needs to dump the default one
+                try (InputStream is = AbsCommand.class.getResourceAsStream(DEFAULT_PREFERENCES_RESOURCENAME)) {
+                    Path dest = codenvyPreferences.toPath();
+                    Files.copy(is, dest);
+                } catch (IOException e) {
+                    throw new IllegalStateException(format("Unable to initialize the default preferences file %s", codenvyPreferences), e);
+                }
+            }
+            globalPreferences = PreferencesAPI.getPreferences(codenvyPreferences.toURI());
             session.put(Preferences.class.getName(), globalPreferences);
         }
 
@@ -93,27 +116,6 @@ public abstract class AbsCommand extends OsgiCommandSupport {
      */
     protected MultiRemoteCodenvy getMultiRemoteCodenvy() {
         return multiRemoteCodenvy;
-    }
-
-
-    /**
-     * Get a configuration property from the Codenvy configuration file stored in KARAF_HOME/etc folder.
-     * @param property the name of the property
-     * @return the value or null if not found
-     */
-    protected String getCodenvyProperty(String property) {
-        // Load the settings if not yet loaded
-        if (codenvySettings == null) {
-            // load the codenvy setting
-            try (Reader reader = new InputStreamReader(new FileInputStream(CODENVY_CONFIG_FILE), Charset.defaultCharset())) {
-                codenvySettings = new Properties();
-                codenvySettings.load(reader);
-            } catch (IOException e) {
-                System.out.println("Unable to load codenvy settings" + e.getMessage());
-                throw new IllegalStateException("Unable to load codenvy settings", e);
-            }
-        }
-        return codenvySettings.getProperty(property);
     }
 
     /**

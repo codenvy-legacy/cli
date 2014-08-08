@@ -1,9 +1,10 @@
 {
+    "version" : "1.0",
     "config" : { },
     "remotes" : {
         "default" : {
             "defaultRemote" : true,
-            "url" : "http://ide3.cf.codenvy-stg.com"
+            "url" : "http://codenvy-next.com"
         }
     }
 }
