@@ -34,7 +34,7 @@ public interface UserWorkspace {
     /**
      * @return projects that are in this workspace
      */
-    List<UserProject> getProjects();
+    List<UserProjectReference> getProjects();
 
     /**
      * @return remote of this workspace

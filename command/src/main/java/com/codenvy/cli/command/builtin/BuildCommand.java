@@ -14,12 +14,13 @@ import jline.console.ConsoleReader;
 
 import com.codenvy.cli.command.builtin.model.DefaultUserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.model.BuilderState;
 import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.Link;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
@@ -89,7 +90,7 @@ public class BuildCommand extends AbsCommand {
         }
 
         // get project for the given shortID
-        UserProject project = getMultiRemoteCodenvy().getProject(projectID);
+        UserProjectReference project = getMultiRemoteCodenvy().getProject(projectID);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();
@@ -101,7 +102,7 @@ public class BuildCommand extends AbsCommand {
         }
 
 
-        final Project projectToBuild = project.getInnerProject();
+        final ProjectReference projectToBuild = project.getInnerReference();
 
         // Ok now we have the project
         final BuilderStatus builderStatus = project.getCodenvy().builder().build(projectToBuild).execute();
@@ -173,7 +174,7 @@ public class BuildCommand extends AbsCommand {
         // print logs if not cancelled
         if (CANCELLED != newStatus.getInnerStatus().status()) {
             String logs = newStatus.getProject().getCodenvy().builder()
-                                   .logs(newStatus.getProject().getInnerProject(), newStatus.getInnerStatus().taskId()).execute();
+                                   .logs(newStatus.getProject().getInnerReference(), newStatus.getInnerStatus().taskId()).execute();
             System.out.println("Logs:");
             System.out.println(logs);
         }
@@ -232,7 +233,7 @@ public class BuildCommand extends AbsCommand {
 
                 try {
                     updatedBuilderStatus = status.getProject().getCodenvy().builder()
-                                                .status(status.getProject().getInnerProject(), status.getInnerStatus().taskId())
+                                                .status(status.getProject().getInnerReference(), status.getInnerStatus().taskId())
                                                 .execute();
                 } catch (CodenvyErrorException e) {
                     return null;

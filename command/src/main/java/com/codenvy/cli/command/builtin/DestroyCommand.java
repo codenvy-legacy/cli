@@ -11,8 +11,9 @@
 
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
@@ -54,7 +55,7 @@ public class DestroyCommand extends AbsCommand {
         }
 
         // get project for the given shortID
-        UserProject project = getMultiRemoteCodenvy().getProject(projectId);
+        UserProjectReference project = getMultiRemoteCodenvy().getProject(projectId);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();
@@ -65,7 +66,7 @@ public class DestroyCommand extends AbsCommand {
             return null;
         }
 
-        final Project projectToDestroy = project.getInnerProject();
+        final ProjectReference projectToDestroy = project.getInnerReference();
 
         project.getCodenvy().project().deleteResources(projectToDestroy, "").execute();
         System.out.println(String.format("The project %s has been destroyed", projectToDestroy.name()));

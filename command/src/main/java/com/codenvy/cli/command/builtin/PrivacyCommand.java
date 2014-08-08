@@ -11,8 +11,9 @@
 
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.Visibility;
 
 import org.apache.karaf.shell.commands.Argument;
@@ -59,7 +60,7 @@ public class PrivacyCommand extends AbsCommand {
         }
 
         // get project for the given shortID
-        UserProject project = getMultiRemoteCodenvy().getProject(projectId);
+        UserProjectReference project = getMultiRemoteCodenvy().getProject(projectId);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();
@@ -70,7 +71,7 @@ public class PrivacyCommand extends AbsCommand {
             return null;
         }
 
-        final Project projectToChangePrivacy = project.getInnerProject();
+        final ProjectReference projectToChangePrivacy = project.getInnerReference();
 
         // only display privacy if flag is not et
         if (visibilityString == null) {

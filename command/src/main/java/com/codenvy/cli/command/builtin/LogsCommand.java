@@ -111,7 +111,7 @@ public class LogsCommand extends AbsCommand {
 
 
         // Now, print the log
-        String log = foundStatus.getProject().getCodenvy().runner().logs(foundStatus.getProject().getInnerProject(), foundStatus.getInnerStatus().processId()).execute();
+        String log = foundStatus.getProject().getCodenvy().runner().logs(foundStatus.getProject().getInnerReference(), foundStatus.getInnerStatus().processId()).execute();
         System.out.println(log);
     }
 
@@ -143,7 +143,7 @@ public class LogsCommand extends AbsCommand {
 
 
         // Now, print the log
-        String log = foundStatus.getProject().getCodenvy().builder().logs(foundStatus.getProject().getInnerProject(), foundStatus.getInnerStatus().taskId()).execute();
+        String log = foundStatus.getProject().getCodenvy().builder().logs(foundStatus.getProject().getInnerReference(), foundStatus.getInnerStatus().taskId()).execute();
         System.out.println(log);
 
     }

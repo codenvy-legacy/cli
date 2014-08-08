@@ -12,10 +12,11 @@ package com.codenvy.cli.command.builtin;
 
 import jline.console.ConsoleReader;
 
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.util.metadata.CodenvyMetadata;
 import com.codenvy.client.Response;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
@@ -72,7 +73,7 @@ public class PullCommand extends AbsCommand {
         }
 
         // get project for the given shortID
-        UserProject project = getMultiRemoteCodenvy().getProject(projectId);
+        UserProjectReference project = getMultiRemoteCodenvy().getProject(projectId);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();
@@ -84,7 +85,7 @@ public class PullCommand extends AbsCommand {
         }
 
 
-        final Project projectToPull = project.getInnerProject();
+        final ProjectReference projectToPull = project.getInnerReference();
 
         File dest;
         if (directory == null) {

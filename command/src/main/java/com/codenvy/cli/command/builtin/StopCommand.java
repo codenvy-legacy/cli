@@ -11,7 +11,7 @@
 package com.codenvy.cli.command.builtin;
 
 import com.codenvy.cli.command.builtin.model.DefaultUserRunnerStatus;
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.client.model.RunnerStatus;
 
@@ -100,7 +100,7 @@ public class StopCommand extends AbsCommand {
      * @return the updated status
      */
     protected UserRunnerStatus stopStatus(UserRunnerStatus status) {
-        RunnerStatus updatedStatus = status.getProject().getCodenvy().runner().stop(status.getProject().getInnerProject(), status.getInnerStatus().processId()).execute();
+        RunnerStatus updatedStatus = status.getProject().getCodenvy().runner().stop(status.getProject().getInnerReference(), status.getInnerStatus().processId()).execute();
         return new DefaultUserRunnerStatus(updatedStatus, status.getProject());
 
     }
@@ -108,7 +108,7 @@ public class StopCommand extends AbsCommand {
 
     protected void stopProjectProcesses() {
         // needs to find all run processes of the project
-        UserProject foundProject = getMultiRemoteCodenvy().getProject(id);
+        UserProjectReference foundProject = getMultiRemoteCodenvy().getProject(id);
 
         // not found, errors already printed
         if (foundProject == null) {

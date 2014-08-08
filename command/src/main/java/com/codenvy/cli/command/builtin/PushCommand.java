@@ -13,9 +13,10 @@ package com.codenvy.cli.command.builtin;
 
 import jline.console.ConsoleReader;
 
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.util.metadata.CodenvyMetadata;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
@@ -118,7 +119,7 @@ public class PushCommand extends AbsCommand {
         }
 
         // get project for the given shortID
-        UserProject project = getMultiRemoteCodenvy().getProject(projectId);
+        UserProjectReference project = getMultiRemoteCodenvy().getProject(projectId);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();
@@ -131,7 +132,7 @@ public class PushCommand extends AbsCommand {
         }
 
 
-        final Project projectToPush = project.getInnerProject();
+        final ProjectReference projectToPush = project.getInnerReference();
 
         // ok now we perform push
         System.out.print("Pushing...");

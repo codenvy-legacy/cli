@@ -11,7 +11,7 @@
 
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
@@ -66,12 +66,12 @@ public class CreateProjectCommand extends AbsCommand {
         }
 
 
-        UserProject userProject = getMultiRemoteCodenvy().createProject(name, workspace, remote, projectType);
+        UserProjectReference userProjectReference = getMultiRemoteCodenvy().createProject(name, workspace, remote, projectType);
 
-        if (userProject != null) {
+        if (userProjectReference != null) {
             System.out.println(String.format("Project %s has been created", name));
             if (openProject) {
-                openURL(userProject.getInnerProject().ideUrl());
+                openURL(userProjectReference.getInnerReference().ideUrl());
             }
         }
 

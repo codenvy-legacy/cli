@@ -12,7 +12,7 @@
 package com.codenvy.cli.command.builtin;
 
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.client.model.Link;
 import com.codenvy.client.model.RunnerState;
@@ -80,7 +80,7 @@ public class OpenCommand extends AbsCommand {
 
 
     protected void openProject() {
-        UserProject project = getMultiRemoteCodenvy().getProject(id);
+        UserProjectReference project = getMultiRemoteCodenvy().getProject(id);
         if (project == null) {
             Ansi buffer = Ansi.ansi();
             buffer.fg(RED);
@@ -90,7 +90,7 @@ public class OpenCommand extends AbsCommand {
             return;
         }
 
-        String ideURL = project.getInnerProject().ideUrl();
+        String ideURL = project.getInnerReference().ideUrl();
         openURL(ideURL);
     }
 

@@ -13,7 +13,7 @@ package com.codenvy.cli.command.builtin;
 import jline.console.ConsoleReader;
 
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.cli.command.builtin.util.ascii.AsciiArray;
 
@@ -54,7 +54,7 @@ public class ListCommand extends AbsCommand {
         if (isProgressEnabled()) {
             new ConsoleReader().resetPromptLine("Retrieving projects...", "", 0);
         }
-        List<UserProject> projects = getMultiRemoteCodenvy().getProjects();
+        List<UserProjectReference> projects = getMultiRemoteCodenvy().getProjects();
         if (isProgressEnabled()) {
             new ConsoleReader().resetPromptLine("", "", 0);
         }
@@ -75,7 +75,7 @@ public class ListCommand extends AbsCommand {
         List<String> builderIDs = new ArrayList<>();
 
         int count = 0;
-        for (UserProject project : projects) {
+        for (UserProjectReference project : projects) {
 
             // get all runners and builders for this project
             if (isProgressEnabled()) {
@@ -110,8 +110,8 @@ public class ListCommand extends AbsCommand {
                     remotes.add(project.getWorkspace().getRemote());
                     workspaces.add(project.getWorkspace().name());
                     projectNames.add(project.name());
-                    types.add(project.getInnerProject().projectTypeId());
-                    privacies.add(project.getInnerProject().visibility());
+                    types.add(project.getInnerReference().projectTypeId());
+                    privacies.add(project.getInnerReference().visibility());
                 } else {
                     // blank data
                     ids.add("");

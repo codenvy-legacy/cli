@@ -12,7 +12,7 @@
 package com.codenvy.cli.command.builtin.util.metadata;
 
 import com.codenvy.cli.command.builtin.Constants;
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,7 +63,7 @@ public class CodenvyMetadata {
 
     }
 
-    public CodenvyMetadata(UserProject project, File projectFolder) throws IOException {
+    public CodenvyMetadata(UserProjectReference project, File projectFolder) throws IOException {
         init(projectFolder);
         this.projectId = project.shortId();
         properties.put(PROJECT_ID, projectId);

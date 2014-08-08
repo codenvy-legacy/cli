@@ -35,7 +35,7 @@ public class DefaultUserBuilderStatus implements UserBuilderStatus {
     /**
      * Project on which this runner process is linked
      */
-    private UserProject userProject;
+    private UserProjectReference userProjectReference;
 
     /**
      * SHA-1.
@@ -45,14 +45,14 @@ public class DefaultUserBuilderStatus implements UserBuilderStatus {
     /**
      * Default constructor
      * @param builderStatus the status returned from Rest API
-     * @param userProject the user project
+     * @param userProjectReference the user project
      */
-    public DefaultUserBuilderStatus(BuilderStatus builderStatus, UserProject userProject) {
+    public DefaultUserBuilderStatus(BuilderStatus builderStatus, UserProjectReference userProjectReference) {
         this.builderStatus = builderStatus;
-        this.userProject = userProject;
+        this.userProjectReference = userProjectReference;
 
         // b is for builder
-        this.sha1Id = sha1("b", String.valueOf(builderStatus.taskId()) + userProject.shortId());
+        this.sha1Id = sha1("b", String.valueOf(builderStatus.taskId()) + userProjectReference.shortId());
     }
 
     /**
@@ -77,8 +77,8 @@ public class DefaultUserBuilderStatus implements UserBuilderStatus {
      * @return the linked project
      */
     @Override
-    public UserProject getProject() {
-        return userProject;
+    public UserProjectReference getProject() {
+        return userProjectReference;
     }
 
     /**

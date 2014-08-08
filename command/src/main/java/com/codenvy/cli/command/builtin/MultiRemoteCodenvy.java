@@ -11,11 +11,11 @@
 package com.codenvy.cli.command.builtin;
 
 import com.codenvy.cli.command.builtin.model.DefaultUserBuilderStatus;
-import com.codenvy.cli.command.builtin.model.DefaultUserProject;
+import com.codenvy.cli.command.builtin.model.DefaultUserProjectReference;
 import com.codenvy.cli.command.builtin.model.DefaultUserRunnerStatus;
 import com.codenvy.cli.command.builtin.model.DefaultUserWorkspace;
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.cli.command.builtin.model.UserWorkspace;
 import com.codenvy.cli.command.builtin.util.ascii.AsciiArray;
@@ -38,6 +38,7 @@ import com.codenvy.client.auth.Credentials;
 import com.codenvy.client.auth.Token;
 import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.RunnerStatus;
 import com.codenvy.client.model.Workspace;
 import com.codenvy.client.model.WorkspaceReference;
@@ -121,15 +122,15 @@ public class MultiRemoteCodenvy {
     }
 
 
-    protected List<UserProject> getProjects() {
-        List<UserProject> projects = new ArrayList<>();
+    protected List<UserProjectReference> getProjects() {
+        List<UserProjectReference> projects = new ArrayList<>();
 
         Set<Map.Entry<String, Codenvy>> entries = readyRemotes.entrySet();
         Iterator<Map.Entry<String, Codenvy>> iterator = entries.iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, Codenvy> entry = iterator.next();
             try {
-                List<UserProject> foundProjects = getProjects(entry.getKey(), entry.getValue());
+                List<UserProjectReference> foundProjects = getProjects(entry.getKey(), entry.getValue());
                 if (!foundProjects.isEmpty()) {
                     projects.addAll(foundProjects);
                 }
@@ -156,7 +157,7 @@ public class MultiRemoteCodenvy {
      */
     protected UserWorkspace getWorkspaceWithName(String name, String remote, Codenvy codenvy) {
         WorkspaceClient workspaceClient = codenvy.workspace();
-        Request<? extends WorkspaceReference> request = workspaceClient.withName(name);
+        Request<WorkspaceReference> request = workspaceClient.withName(name);
         WorkspaceReference workspaceReference = request.execute();
 
         if (workspaceReference.isTemporary()) {
@@ -181,8 +182,8 @@ public class MultiRemoteCodenvy {
         // get all workspaces
 
         WorkspaceClient workspaceClient = codenvy.workspace();
-        Request<List<? extends Workspace>> request = workspaceClient.all();
-        List<? extends Workspace> readWorkspaces = request.execute();
+        Request<List<Workspace>> request = workspaceClient.all();
+        List<Workspace> readWorkspaces = request.execute();
 
         for (Workspace workspace : readWorkspaces) {
             WorkspaceReference ref = workspace.workspaceReference();
@@ -204,14 +205,14 @@ public class MultiRemoteCodenvy {
      *         the codenvy object used to retrieve the data
      * @return the list of projects
      */
-    protected List<UserProject> getProjects(String remote, Codenvy codenvy) {
-        List<UserProject> projects = new ArrayList<>();
+    protected List<UserProjectReference> getProjects(String remote, Codenvy codenvy) {
+        List<UserProjectReference> projects = new ArrayList<>();
 
         // For each workspace, search the project and compute
 
         WorkspaceClient workspaceClient = codenvy.workspace();
-        Request<List<? extends Workspace>> request = workspaceClient.all();
-        List<? extends Workspace> readWorkspaces = request.execute();
+        Request<List<Workspace>> request = workspaceClient.all();
+        List<Workspace> readWorkspaces = request.execute();
 
         for (Workspace workspace : readWorkspaces) {
             WorkspaceReference ref = workspace.workspaceReference();
@@ -222,9 +223,9 @@ public class MultiRemoteCodenvy {
 
             DefaultUserWorkspace defaultUserWorkspace = new DefaultUserWorkspace(remote, this, codenvy, ref);
 
-            List<? extends Project> readProjects = codenvy.project().getWorkspaceProjects(ref.id()).execute();
-            for (Project readProject : readProjects) {
-                DefaultUserProject project = new DefaultUserProject(codenvy, readProject, defaultUserWorkspace);
+            List<ProjectReference> readProjects = codenvy.project().getWorkspaceProjects(ref.id()).execute();
+            for (ProjectReference readProject : readProjects) {
+                DefaultUserProjectReference project = new DefaultUserProjectReference(codenvy, readProject, defaultUserWorkspace);
                 projects.add(project);
             }
         }
@@ -235,14 +236,14 @@ public class MultiRemoteCodenvy {
     /**
      * Allows to search a project
      */
-    protected UserProject getProject(String shortId) {
+    protected UserProjectReference getProject(String shortId) {
         if (shortId == null || shortId.length() < 2) {
             throw new IllegalArgumentException("The identifier should at least contain two digits");
         }
 
 
         // get all projects
-        List<UserProject> projects = getProjects();
+        List<UserProjectReference> projects = getProjects();
 
         // no projects
         if (projects.isEmpty()) {
@@ -250,8 +251,8 @@ public class MultiRemoteCodenvy {
         }
 
         // now search in the given projects
-        List<UserProject> matchingProjects = new ArrayList<>();
-        for (UserProject project : projects) {
+        List<UserProjectReference> matchingProjects = new ArrayList<>();
+        for (UserProjectReference project : projects) {
             // match
             if (project.shortId().startsWith(shortId)) {
                 matchingProjects.add(project);
@@ -480,16 +481,16 @@ public class MultiRemoteCodenvy {
 
     public List<UserBuilderStatus> findBuilders(String builderID) {
         // first collect all processes
-        List<UserProject> projects = getProjects();
+        List<UserProjectReference> projects = getProjects();
 
         List<UserBuilderStatus> matchingStatuses = new ArrayList<>();
 
         // then for each project, gets the builds IDs
-        for (UserProject userProject : projects) {
-            final List<? extends BuilderStatus> builderStatuses = userProject.getCodenvy().builder().builds(userProject.getInnerProject()).execute();
+        for (UserProjectReference userProjectReference : projects) {
+            final List<BuilderStatus> builderStatuses = userProjectReference.getCodenvy().builder().builds(userProjectReference.getInnerReference()).execute();
             for (BuilderStatus builderStatus : builderStatuses) {
 
-                UserBuilderStatus tmpStatus = new DefaultUserBuilderStatus(builderStatus, userProject);
+                UserBuilderStatus tmpStatus = new DefaultUserBuilderStatus(builderStatus, userProjectReference);
                 if (tmpStatus.shortId().startsWith(builderID)) {
                     matchingStatuses.add(tmpStatus);
                 }
@@ -500,17 +501,17 @@ public class MultiRemoteCodenvy {
 
 
     public List<UserRunnerStatus> findRunners(String runnerID) {
-        List<UserProject> projects = getProjects();
+        List<UserProjectReference> projects = getProjects();
 
         List<UserRunnerStatus> matchingStatuses = new ArrayList<>();
 
         // then for each project, gets the process IDs
-        for (UserProject userProject : projects) {
-            final List<? extends RunnerStatus> runnerStatuses =
-                    userProject.getCodenvy().runner().processes(userProject.getInnerProject()).execute();
+        for (UserProjectReference userProjectReference : projects) {
+            final List<RunnerStatus> runnerStatuses =
+                    userProjectReference.getCodenvy().runner().processes(userProjectReference.getInnerReference()).execute();
             for (RunnerStatus runnerStatus : runnerStatuses) {
 
-                UserRunnerStatus tmpStatus = new DefaultUserRunnerStatus(runnerStatus, userProject);
+                UserRunnerStatus tmpStatus = new DefaultUserRunnerStatus(runnerStatus, userProjectReference);
                 if (tmpStatus.shortId().startsWith(runnerID)) {
                     matchingStatuses.add(tmpStatus);
                 }
@@ -520,23 +521,23 @@ public class MultiRemoteCodenvy {
         return matchingStatuses;
     }
 
-    public List<UserRunnerStatus> getRunners(UserProject userProject) {
+    public List<UserRunnerStatus> getRunners(UserProjectReference userProjectReference) {
         List<UserRunnerStatus> statuses = new ArrayList<>();
-        final List<? extends RunnerStatus> runnerStatuses = userProject.getCodenvy().runner().processes(userProject.getInnerProject()).execute();
+        final List<RunnerStatus> runnerStatuses = userProjectReference.getCodenvy().runner().processes(userProjectReference.getInnerReference()).execute();
         for (RunnerStatus runnerStatus : runnerStatuses) {
 
-            UserRunnerStatus tmpStatus = new DefaultUserRunnerStatus(runnerStatus, userProject);
+            UserRunnerStatus tmpStatus = new DefaultUserRunnerStatus(runnerStatus, userProjectReference);
                 statuses.add(tmpStatus);
         }
         return statuses;
     }
 
-    public List<UserBuilderStatus> getBuilders(UserProject userProject) {
+    public List<UserBuilderStatus> getBuilders(UserProjectReference userProjectReference) {
         List<UserBuilderStatus> statuses = new ArrayList<>();
-        final List<? extends BuilderStatus> builderStatuses = userProject.getCodenvy().builder().builds(userProject.getInnerProject()).execute();
+        final List<BuilderStatus> builderStatuses = userProjectReference.getCodenvy().builder().builds(userProjectReference.getInnerReference()).execute();
         for (BuilderStatus builderStatus : builderStatuses) {
 
-            UserBuilderStatus tmpStatus = new DefaultUserBuilderStatus(builderStatus, userProject);
+            UserBuilderStatus tmpStatus = new DefaultUserBuilderStatus(builderStatus, userProjectReference);
             statuses.add(tmpStatus);
         }
         return statuses;
@@ -581,7 +582,7 @@ public class MultiRemoteCodenvy {
     }
 
 
-    protected UserProject createProject(String name, String workspaceName, String remoteName, String projectType) {
+    protected UserProjectReference createProject(String name, String workspaceName, String remoteName, String projectType) {
 
         // Remote ?
         if (remoteName == null) {
@@ -628,7 +629,7 @@ public class MultiRemoteCodenvy {
 
 
         // OK, now we have everything, we can create the project
-        Project projectToCreate = codenvyClient.newProjectBuilder().withName(name).withWorkspaceId(userWorkspace.id()).withWorkspaceName(
+        ProjectReference projectToCreate = codenvyClient.newProjectBuilder().withName(name).withWorkspaceId(userWorkspace.id()).withWorkspaceName(
                 workspaceName).withProjectTypeId(projectType).withDescription(name).build();
 
         try {
@@ -641,9 +642,9 @@ public class MultiRemoteCodenvy {
             return null;
         }
 
-        List<? extends Project> projects = remoteCodenvy.project().getWorkspaceProjects(userWorkspace.id()).execute();
-        Project newProject = null;
-        for (Project project : projects) {
+        List<ProjectReference> projects = remoteCodenvy.project().getWorkspaceProjects(userWorkspace.id()).execute();
+        ProjectReference newProject = null;
+        for (ProjectReference project : projects) {
             if (name.equals(project.name())) {
                 newProject = project;
                 break;
@@ -654,11 +655,11 @@ public class MultiRemoteCodenvy {
             return null;
         }
 
-        UserProject builtUserProject = new DefaultUserProject(remoteCodenvy, newProject, userWorkspace);
+        UserProjectReference builtUserProjectReference = new DefaultUserProjectReference(remoteCodenvy, newProject, userWorkspace);
 
-        System.out.println(builtUserProject);
+        System.out.println(builtUserProjectReference);
 
-        return builtUserProject;
+        return builtUserProjectReference;
 
     }
 

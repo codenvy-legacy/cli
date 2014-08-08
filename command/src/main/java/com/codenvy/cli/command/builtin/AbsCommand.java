@@ -34,7 +34,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Properties;
 
 import static com.codenvy.cli.command.builtin.Constants.DEFAULT_PREFERENCES_RESOURCENAME;
 import static com.codenvy.cli.command.builtin.Constants.PREFERENCES_FOLDER;
@@ -45,6 +44,7 @@ import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
  * Abstract command which should be extended by all Codenvy commands.
+ *
  * @author Florent Benoit
  */
 public abstract class AbsCommand extends OsgiCommandSupport {
@@ -115,6 +115,7 @@ public abstract class AbsCommand extends OsgiCommandSupport {
 
     /**
      * Checks that there are available codenvy remotes
+     *
      * @return
      */
     protected boolean checkifAvailableRemotes() {
@@ -126,8 +127,10 @@ public abstract class AbsCommand extends OsgiCommandSupport {
 
         return multiRemoteCodenvy.hasAvailableRemotes();
     }
+
     /**
      * Checks that there are enabled codenvy remotes
+     *
      * @return
      */
     protected boolean checkifEnabledRemotes() {
@@ -167,7 +170,7 @@ public abstract class AbsCommand extends OsgiCommandSupport {
      * @return the current formatter mode used at runtime
      */
     protected FormatterMode getFormatterMode() {
-        FormatterMode formatterMode = (FormatterMode) session.get(FormatterMode.class.getName());
+        FormatterMode formatterMode = (FormatterMode)session.get(FormatterMode.class.getName());
         if (formatterMode == null) {
             formatterMode = MODERN;
         }
@@ -176,6 +179,7 @@ public abstract class AbsCommand extends OsgiCommandSupport {
 
     /**
      * Build a new Ascii array instance with the selected formatter mode
+     *
      * @return a new instance of the ascii array
      */
     protected AsciiArray buildAsciiArray() {
@@ -184,6 +188,7 @@ public abstract class AbsCommand extends OsgiCommandSupport {
 
     /**
      * Build a new Ascii array instance with the selected formatter mode
+     *
      * @return a new instance of the ascii array
      */
     protected AsciiForm buildAsciiForm() {
@@ -192,7 +197,7 @@ public abstract class AbsCommand extends OsgiCommandSupport {
 
 
     protected boolean isStackTraceEnabled() {
-        Boolean val= (Boolean) session.get(SessionProperties.PRINT_STACK_TRACES);
+        Boolean val = (Boolean)session.get(SessionProperties.PRINT_STACK_TRACES);
         if (val != null && val.booleanValue()) {
             return true;
         }
@@ -200,7 +205,7 @@ public abstract class AbsCommand extends OsgiCommandSupport {
     }
 
     protected boolean isProgressEnabled() {
-        Boolean val= (Boolean) session.get("PROGRESS_MONITOR");
+        Boolean val = (Boolean)session.get("PROGRESS_MONITOR");
         if (val != null && val.booleanValue()) {
             return true;
         }

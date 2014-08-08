@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.preferences.Preferences;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.CodenvyBuilder;
@@ -106,13 +106,13 @@ public abstract class AbsCommandTest {
     private ProjectClient projectClient;
 
     @Mock
-    private Request<List<? extends Project>> projectRequests;
+    private Request<List<Project>> projectRequests;
 
     @Mock
     private WorkspaceClient workspaceClient;
 
     @Mock
-    private Request<List<? extends Workspace>> workspaceRequests;
+    private Request<List<Workspace>> workspaceRequests;
 
     private List<Workspace> workspaces;
 
@@ -222,8 +222,8 @@ public abstract class AbsCommandTest {
         doReturn(multiRemoteCodenvy.getProjects("default", codenvy)).when(multiRemoteCodenvy).getProjects();
         doReturn(true).when(multiRemoteCodenvy).hasReadyRemotes();
         doReturn(true).when(multiRemoteCodenvy).hasAvailableRemotes();
-        doReturn(Collections.emptyList()).when(multiRemoteCodenvy).getBuilders(any(UserProject.class));
-        doReturn(Collections.emptyList()).when(multiRemoteCodenvy).getRunners(any(UserProject.class));
+        doReturn(Collections.emptyList()).when(multiRemoteCodenvy).getBuilders(any(UserProjectReference.class));
+        doReturn(Collections.emptyList()).when(multiRemoteCodenvy).getRunners(any(UserProjectReference.class));
 
     }
 
@@ -271,7 +271,7 @@ public abstract class AbsCommandTest {
         return workspaceClient;
     }
 
-    public Request<List< ? extends Workspace>> getWorkspaceRequests() {
+    public Request<List<Workspace>> getWorkspaceRequests() {
         return workspaceRequests;
     }
 
@@ -289,7 +289,7 @@ public abstract class AbsCommandTest {
 
         getWorkspaces().add(workspace);
 
-        Request< ? extends WorkspaceReference> requestWorkspaceRef = mock(Request.class);
+        Request<WorkspaceReference> requestWorkspaceRef = mock(Request.class);
         doReturn(requestWorkspaceRef).when(getWorkspaceClient()).withName(workspaceName);
         doReturn(workspaceRef).when(requestWorkspaceRef).execute();
 

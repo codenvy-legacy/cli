@@ -12,13 +12,14 @@ package com.codenvy.cli.command.builtin.model;
 
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 
 /**
  * Define a project available for a given user
  *
  * @author Florent Benoit
  */
-public interface UserProject {
+public interface UserProjectReference {
 
     /**
      * @return the name of the project
@@ -43,7 +44,7 @@ public interface UserProject {
     /**
      * @return the inner project object
      */
-    Project getInnerProject();
+    ProjectReference getInnerReference();
 
     Codenvy getCodenvy();
 

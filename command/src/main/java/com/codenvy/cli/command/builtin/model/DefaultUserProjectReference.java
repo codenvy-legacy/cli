@@ -13,6 +13,7 @@ package com.codenvy.cli.command.builtin.model;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 
 import org.fusesource.jansi.Ansi;
 
@@ -23,16 +24,16 @@ import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
 
 /**
- * Implements the {@link com.codenvy.cli.command.builtin.model.UserProject} interface providing links between project and workspaces.
+ * Implements the {@link UserProjectReference} interface providing links between project and workspaces.
  *
  * @author Florent Benoit
  */
-public class DefaultUserProject implements UserProject {
+public class DefaultUserProjectReference implements UserProjectReference {
 
     /**
      * Current project
      */
-    private Project project;
+    private ProjectReference project;
 
     /**
      * Current workspace
@@ -56,7 +57,7 @@ public class DefaultUserProject implements UserProject {
      * @param workspace
      *         the current workspace
      */
-    public DefaultUserProject(Codenvy codenvy, Project project, UserWorkspace workspace) {
+    public DefaultUserProjectReference(Codenvy codenvy, ProjectReference project, UserWorkspace workspace) {
         this.codenvy = codenvy;
         this.project = project;
         this.workspace = workspace;
@@ -101,7 +102,7 @@ public class DefaultUserProject implements UserProject {
     /**
      * @return the inner project object
      */
-    public Project getInnerProject() {
+    public ProjectReference getInnerReference() {
         return project;
     }
 
@@ -138,8 +139,8 @@ public class DefaultUserProject implements UserProject {
         return new DefaultAsciiForm().withEntry(bold("id"), shortId())
                                      .withEntry(bold("workspace"), getWorkspace().name())
                                      .withEntry(bold("project"), name())
-                                     .withEntry(bold("visibility"), getInnerProject().visibility())
-                                     .withEntry(bold("ide url"), getInnerProject().ideUrl())
+                                     .withEntry(bold("visibility"), getInnerReference().visibility())
+                                     .withEntry(bold("ide url"), getInnerReference().ideUrl())
                                      .withEntry(bold("runners"), runnersList)
                                      .withEntry(bold("builders"), buildersList)
                                      .withUppercasePropertyName()

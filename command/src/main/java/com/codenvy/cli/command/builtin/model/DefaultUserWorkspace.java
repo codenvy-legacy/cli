@@ -13,6 +13,7 @@ package com.codenvy.cli.command.builtin.model;
 import com.codenvy.cli.command.builtin.MultiRemoteCodenvy;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.WorkspaceReference;
 
 import java.util.ArrayList;
@@ -81,12 +82,12 @@ public class DefaultUserWorkspace implements UserWorkspace {
      * @return projects that are in this workspace
      */
     @Override
-    public List<UserProject> getProjects() {
-        List<? extends Project> readProjects = codenvy.project().getWorkspaceProjects(id()).execute();
-        List<UserProject> projects = new ArrayList<>();
-        for (Project readProject : readProjects) {
-            UserProject userProject = new DefaultUserProject(codenvy, readProject, this);
-            projects.add(userProject);
+    public List<UserProjectReference> getProjects() {
+        List<ProjectReference> readProjects = codenvy.project().getWorkspaceProjects(id()).execute();
+        List<UserProjectReference> projects = new ArrayList<>();
+        for (ProjectReference readProject : readProjects) {
+            UserProjectReference userProjectReference = new DefaultUserProjectReference(codenvy, readProject, this);
+            projects.add(userProjectReference);
         }
         return projects;
     }

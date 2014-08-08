@@ -32,7 +32,7 @@ public interface UserRunnerStatus {
     /**
      * @return the linked project
      */
-    UserProject getProject();
+    UserProjectReference getProject();
 
     /**
      * @return inner status

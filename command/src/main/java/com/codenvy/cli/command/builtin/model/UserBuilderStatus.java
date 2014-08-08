@@ -31,7 +31,7 @@ public interface UserBuilderStatus {
     /**
      * @return the linked project
      */
-    UserProject getProject();
+    UserProjectReference getProject();
 
     /**
      * @return inner status

@@ -13,11 +13,12 @@ package com.codenvy.cli.command.builtin;
 import jline.console.ConsoleReader;
 
 import com.codenvy.cli.command.builtin.model.DefaultUserRunnerStatus;
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.model.Link;
 import com.codenvy.client.model.Project;
+import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.RunnerState;
 import com.codenvy.client.model.RunnerStatus;
 
@@ -90,7 +91,7 @@ public class RunnerCommand extends AbsCommand {
         }
 
         // get project for the given shortID
-        UserProject project = getMultiRemoteCodenvy().getProject(projectId);
+        UserProjectReference project = getMultiRemoteCodenvy().getProject(projectId);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();
@@ -101,7 +102,7 @@ public class RunnerCommand extends AbsCommand {
             return null;
         }
 
-        final Project projectToRun = project.getInnerProject();
+        final ProjectReference projectToRun = project.getInnerReference();
 
         // Ok now we have the project, run it
         final RunnerStatus runnerStatus;
@@ -188,7 +189,7 @@ public class RunnerCommand extends AbsCommand {
         // print logs if not cancelled
         if (CANCELLED != newStatus.getInnerStatus().status()) {
             String logs = newStatus.getProject().getCodenvy().runner()
-                                   .logs(newStatus.getProject().getInnerProject(), newStatus.getInnerStatus().processId()).execute();
+                                   .logs(newStatus.getProject().getInnerReference(), newStatus.getInnerStatus().processId()).execute();
             System.out.println("Logs:");
             System.out.println(logs);
         }
@@ -242,7 +243,7 @@ public class RunnerCommand extends AbsCommand {
 
                 try {
                     updatedRunnerStatus = status.getProject().getCodenvy().runner()
-                                                .status(status.getProject().getInnerProject(), status.getInnerStatus().processId())
+                                                .status(status.getProject().getInnerReference(), status.getInnerStatus().processId())
                                                 .execute();
                 } catch (CodenvyErrorException e) {
                     return null;

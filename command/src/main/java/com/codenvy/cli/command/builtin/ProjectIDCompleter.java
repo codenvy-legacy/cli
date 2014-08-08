@@ -11,7 +11,7 @@
 
 package com.codenvy.cli.command.builtin;
 
-import com.codenvy.cli.command.builtin.model.UserProject;
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 
 import org.apache.felix.service.command.CommandSession;
 import org.apache.karaf.shell.console.CommandSessionHolder;
@@ -42,8 +42,8 @@ public class ProjectIDCompleter implements Completer {
 
         if (multiRemoteCodenvy != null) {
             // get current projects
-            List<UserProject> projects = multiRemoteCodenvy.getProjects();
-            for (UserProject project : projects) {
+            List<UserProjectReference> projects = multiRemoteCodenvy.getProjects();
+            for (UserProjectReference project : projects) {
                 delegate.getStrings().add(project.shortId());
             }
         }
