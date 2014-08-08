@@ -10,25 +10,24 @@
  *******************************************************************************/
 package com.codenvy.cli.preferences.file;
 
-import static com.codenvy.cli.preferences.file.FakePojo.DUMB_POJO_NAME;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import static com.codenvy.cli.preferences.file.FakePojo.DUMB_POJO_NAME;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Stéphane Daviet
@@ -143,7 +142,7 @@ public class FilePreferencesTest {
         assertThat(fakePojo).isEqualToComparingFieldByField(FakePojo.getDumbInstance()
                                                                     .withName(OtherPojo.OTHER_POJO_NAME)
                                                                     .withLeitmotiv(null)
-                                                                    .withCharacteristics(null));
+                                                                    .withCharacteristics((String[]) null));
     }
 
     @Test
@@ -157,8 +156,6 @@ public class FilePreferencesTest {
 
         Files.copy(preferencesFile.toPath(), new FileOutputStream(tempPreferencesFile));
         final FilePreferences filePreferences = new FilePreferences(preferencesFile).setDisableSaveOnChanges();
-
-        final CountDownLatch countDownLatch = new CountDownLatch(1);
 
         ExecutorService executorService = Executors.newFixedThreadPool(2);
 
@@ -242,7 +239,7 @@ public class FilePreferencesTest {
         tempPreferencesFile.deleteOnExit();
         FilePreferences filePreferences = new FilePreferences(tempPreferencesFile).setDisableSaveOnChanges();
 
-        filePreferences.put("key", Arrays.asList(new String[]{"fake", "dumb", "useless"}));
+        filePreferences.put("key", asList("fake", "dumb", "useless"));
 
         filePreferences.get("key", List.class);
     }
