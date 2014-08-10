@@ -73,6 +73,7 @@ public class ListCommand extends AbsCommand {
         List<String> privacies = new ArrayList<>();
         List<String> runnerIDs = new ArrayList<>();
         List<String> builderIDs = new ArrayList<>();
+        List<String> permissions = new ArrayList<>();
 
         int count = 0;
         for (UserProjectReference project : projects) {
@@ -85,12 +86,15 @@ public class ListCommand extends AbsCommand {
             }
             List<UserRunnerStatus> runners;
             List<UserBuilderStatus> builders;
+            List<String> userPermissions;
             if (verbose) {
                  runners = getMultiRemoteCodenvy().getRunners(project);
                  builders = getMultiRemoteCodenvy().getBuilders(project);
+                userPermissions = getMultiRemoteCodenvy().getProjectPermissions(project);
             } else {
                 runners = Collections.emptyList();
                 builders = Collections.emptyList();
+                userPermissions = Collections.emptyList();
             }
 
             // ok, now we need to know how many lines we need
@@ -112,6 +116,7 @@ public class ListCommand extends AbsCommand {
                     projectNames.add(project.name());
                     types.add(project.getInnerReference().projectTypeId());
                     privacies.add(project.getInnerReference().visibility());
+                    permissions.add(convert(userPermissions));
                 } else {
                     // blank data
                     ids.add("");
@@ -120,6 +125,7 @@ public class ListCommand extends AbsCommand {
                     projectNames.add("");
                     types.add("");
                     privacies.add("");
+                    permissions.add("");
                 }
 
                 // runners ?
@@ -150,9 +156,9 @@ public class ListCommand extends AbsCommand {
         // Ascii array
         AsciiArray asciiArray;
 
-        // verbose mode : add runners and builders
+        // verbose mode : add permissions, runners and builders
         if (verbose) {
-            asciiArray = buildAsciiArray().withColumns(ids, remotes, workspaces, projectNames, types, privacies, builderIDs, runnerIDs).withTitle("ID", "Remote", "Workspace", "Project", "Type", "Privacy", "Builders", "Runners");
+            asciiArray = buildAsciiArray().withColumns(ids, remotes, workspaces, projectNames, types, privacies, permissions, builderIDs, runnerIDs).withTitle("ID", "Remote", "Workspace", "Project", "Type", "Privacy", "Perms", "Builders", "Runners");
         } else {
             asciiArray = buildAsciiArray().withColumns(ids, remotes, workspaces, projectNames, types, privacies).withTitle("ID", "Remote", "Workspace", "Project", "Type", "Privacy");
         }
@@ -163,6 +169,26 @@ public class ListCommand extends AbsCommand {
     }
 
 
+    protected String convert(List<String> userPermissions) {
+        StringBuilder sb = new StringBuilder("");
+
+        if (userPermissions.contains("read")) {
+            sb.append("R");
+        }
+        if (userPermissions.contains("write")) {
+            sb.append("W");
+        }
+        if (userPermissions.contains("update_acl")) {
+            sb.append("U");
+        }
+        if (userPermissions.contains("run")) {
+            sb.append("X");
+        }
+        if (userPermissions.contains("build")) {
+            sb.append("B");
+        }
+        return sb.toString();
+    }
 
     protected String prettyPrint(UserRunnerStatus runnerStatus) {
         StringBuilder sb = new StringBuilder(runnerStatus.shortId());

@@ -49,6 +49,7 @@ import org.fusesource.jansi.Ansi;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -520,6 +521,20 @@ public class MultiRemoteCodenvy {
 
         return matchingStatuses;
     }
+
+    /**
+     * Gets project permissions
+     * @param userProjectReference
+     * @return
+     */
+    public List<String> getProjectPermissions(UserProjectReference userProjectReference) {
+        Project project = userProjectReference.getCodenvy().project().getProject(userProjectReference.getWorkspace().id(), userProjectReference.getInnerReference()).execute();
+        if (project == null) {
+            return Collections.emptyList();
+        }
+        return project.userPermissions();
+    }
+
 
     public List<UserRunnerStatus> getRunners(UserProjectReference userProjectReference) {
         List<UserRunnerStatus> statuses = new ArrayList<>();

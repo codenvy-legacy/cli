@@ -224,6 +224,7 @@ public abstract class AbsCommandTest {
         doReturn(true).when(multiRemoteCodenvy).hasAvailableRemotes();
         doReturn(Collections.emptyList()).when(multiRemoteCodenvy).getBuilders(any(UserProjectReference.class));
         doReturn(Collections.emptyList()).when(multiRemoteCodenvy).getRunners(any(UserProjectReference.class));
+        doReturn(Collections.emptyList()).when(multiRemoteCodenvy).getProjectPermissions(any(UserProjectReference.class));
 
     }
 
