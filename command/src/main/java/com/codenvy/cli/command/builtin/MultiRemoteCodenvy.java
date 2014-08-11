@@ -161,10 +161,6 @@ public class MultiRemoteCodenvy {
         Request<WorkspaceReference> request = workspaceClient.withName(name);
         WorkspaceReference workspaceReference = request.execute();
 
-        if (workspaceReference.isTemporary()) {
-            return null;
-        }
-
         return new DefaultUserWorkspace(remote, this, codenvy, workspaceReference);
     }
 
@@ -188,11 +184,6 @@ public class MultiRemoteCodenvy {
 
         for (Workspace workspace : readWorkspaces) {
             WorkspaceReference ref = workspace.workspaceReference();
-            // Now skip all temporary workspaces
-            if (ref.isTemporary()) {
-                continue;
-            }
-
             workspaces.add(new DefaultUserWorkspace(remote, this, codenvy, ref));
 
         }
@@ -217,10 +208,6 @@ public class MultiRemoteCodenvy {
 
         for (Workspace workspace : readWorkspaces) {
             WorkspaceReference ref = workspace.workspaceReference();
-            // Now skip all temporary workspaces
-            if (ref.isTemporary()) {
-                continue;
-            }
 
             DefaultUserWorkspace defaultUserWorkspace = new DefaultUserWorkspace(remote, this, codenvy, ref);
 
