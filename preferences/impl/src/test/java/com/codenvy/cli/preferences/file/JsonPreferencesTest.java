@@ -10,7 +10,8 @@
  *******************************************************************************/
 package com.codenvy.cli.preferences.file;
 
-import org.junit.Test;
+
+import org.testng.annotations.Test;
 
 /**
  * @author Stéphane Daviet

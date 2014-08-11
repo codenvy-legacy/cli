@@ -12,7 +12,6 @@ package com.codenvy.cli.command.builtin.model;
 
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.client.Codenvy;
-import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 
 import org.fusesource.jansi.Ansi;

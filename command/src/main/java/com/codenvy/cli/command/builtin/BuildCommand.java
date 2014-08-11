@@ -19,7 +19,6 @@ import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.model.BuilderState;
 import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.Link;
-import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 
 import org.apache.karaf.shell.commands.Argument;

@@ -10,13 +10,16 @@
  *******************************************************************************/
 package com.codenvy.cli.preferences.file;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -26,8 +29,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static com.codenvy.cli.preferences.file.FakePojo.DUMB_POJO_NAME;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * @author Stéphane Daviet
@@ -35,12 +40,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FilePreferencesTest {
     private static final String USELESS_POJO_KEY = "uselessPojo";
 
+
+    protected FilePreferences getPreferencesFile(String resourceName) throws IOException {
+
+        File tempPreferencesFile = File.createTempFile("preferencesTest", ".json");
+        tempPreferencesFile.deleteOnExit();
+        try (InputStream is = FilePreferencesTest.class.getResourceAsStream(resourceName)) {
+            if (is == null) {
+                throw new IllegalStateException("Unable to find the resource '" + resourceName + "'.");
+            }
+            Files.copy(is, tempPreferencesFile.toPath(), REPLACE_EXISTING);
+        }
+
+        // disable the save
+        return new FilePreferences(tempPreferencesFile).setDisableSaveOnChanges();
+    }
+
     @Test
-    public void testPerfectPojoMatchPreferences() throws URISyntaxException {
-        File preferencesFile = new File(FilePreferencesTest.class
-                                                                    .getResource("perfectPojoMatchPreferences.json")
-                                                                    .toURI());
-        FilePreferences filePreferences = new FilePreferences(preferencesFile).setDisableSaveOnChanges();
+    public void testPerfectPojoMatchPreferences() throws IOException {
+        FilePreferences filePreferences = getPreferencesFile("perfectPojoMatchPreferences.json");
 
         FakePojo fakePojo = filePreferences.get(USELESS_POJO_KEY, FakePojo.class);
 
@@ -48,11 +66,8 @@ public class FilePreferencesTest {
     }
 
     @Test
-    public void testMorePropertiesThanPojoPreferences() throws URISyntaxException {
-        File preferencesFile = new File(FilePreferencesTest.class
-                                                                    .getResource("morePropertiesThanPojoPreferences.json")
-                                                                    .toURI());
-        FilePreferences filePreferences = new FilePreferences(preferencesFile).setDisableSaveOnChanges();
+    public void testMorePropertiesThanPojoPreferences() throws IOException {
+        FilePreferences filePreferences = getPreferencesFile("morePropertiesThanPojoPreferences.json");
 
         FakePojo fakePojo = filePreferences.get(USELESS_POJO_KEY, FakePojo.class);
 
@@ -60,11 +75,8 @@ public class FilePreferencesTest {
     }
 
     @Test
-    public void testTwoConsumersWithDifferentsPojo() throws URISyntaxException {
-        File preferencesFile = new File(FilePreferencesTest.class
-                                                                    .getResource("morePropertiesThanPojoPreferences.json")
-                                                                    .toURI());
-        FilePreferences filePreferences = new FilePreferences(preferencesFile).setDisableSaveOnChanges();
+    public void testTwoConsumersWithDifferentsPojo() throws IOException {
+        FilePreferences filePreferences = getPreferencesFile("morePropertiesThanPojoPreferences.json");
 
         FakePojo fakePojo = filePreferences.get(USELESS_POJO_KEY, FakePojo.class);
 
@@ -76,21 +88,15 @@ public class FilePreferencesTest {
     }
 
     @Test
-    public void testLessPropertiesThanPojoPreferences() throws URISyntaxException {
-        File preferencesFile = new File(FilePreferencesTest.class
-                                                                    .getResource("lessPropertiesThanPojoPreferences.json")
-                                                                    .toURI());
-        FilePreferences filePreferences = new FilePreferences(preferencesFile).setDisableSaveOnChanges();
+    public void testLessPropertiesThanPojoPreferences() throws IOException {
+        FilePreferences filePreferences = getPreferencesFile("lessPropertiesThanPojoPreferences.json");
         FakePojo fakePojo = filePreferences.get(USELESS_POJO_KEY, FakePojo.class);
         assertThat(FakePojo.getDumbInstance().withName(null)).isEqualToComparingFieldByField(fakePojo);
     }
 
     @Test
-    public void testDeeperPerfectMatchPreferences() throws URISyntaxException {
-        File preferencesFile = new File(FilePreferencesTest.class
-                                                                    .getResource("deeperPerfectPojoMatchPreferences.json")
-                                                                    .toURI());
-        FilePreferences filePreferences = new FilePreferences(preferencesFile).setDisableSaveOnChanges();
+    public void testDeeperPerfectMatchPreferences() throws IOException {
+        FilePreferences filePreferences = getPreferencesFile("deeperPerfectPojoMatchPreferences.json");
 
         FakePojo fakePojo = filePreferences.path("intermediateNode")
                                               .get(USELESS_POJO_KEY, FakePojo.class);
@@ -113,11 +119,8 @@ public class FilePreferencesTest {
     }
 
     @Test
-    public void testMergeWithNoPropertyOverwrite() throws URISyntaxException {
-        File preferencesFile = new File(FilePreferencesTest.class
-                                                                    .getResource("perfectPojoMatchPreferences.json")
-                                                                    .toURI());
-        FilePreferences filePreferences = new FilePreferences(preferencesFile).setDisableSaveOnChanges();
+    public void testMergeWithNoPropertyOverwrite() throws IOException {
+        FilePreferences filePreferences = getPreferencesFile("perfectPojoMatchPreferences.json");
 
         filePreferences.merge(USELESS_POJO_KEY, OtherPojo.getInstance().withName(DUMB_POJO_NAME));
         FakePojo fakePojo = filePreferences.get(USELESS_POJO_KEY, FakePojo.class);
@@ -126,11 +129,8 @@ public class FilePreferencesTest {
     }
 
     @Test
-    public void testOverwrite() throws URISyntaxException {
-        File preferencesFile = new File(FilePreferencesTest.class
-                                                                    .getResource("perfectPojoMatchPreferences.json")
-                                                                    .toURI());
-        FilePreferences filePreferences = new FilePreferences(preferencesFile).setDisableSaveOnChanges();
+    public void testOverwrite() throws IOException {
+        FilePreferences filePreferences = getPreferencesFile("perfectPojoMatchPreferences.json");
 
         filePreferences.put(USELESS_POJO_KEY, OtherPojo.getInstance());
         OtherPojo otherPojo = filePreferences.get(USELESS_POJO_KEY, OtherPojo.class);
@@ -146,16 +146,8 @@ public class FilePreferencesTest {
     }
 
     @Test
-    public void testParallelConsumption() throws URISyntaxException, IOException, InterruptedException, ExecutionException {
-        File preferencesFile = new File(FilePreferencesTest.class
-                                                                    .getResource("perfectPojoMatchPreferences.json")
-                                                                    .toURI());
-
-        File tempPreferencesFile = File.createTempFile("preferencesTest", ".json");
-        tempPreferencesFile.deleteOnExit();
-
-        Files.copy(preferencesFile.toPath(), new FileOutputStream(tempPreferencesFile));
-        final FilePreferences filePreferences = new FilePreferences(preferencesFile).setDisableSaveOnChanges();
+    public void testParallelConsumption() throws IOException, InterruptedException, ExecutionException {
+        final FilePreferences filePreferences = getPreferencesFile("perfectPojoMatchPreferences.json");
 
         ExecutorService executorService = Executors.newFixedThreadPool(2);
 
@@ -178,11 +170,8 @@ public class FilePreferencesTest {
     }
 
     @Test
-    public void testDeepPutAndGet() throws URISyntaxException {
-        File preferencesFile = new File(FilePreferencesTest.class
-                                                                    .getResource("deeperPerfectPojoMatchPreferences.json")
-                                                                    .toURI());
-        FilePreferences filePreferences = new FilePreferences(preferencesFile).setDisableSaveOnChanges();
+    public void testDeepPutAndGet() throws IOException {
+        FilePreferences filePreferences = getPreferencesFile("deeperPerfectPojoMatchPreferences.json");
 
         FakePojo fakePojo = filePreferences.path("intermediateNode")
                                               .get(USELESS_POJO_KEY, FakePojo.class);

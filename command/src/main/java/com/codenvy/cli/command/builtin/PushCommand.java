@@ -15,7 +15,6 @@ import jline.console.ConsoleReader;
 
 import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.util.metadata.CodenvyMetadata;
-import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 
 import org.apache.karaf.shell.commands.Argument;

@@ -160,7 +160,9 @@ public class MultiRemoteCodenvy {
         WorkspaceClient workspaceClient = codenvy.workspace();
         Request<WorkspaceReference> request = workspaceClient.withName(name);
         WorkspaceReference workspaceReference = request.execute();
-
+        if (workspaceReference == null) {
+            return null;
+        }
         return new DefaultUserWorkspace(remote, this, codenvy, workspaceReference);
     }
 

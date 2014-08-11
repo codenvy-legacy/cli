@@ -11,7 +11,6 @@
 package com.codenvy.cli.command.builtin.model;
 
 import com.codenvy.client.Codenvy;
-import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 
 /**

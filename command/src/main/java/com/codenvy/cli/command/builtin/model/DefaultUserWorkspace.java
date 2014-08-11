@@ -12,7 +12,6 @@ package com.codenvy.cli.command.builtin.model;
 
 import com.codenvy.cli.command.builtin.MultiRemoteCodenvy;
 import com.codenvy.client.Codenvy;
-import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.WorkspaceReference;
 

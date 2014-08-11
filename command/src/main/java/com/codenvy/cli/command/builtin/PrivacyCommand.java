@@ -12,7 +12,6 @@
 package com.codenvy.cli.command.builtin;
 
 import com.codenvy.cli.command.builtin.model.UserProjectReference;
-import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.Visibility;
 

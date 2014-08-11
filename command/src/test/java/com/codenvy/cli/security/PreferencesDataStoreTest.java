@@ -16,15 +16,17 @@ import com.codenvy.cli.preferences.Preferences;
 import com.codenvy.cli.preferences.file.FilePreferences;
 import com.codenvy.client.auth.Credentials;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mockito;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 import java.io.File;
+import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 /**
  * @author Florent Benoit
@@ -37,8 +39,8 @@ public class PreferencesDataStoreTest extends AbsCommandTest {
     private PreferencesDataStore dataStoreStephane;
 
 
-    @Before
-    public void init() throws Exception {
+
+    public void init() throws URISyntaxException {
 
         FilePreferences filePreferences =
                 new FilePreferences(new File(PreferencesDataStoreTest.class.getResource("preferences.json").toURI()));
@@ -55,28 +57,29 @@ public class PreferencesDataStoreTest extends AbsCommandTest {
 
     @Test
     public void testGet() throws Exception {
-
+        init();
         // Return mock values extracted from store
         doReturn("florent").when(getCredentials()).username();
         doReturn("abc123").when(getToken()).value();
 
         Credentials credentialsFlorent = dataStoreFlorent.getCredentials("dummy");
         assertNotNull(credentialsFlorent);
-        assertEquals("florent", credentialsFlorent.username());
-        assertEquals("abc123", credentialsFlorent.token().value());
+        assertEquals(credentialsFlorent.username(), "florent");
+        assertEquals(credentialsFlorent.token().value(), "abc123");
 
         doReturn("stephane").when(getCredentials()).username();
         doReturn("def456").when(getToken()).value();
 
         Credentials credentialsStephane = dataStoreStephane.getCredentials("dummy");
         assertNotNull(credentialsStephane);
-        assertEquals("stephane", credentialsStephane.username());
-        assertEquals("def456", credentialsStephane.token().value());
+        assertEquals(credentialsStephane.username(), "stephane");
+        assertEquals(credentialsStephane.token().value(), "def456");
 
     }
 
-    @Test
+    @Test(dependsOnMethods = "testGet")
     public void testPut() throws Exception {
+        init();
         // Return mock values extracted from store
         doReturn("florent").when(getCredentials()).username();
         doReturn("abc123").when(getToken()).value();
@@ -91,13 +94,14 @@ public class PreferencesDataStoreTest extends AbsCommandTest {
 
         Credentials merged = dataStoreFlorent.put("florent_dev", update);
 
-        assertEquals("toto", merged.username());
+        assertEquals(merged.username(), "toto");
 
     }
 
-
-        @Test
+    @Test(dependsOnMethods = "testPut")
     public void testOnlyOneInstanceGet() throws Exception {
+        init();
+
         Credentials one = dataStoreFlorent.get("one");
         assertNotNull(one);
         Credentials two = dataStoreFlorent.get("two");

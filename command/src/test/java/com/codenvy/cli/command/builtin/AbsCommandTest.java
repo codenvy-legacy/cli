@@ -30,13 +30,15 @@ import com.codenvy.client.model.Workspace;
 import com.codenvy.client.model.WorkspaceReference;
 
 import org.apache.felix.service.command.CommandSession;
-import org.junit.Before;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.mockito.testng.MockitoTestNGListener;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Listeners;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,9 +57,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Florent Benoit
  */
-@RunWith(MockitoJUnitRunner.class)
 public abstract class AbsCommandTest {
-    public static final String DEFAULT_URL = "http://ide3.cf.codenvy-stg.com";
 
 
     private MultiRemoteCodenvy multiRemoteCodenvy;
@@ -122,8 +122,10 @@ public abstract class AbsCommandTest {
     private Map<String, List<Project>> projects;
 
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public void initMocks() {
+        MockitoAnnotations.initMocks(this);
+
         // We shouldn't use session.getConsole() for logging as grep, less, more commands won't work in interactive mode
         when(commandSession.getConsole()).thenAnswer(
                 new Answer() {

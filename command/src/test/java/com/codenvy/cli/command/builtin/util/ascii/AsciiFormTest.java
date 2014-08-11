@@ -11,13 +11,13 @@
 package com.codenvy.cli.command.builtin.util.ascii;
 
 import org.fusesource.jansi.Ansi;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import static java.lang.String.format;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 /**
  * @author Florent Benoit
@@ -37,7 +37,7 @@ public class AsciiFormTest {
         String result = asciiForm.toAscii();
         assertTrue(result.length() > 0);
 
-        assertEquals(format("id value1%n"), result);
+        assertEquals(result, format("id value1%n"));
     }
 
     @Test
@@ -46,9 +46,9 @@ public class AsciiFormTest {
         String result = asciiForm.toAscii();
         assertTrue(result.length() > 0);
 
-        assertEquals(format("ID             value1%n" +
-                            "A VERY LONG ID 123456789%n" +
-                            "SHORT ID       abc%n"), result);
+        assertEquals(result, format("ID             value1%n" +
+                                    "A VERY LONG ID 123456789%n" +
+                                    "SHORT ID       abc%n"));
     }
 
     protected String bold(String name) {
@@ -61,9 +61,9 @@ public class AsciiFormTest {
         AsciiForm asciiForm = new DefaultAsciiForm().withEntry(bold("id"), "value1").withEntry(bold("a very long Id"), "123456789").withEntry(bold("short id"), "abc").withUppercasePropertyName();
         String result = asciiForm.toAscii();
         assertTrue(result.length() > 0);
-        assertEquals(format("\u001B[1mID\u001B[22m             value1%n" +
-                            "\u001B[1mA VERY LONG ID\u001B[22m 123456789%n" +
-                            "\u001B[1mSHORT ID\u001B[22m       abc%n"), result);
+        assertEquals(result, format("\u001B[1mID\u001B[22m             value1%n" +
+                                    "\u001B[1mA VERY LONG ID\u001B[22m 123456789%n" +
+                                    "\u001B[1mSHORT ID\u001B[22m       abc%n"));
     }
 
 

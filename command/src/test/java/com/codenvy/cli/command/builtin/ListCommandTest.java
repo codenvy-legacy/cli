@@ -12,13 +12,14 @@ package com.codenvy.cli.command.builtin;
 
 import com.codenvy.cli.command.builtin.util.ascii.FormatterMode;
 
-import org.junit.Test;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.CSV;
 import static java.lang.String.format;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Test of the list command
@@ -38,6 +39,8 @@ public class ListCommandTest extends AbsCommandTest {
     }
 
 
+
+
     /**
      * Expect it works when there are no workspaces
      */
@@ -53,7 +56,7 @@ public class ListCommandTest extends AbsCommandTest {
     /**
      * Expect it works when there is one workspace without projects
      */
-    @Test
+    @Test(dependsOnMethods = "testNoWorkspace")
     public void testOneWorkspaceNoProjects() throws Exception {
 
         CommandInvoker commandInvoker = getInvoker();
@@ -70,12 +73,10 @@ public class ListCommandTest extends AbsCommandTest {
     /**
      * Expect it works when there is one workspace with one project
      */
-    @Test
+    @Test(dependsOnMethods = "testOneWorkspaceNoProjects")
     public void testOneWorkspaceOneProjectVerbose() throws Exception {
 
-
         String workspaceName = "WORKSPACE1";
-        addWorkspace(workspaceName);
         addProject(workspaceName, "project1");
 
         CommandInvoker commandInvoker = getInvoker().option("-v", true);
@@ -85,22 +86,17 @@ public class ListCommandTest extends AbsCommandTest {
 
         CommandInvoker.Result result = commandInvoker.invoke(getCommandSession());
 
-        assertEquals(format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY,PERMS,BUILDERS,RUNNERS%n" +
-                            "p10ff33,default,WORKSPACE1,project1,java,true,,none,none%n" +
-                            "%n"), result.disableAnsi().getOutputStream());
+        assertEquals(result.disableAnsi().getOutputStream(), format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY,PERMS,BUILDERS,RUNNERS%n" +
+                                                                    "p10ff33,default,WORKSPACE1,project1,java,true,,none,none%n" +
+                                                                    "%n"));
 
     }
 
     /**
      * Expect it works when there is one workspace with one project
      */
-    @Test
+    @Test(dependsOnMethods = "testOneWorkspaceOneProjectVerbose")
     public void testOneWorkspaceOneProjectDefault() throws Exception {
-
-
-        String workspaceName = "WORKSPACE1";
-        addWorkspace(workspaceName);
-        addProject(workspaceName, "project1");
 
         CommandInvoker commandInvoker = getInvoker();
 
@@ -109,9 +105,9 @@ public class ListCommandTest extends AbsCommandTest {
 
         CommandInvoker.Result result = commandInvoker.invoke(getCommandSession());
 
-        assertEquals(format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY%n" +
-                            "p10ff33,default,WORKSPACE1,project1,java,true%n" +
-                            "%n"), result.disableAnsi().getOutputStream());
+        assertEquals(result.disableAnsi().getOutputStream(), format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY%n" +
+                                                                    "p10ff33,default,WORKSPACE1,project1,java,true%n" +
+                                                                    "%n"));
 
     }
 

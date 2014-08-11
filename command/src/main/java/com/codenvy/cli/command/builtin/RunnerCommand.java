@@ -17,7 +17,6 @@ import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.model.Link;
-import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.RunnerState;
 import com.codenvy.client.model.RunnerStatus;

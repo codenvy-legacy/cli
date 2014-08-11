@@ -10,7 +10,7 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.util.ascii;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,9 +18,9 @@ import java.util.List;
 import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.CSV;
 import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.MODERN;
 import static java.lang.String.format;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  * @author Florent Benoit
@@ -40,8 +40,8 @@ public class AsciiArrayTest {
         DefaultAsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1);
         List<Integer> columnsSize = asciiArray.getColumnsSize();
         assertNotNull(columnsSize);
-        assertEquals(1, columnsSize.size());
-        assertEquals(Integer.valueOf(3), columnsSize.get(0));
+        assertEquals(columnsSize.size(), 1);
+        assertEquals(columnsSize.get(0), Integer.valueOf(3));
     }
 
     @Test
@@ -51,9 +51,9 @@ public class AsciiArrayTest {
         DefaultAsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2);
         List<Integer> columnsSize = asciiArray.getColumnsSize();
         assertNotNull(columnsSize);
-        assertEquals(2, columnsSize.size());
-        assertEquals(Integer.valueOf(8), columnsSize.get(0));
-        assertEquals(Integer.valueOf(5), columnsSize.get(1));
+        assertEquals(columnsSize.size(), 2);
+        assertEquals(columnsSize.get(0), Integer.valueOf(8));
+        assertEquals(columnsSize.get(1), Integer.valueOf(5));
     }
 
     @Test
@@ -64,9 +64,9 @@ public class AsciiArrayTest {
         DefaultAsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2).withTitle(titles);
         List<Integer> columnsSize = asciiArray.getColumnsSize();
         assertNotNull(columnsSize);
-        assertEquals(2, columnsSize.size());
-        assertEquals(Integer.valueOf(8), columnsSize.get(0));
-        assertEquals(Integer.valueOf(12), columnsSize.get(1));
+        assertEquals(columnsSize.size(), 2);
+        assertEquals(columnsSize.get(0), Integer.valueOf(8));
+        assertEquals(columnsSize.get(1), Integer.valueOf(12));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class AsciiArrayTest {
         String line = asciiArray.getBorderLine();
 
         // 4 spaces for the column
-        assertEquals("+----+", line);
+        assertEquals(line, "+----+");
 
     }
 
@@ -89,7 +89,7 @@ public class AsciiArrayTest {
         String line = asciiArray.getBorderLine();
 
         // 10 - for the title
-        assertEquals("+----------+", line);
+        assertEquals(line, "+----------+");
 
     }
 
@@ -98,7 +98,7 @@ public class AsciiArrayTest {
         List<String> column1 = Arrays.asList("row1", "row2", "row3");
         AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1);
         String result = asciiArray.toAscii();
-        assertEquals("+----+|row1||row2||row3|+----+", result.replaceAll("\\r|\\n", ""));
+        assertEquals(result.replaceAll("\\r|\\n", ""), "+----+|row1||row2||row3|+----+");
     }
 
     @Test
@@ -107,7 +107,7 @@ public class AsciiArrayTest {
         List<String> column2 = Arrays.asList("1", "2", "3");
         AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2);
         String result = asciiArray.toAscii();
-        assertEquals(format("+----+-+|row1|1||row2|2||row3|3|+----+-+"), result.replaceAll("\\r|\\n", ""));
+        assertEquals(result.replaceAll("\\r|\\n", ""), format("+----+-+|row1|1||row2|2||row3|3|+----+-+"));
     }
 
     @Test
@@ -117,7 +117,7 @@ public class AsciiArrayTest {
         List<String> titles = Arrays.asList("name", "id");
         AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2).withTitle(titles);
         String result = asciiArray.toAscii();
-        assertEquals(format("+----+--+|NAME|ID|+----+--+|row1| 1||row2| 2||row3| 3|+----+--+"), result.replaceAll("\\r|\\n", ""));
+        assertEquals(result.replaceAll("\\r|\\n", ""), format("+----+--+|NAME|ID|+----+--+|row1| 1||row2| 2||row3| 3|+----+--+"));
     }
 
     @Test
@@ -127,10 +127,10 @@ public class AsciiArrayTest {
         List<String> titles = Arrays.asList("name", "id");
         AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2).withTitle(titles).withFormatter(MODERN);
         String result = asciiArray.toAscii();
-        assertEquals(format("NAME  ID  %n" +
-                     "row1  1   %n" +
-                     "row2  2   %n" +
-                     "row3  3   %n"), result);
+        assertEquals(result, format("NAME  ID  %n" +
+                                    "row1  1   %n" +
+                                    "row2  2   %n" +
+                                    "row3  3   %n"));
     }
 
     @Test
@@ -140,10 +140,10 @@ public class AsciiArrayTest {
         List<String> titles = Arrays.asList("name", "id");
         AsciiArray asciiArray = new DefaultAsciiArray().withColumns(column1, column2).withTitle(titles).withFormatter(CSV);
         String result = asciiArray.toAscii();
-        assertEquals(format("NAME,ID%n" +
-                     "row1,1%n" +
-                     "row2,2%n" +
-                     "row3,3%n"), result);
+        assertEquals(result, format("NAME,ID%n" +
+                                    "row1,1%n" +
+                                    "row2,2%n" +
+                                    "row3,3%n"));
     }
 
 }
