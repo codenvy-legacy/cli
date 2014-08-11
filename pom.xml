@@ -53,6 +53,8 @@
     <scm>
         <connection>scm:git:git@github.com:codenvy/cli.git</connection>
         <developerConnection>scm:git:git@github.com:codenvy/cli.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/codenvy/cli/tree/v2</url>
     </scm>
     <properties>
         <assertj.version>1.6.1</assertj.version>
