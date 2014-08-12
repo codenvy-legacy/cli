@@ -58,6 +58,9 @@
             <action class="com.codenvy.cli.command.builtin.PullCommand" />
         </command>
         <command>
+            <action class="com.codenvy.cli.command.builtin.CloneLocalCommand" />
+        </command>
+        <command>
             <action class="com.codenvy.cli.command.builtin.PushCommand" />
         </command>
         <command>

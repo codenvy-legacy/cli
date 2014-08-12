@@ -24,3 +24,4 @@ com.codenvy.cli.command.builtin.PushCommand
 com.codenvy.cli.command.builtin.CreateProjectCommand
 com.codenvy.cli.command.builtin.DestroyCommand
 com.codenvy.cli.command.builtin.PrivacyCommand
+com.codenvy.cli.command.builtin.CloneLocalCommand

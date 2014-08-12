@@ -45,11 +45,10 @@ import static org.fusesource.jansi.Ansi.Color.RED;
  * @author Florent Benoit
  */
 @Command(scope = "codenvy", name = "push", description = "Push a project")
-public class PushCommand extends AbsCommand {
+public class PushCommand extends AbsPushPullCommand {
 
-    @Argument(name = "from-directory", description = "Specify the directory to use for pushing the project", index = 0)
+    @Argument(name = "codenvy-directory", description = "Specify the directory of a codenvy project")
     private String directory;
-
 
     /**
      * Execute the command
@@ -72,48 +71,8 @@ public class PushCommand extends AbsCommand {
         }
 
 
-        // path is not a directory
-        if (!directoryToSend.isDirectory()) {
-            Ansi buffer = Ansi.ansi();
-            buffer.fg(RED);
-            buffer.a("The specified path '").a(directoryToSend.getAbsolutePath()).a("' is not a directory.");
-            buffer.reset();
-            System.out.println(buffer.toString());
-            return null;
-        }
-
-        // directory doesn't exists
-        if (!directoryToSend.exists()) {
-            Ansi buffer = Ansi.ansi();
-            buffer.fg(RED);
-            buffer.a("The specified directory '").a(directoryToSend.getAbsolutePath()).a("' doesn't exists.");
-            buffer.reset();
-            System.out.println(buffer.toString());
-            return null;
-        }
-
-        // codenvy folder
-        File codenvyFolder = new File(directoryToSend, CODENVY_FOLDERNAME);
-        if (!codenvyFolder.exists() || !codenvyFolder.isDirectory()) {
-            Ansi buffer = Ansi.ansi();
-            buffer.fg(RED);
-            buffer.a("The specified directory '").a(directoryToSend.getAbsolutePath()).a("' is not a codenvy directory.");
-            buffer.reset();
-            System.out.println(buffer.toString());
-            return null;
-        }
-
-        String projectId;
-        try {
-            CodenvyMetadata codenvyMetadata = new CodenvyMetadata(directoryToSend);
-            projectId = codenvyMetadata.getProjectId();
-        } catch (Exception e) {
-            Ansi buffer = Ansi.ansi();
-            buffer.fg(RED);
-            buffer.a("The specified directory '").a(directoryToSend.getAbsolutePath()).a(
-                    "' has not been pulled by the CLI. Unable to manage it.");
-            buffer.reset();
-            System.out.println(buffer.toString());
+        String projectId = getProjectFromDirectory(directoryToSend);
+        if (projectId == null) {
             return null;
         }
 
@@ -174,16 +133,6 @@ public class PushCommand extends AbsCommand {
         return null;
     }
 
-    public static void getAllFiles(File dir, List<File> fileList) throws IOException {
-        File[] files = dir.listFiles();
-        for (File file : files) {
-            fileList.add(file);
-            if (file.isDirectory()) {
-                getAllFiles(file, fileList);
-            }
-        }
-    }
-
 
     public static InputStream getZipProjectStream(final File directoryToSend) {
 
@@ -216,49 +165,63 @@ public class PushCommand extends AbsCommand {
         };
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream);
-                    // Writer is on, unlock the reader
-                    writeStartLock.countDown();
-                    final ZipOutputStream outputStream = new ZipOutputStream(pipedOutputStream);
-
-
-
-                    List<File> listFiles = new ArrayList<>();
-                    getAllFiles(directoryToSend, listFiles);
-                    for (File file : listFiles) {
-                        if (!file.isDirectory()) { // we only zip files, not directories
-
-                            String entryPath = file.getPath().substring(directoryToSend.getPath().length() + 1);
-
-                            ZipEntry zipEntry = new ZipEntry(entryPath);
-                            outputStream.putNextEntry(zipEntry);
-
-                            try (FileInputStream fis = new FileInputStream(file)) {
-                                byte[] bytes = new byte[1024];
-                                int length;
-                                while ((length = fis.read(bytes)) >= 0) {
-                                    outputStream.write(bytes, 0, length);
-                                }
-
-                                outputStream.closeEntry();
-                            }
-                        }
-                    }
-
-                    // Flag for writing end, see hack above for PipedInputStream#read(…).
-                    writeDoneSignal.set(true);
-                    outputStream.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+        executor.execute(new ZipRunnable(pipedInputStream, writeStartLock, directoryToSend, writeDoneSignal));
 
         return pipedInputStream;
+    }
+
+    private static class ZipRunnable implements Runnable {
+        private final PipedInputStream pipedInputStream;
+        private final CountDownLatch writeStartLock;
+        private final File           directoryToSend;
+        private final AtomicBoolean  writeDoneSignal;
+
+        public ZipRunnable(PipedInputStream pipedInputStream, CountDownLatch writeStartLock, File directoryToSend,
+                           AtomicBoolean writeDoneSignal) {
+            this.pipedInputStream = pipedInputStream;
+            this.writeStartLock = writeStartLock;
+            this.directoryToSend = directoryToSend;
+            this.writeDoneSignal = writeDoneSignal;
+        }
+
+        @Override
+    public void run() {
+        try {
+            final PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream);
+            // Writer is on, unlock the reader
+            writeStartLock.countDown();
+            final ZipOutputStream outputStream = new ZipOutputStream(pipedOutputStream);
+
+
+            List<File> listFiles = new ArrayList<>();
+            getAllFiles(directoryToSend, listFiles);
+            for (File file : listFiles) {
+                if (!file.isDirectory()) { // we only zip files, not directories
+
+                    String entryPath = file.getPath().substring(directoryToSend.getPath().length() + 1);
+
+                    ZipEntry zipEntry = new ZipEntry(entryPath);
+                    outputStream.putNextEntry(zipEntry);
+
+                    try (FileInputStream fis = new FileInputStream(file)) {
+                        byte[] bytes = new byte[1024];
+                        int length;
+                        while ((length = fis.read(bytes)) >= 0) {
+                            outputStream.write(bytes, 0, length);
+                        }
+
+                        outputStream.closeEntry();
+                    }
+                }
+            }
+
+            // Flag for writing end, see hack above for PipedInputStream#read(…).
+            writeDoneSignal.set(true);
+            outputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     }
 }
 
