@@ -170,6 +170,10 @@ public class ListCommand extends AbsCommand {
 
 
     protected String convert(List<String> userPermissions) {
+        if (userPermissions == null) {
+            return "";
+        }
+
         StringBuilder sb = new StringBuilder("");
 
         if (userPermissions.contains("read")) {

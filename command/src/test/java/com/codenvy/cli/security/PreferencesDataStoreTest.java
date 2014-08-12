@@ -15,6 +15,7 @@ import com.codenvy.cli.command.builtin.AbsCommandTest;
 import com.codenvy.cli.preferences.Preferences;
 import com.codenvy.cli.preferences.file.FilePreferences;
 import com.codenvy.client.auth.Credentials;
+import com.codenvy.client.dummy.DummyCodenvyClient;
 
 import org.mockito.Mockito;
 import org.testng.annotations.BeforeClass;
@@ -49,26 +50,22 @@ public class PreferencesDataStoreTest extends AbsCommandTest {
         // keep remotes
         this.preferences = filePreferences.walk("remotes");
         assertNotNull(preferences);
+        DummyCodenvyClient codenvyClient = new DummyCodenvyClient();
 
-        this.dataStoreFlorent = new PreferencesDataStore(preferences, "florent_dev", getCodenvyClient());
-        this.dataStoreStephane = new PreferencesDataStore(preferences, "stephane_dev", getCodenvyClient());
+
+        this.dataStoreFlorent = new PreferencesDataStore(preferences, "florent_dev", codenvyClient);
+        this.dataStoreStephane = new PreferencesDataStore(preferences, "stephane_dev", codenvyClient);
 
     }
 
     @Test
     public void testGet() throws Exception {
         init();
-        // Return mock values extracted from store
-        doReturn("florent").when(getCredentials()).username();
-        doReturn("abc123").when(getToken()).value();
 
         Credentials credentialsFlorent = dataStoreFlorent.getCredentials("dummy");
         assertNotNull(credentialsFlorent);
         assertEquals(credentialsFlorent.username(), "florent");
         assertEquals(credentialsFlorent.token().value(), "abc123");
-
-        doReturn("stephane").when(getCredentials()).username();
-        doReturn("def456").when(getToken()).value();
 
         Credentials credentialsStephane = dataStoreStephane.getCredentials("dummy");
         assertNotNull(credentialsStephane);
@@ -80,16 +77,11 @@ public class PreferencesDataStoreTest extends AbsCommandTest {
     @Test(dependsOnMethods = "testGet")
     public void testPut() throws Exception {
         init();
-        // Return mock values extracted from store
-        doReturn("florent").when(getCredentials()).username();
-        doReturn("abc123").when(getToken()).value();
-
         Credentials credentialsFlorent = dataStoreFlorent.getCredentials("dummy");
 
-        // change token
+        // change username
         Credentials update = Mockito.mock(Credentials.class);
         doReturn("toto").when(update).username();
-        doReturn("toto").when(getCredentials()).username();
         doReturn(credentialsFlorent.token()).when(update).token();
 
         Credentials merged = dataStoreFlorent.put("florent_dev", update);

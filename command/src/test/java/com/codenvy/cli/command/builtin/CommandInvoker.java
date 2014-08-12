@@ -10,6 +10,11 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
+import com.codenvy.client.Codenvy;
+import com.codenvy.client.CodenvyClient;
+import com.codenvy.client.dummy.DummyCodenvy;
+import com.codenvy.client.dummy.DummyCodenvyClient;
+
 import org.apache.felix.service.command.CommandSession;
 import org.apache.karaf.shell.commands.Action;
 import org.apache.karaf.shell.commands.Argument;
@@ -62,17 +67,22 @@ public class CommandInvoker {
      */
     private final ByteArrayOutputStream errorStream;
 
+    /**
+     * CommandSession.
+     */
+    private final CommandSession commandSession;
 
     /**
      * Build an invoker of commands
      * @param command
      */
-    public CommandInvoker(Action command) {
+    public CommandInvoker(Action command, CommandSession commandSession) {
         this.command = command;
         this.options = new ArrayList<>();
         this.arguments = new ArrayList<>();
         this.outputStream = new ByteArrayOutputStream();
         this.errorStream = new ByteArrayOutputStream();
+        this.commandSession = commandSession;
         introspect();
     }
 
@@ -139,6 +149,10 @@ public class CommandInvoker {
         return this;
     }
 
+    public CommandSession getCommandSession() {
+        return commandSession;
+    }
+
     /**
      * Allows to give input lines as parameter
      * @param lines the given content
@@ -147,6 +161,15 @@ public class CommandInvoker {
     public CommandInvoker setSystemIn(String lines) {
         this.inputStream = new ByteArrayInputStream(lines.getBytes());
         return this;
+    }
+
+
+
+    public Result invoke() throws Exception {
+        if (commandSession == null) {
+            throw new IllegalStateException("Unable to invoke as command session has not been given");
+        }
+        return invoke(commandSession);
     }
 
     public Result invoke(CommandSession commandSession) throws Exception {
@@ -287,5 +310,18 @@ public class CommandInvoker {
         public String getName() {
             return getObject().name();
         }
+    }
+
+
+    public MultiRemoteCodenvy getMultiRemoteCodenvy() {
+        return (MultiRemoteCodenvy) commandSession.get(MultiRemoteCodenvy.class.getName());
+    }
+
+    public DummyCodenvy getDefaultRemoteCodenvy() {
+        return (DummyCodenvy)((MultiRemoteCodenvy)commandSession.get(MultiRemoteCodenvy.class.getName())).getReadyRemotes().get("default");
+    }
+
+    public DummyCodenvyClient getCodenvyClient() {
+        return (DummyCodenvyClient) commandSession.get(DummyCodenvyClient.class.getName());
     }
 }

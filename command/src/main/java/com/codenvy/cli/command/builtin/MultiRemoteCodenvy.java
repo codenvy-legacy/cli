@@ -276,6 +276,9 @@ public class MultiRemoteCodenvy {
     public Map<String, Remote> getAvailableRemotes() {
         return availableRemotes;
     }
+    public Map<String, Codenvy> getReadyRemotes() {
+        return readyRemotes;
+    }
 
     public String listRemotes() {
         Ansi buffer = Ansi.ansi();

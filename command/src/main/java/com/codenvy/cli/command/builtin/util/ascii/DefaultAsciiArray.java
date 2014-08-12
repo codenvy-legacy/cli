@@ -274,6 +274,9 @@ public class DefaultAsciiArray implements AsciiArray {
             // for content
             List<String> columnData = columns.get(column);
             for (String row : columnData) {
+                if (row == null) {
+                    continue;
+                }
                 int currentLength = row.length();
                 if (currentLength > maxLength) {
                     maxLength = currentLength;

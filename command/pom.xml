@@ -54,6 +54,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.codenvy.platform-api-client-java</groupId>
+            <artifactId>codenvy-platform-api-client-java-dummy</artifactId>
+            <version>${com.codenvy.client.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>${com.fasterxml.jackson.version}</version>

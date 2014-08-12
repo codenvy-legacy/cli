@@ -11,7 +11,17 @@
 package com.codenvy.cli.command.builtin;
 
 import com.codenvy.cli.command.builtin.util.ascii.FormatterMode;
+import com.codenvy.client.Codenvy;
+import com.codenvy.client.CodenvyClient;
+import com.codenvy.client.dummy.DummyCodenvy;
+import com.codenvy.client.dummy.DummyCodenvyBuilder;
+import com.codenvy.client.dummy.DummyCodenvyClient;
+import com.codenvy.client.dummy.project.DummyProject;
+import com.codenvy.client.dummy.workspace.DummyWorkspace;
 
+import org.apache.felix.service.command.CommandSession;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -32,13 +42,16 @@ public class ListCommandTest extends AbsCommandTest {
     protected CommandInvoker getInvoker() {
         ListCommand listCommand = new ListCommand();
 
+
+        DummyCodenvyClient codenvyClient = new DummyCodenvyClient();
+
         // prepare
-        prepare(listCommand);
+        CommandSession commandSession = prepare(listCommand, codenvyClient);
 
-        return new CommandInvoker(listCommand);
+
+
+        return new CommandInvoker(listCommand, commandSession);
     }
-
-
 
 
     /**
@@ -47,8 +60,7 @@ public class ListCommandTest extends AbsCommandTest {
     @Test
     public void testNoWorkspace() throws Exception {
 
-        CommandInvoker.Result result = getInvoker().invoke(getCommandSession());
-
+        CommandInvoker.Result result = getInvoker().invoke();
         assertTrue(result.disableAnsi().getOutputStream().contains("No projects"));
 
     }
@@ -56,15 +68,14 @@ public class ListCommandTest extends AbsCommandTest {
     /**
      * Expect it works when there is one workspace without projects
      */
-    @Test(dependsOnMethods = "testNoWorkspace")
+    @Test
     public void testOneWorkspaceNoProjects() throws Exception {
 
         CommandInvoker commandInvoker = getInvoker();
+        DummyWorkspace dummyWorkspace = commandInvoker.getCodenvyClient().newWorkspaceBuilder("WORKSPACE1").build();
+        commandInvoker.getDefaultRemoteCodenvy().workspace().registerWorkspace(dummyWorkspace);
 
-        String workspaceName = "WORKSPACE1";
-        addWorkspace(workspaceName);
-
-        CommandInvoker.Result result = commandInvoker.invoke(getCommandSession());
+        CommandInvoker.Result result = commandInvoker.invoke();
         assertTrue(result.disableAnsi().getOutputStream().contains("No projects"));
 
     }
@@ -73,44 +84,53 @@ public class ListCommandTest extends AbsCommandTest {
     /**
      * Expect it works when there is one workspace with one project
      */
-    @Test(dependsOnMethods = "testOneWorkspaceNoProjects")
-    public void testOneWorkspaceOneProjectVerbose() throws Exception {
+    @Test
+    public void testOneWorkspaceOneProjectDefault() throws Exception {
 
-        String workspaceName = "WORKSPACE1";
-        addProject(workspaceName, "project1");
+        CommandInvoker commandInvoker = getInvoker();
+        DummyWorkspace workspace1 = commandInvoker.getCodenvyClient().newWorkspaceBuilder("WORKSPACE1").build();
+        DummyProject project1 = commandInvoker.getCodenvyClient().newProjectBuilder(workspace1.workspaceReference(), "project1").withProjectTypeId(
+                "java").withVisibility("public").build();
+        commandInvoker.getDefaultRemoteCodenvy().workspace().registerWorkspace(workspace1);
+        commandInvoker.getDefaultRemoteCodenvy().project().registerProject(project1);
 
-        CommandInvoker commandInvoker = getInvoker().option("-v", true);
+        String project1Id = getProjectId(project1);
 
         // use CSV format
-        doReturn(CSV).when(getCommandSession()).get(FormatterMode.class.getName());
+        doReturn(CSV).when(commandInvoker.getCommandSession()).get(FormatterMode.class.getName());
 
-        CommandInvoker.Result result = commandInvoker.invoke(getCommandSession());
+        CommandInvoker.Result result = commandInvoker.invoke();
 
-        assertEquals(result.disableAnsi().getOutputStream(), format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY,PERMS,BUILDERS,RUNNERS%n" +
-                                                                    "p10ff33,default,WORKSPACE1,project1,java,true,,none,none%n" +
+        assertEquals(result.disableAnsi().getOutputStream(), format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY%n" +
+                                                                    project1Id + ",default," + workspace1.workspaceReference().name() + "," + project1.name() + "," + project1.projectTypeId() + "," + project1.visibility() + "%n" +
                                                                     "%n"));
 
     }
+
 
     /**
      * Expect it works when there is one workspace with one project
      */
-    @Test(dependsOnMethods = "testOneWorkspaceOneProjectVerbose")
-    public void testOneWorkspaceOneProjectDefault() throws Exception {
+    @Test
+    public void testOneWorkspaceOneProjectVerbose() throws Exception {
 
-        CommandInvoker commandInvoker = getInvoker();
+        CommandInvoker commandInvoker = getInvoker().option("-v", true);
+
+        DummyWorkspace workspace1 = commandInvoker.getCodenvyClient().newWorkspaceBuilder("WORKSPACE1").build();
+        DummyProject project1 = commandInvoker.getCodenvyClient().newProjectBuilder(workspace1.workspaceReference(), "project1").withProjectTypeId("java").withVisibility("public").build();
+        commandInvoker.getDefaultRemoteCodenvy().workspace().registerWorkspace(workspace1);
+        commandInvoker.getDefaultRemoteCodenvy().project().registerProject(project1);
+
+        String project1Id = getProjectId(project1);
 
         // use CSV format
-        doReturn(CSV).when(getCommandSession()).get(FormatterMode.class.getName());
+        doReturn(CSV).when(commandInvoker.getCommandSession()).get(FormatterMode.class.getName());
 
-        CommandInvoker.Result result = commandInvoker.invoke(getCommandSession());
+        CommandInvoker.Result result = commandInvoker.invoke();
 
-        assertEquals(result.disableAnsi().getOutputStream(), format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY%n" +
-                                                                    "p10ff33,default,WORKSPACE1,project1,java,true%n" +
+        assertEquals(result.disableAnsi().getOutputStream(), format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY,PERMS,BUILDERS,RUNNERS%n" +
+                                                                    project1Id + ",default," + workspace1.workspaceReference().name() + "," + project1.name() + "," + project1.projectTypeId() + "," + project1.visibility()  + ",,none,none%n" +
                                                                     "%n"));
 
     }
-
-
-
 }
