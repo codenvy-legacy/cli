@@ -16,8 +16,6 @@ import com.codenvy.client.model.ProjectReference;
 
 import org.fusesource.jansi.Ansi;
 
-import java.util.List;
-
 import static com.codenvy.cli.command.builtin.util.SHA1.sha1;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
@@ -117,31 +115,11 @@ public class DefaultUserProjectReference implements UserProjectReference {
 
 
     public String toString() {
-        String runnersList = "";
-        List<UserRunnerStatus> runners = getWorkspace().getMultiRemoteCodenvy().getRunners(this);
-        for (UserRunnerStatus runner : runners) {
-            runnersList = runnersList.concat(runner.shortId()).concat(" ");
-        }
-        if (runners.isEmpty()) {
-            runnersList = "none";
-        }
-
-        String buildersList = "";
-        List<UserBuilderStatus> builders = getWorkspace().getMultiRemoteCodenvy().getBuilders(this);
-        for (UserBuilderStatus builder : builders) {
-            buildersList = buildersList.concat(builder.shortId()).concat(" ");
-        }
-        if (builders.isEmpty()) {
-            buildersList = "none";
-        }
-
         return new DefaultAsciiForm().withEntry(bold("id"), shortId())
                                      .withEntry(bold("workspace"), getWorkspace().name())
                                      .withEntry(bold("project"), name())
                                      .withEntry(bold("privacy"), getInnerReference().visibility())
                                      .withEntry(bold("ide url"), getInnerReference().ideUrl())
-                                     .withEntry(bold("runners"), runnersList)
-                                     .withEntry(bold("builders"), buildersList)
                                      .withUppercasePropertyName()
                                      .toAscii();
 

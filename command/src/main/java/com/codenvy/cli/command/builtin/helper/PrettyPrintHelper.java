@@ -11,6 +11,9 @@
 
 package com.codenvy.cli.command.builtin.helper;
 
+import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
+import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
+
 import java.util.List;
 
 /**
@@ -27,7 +30,7 @@ public class PrettyPrintHelper {
     }
 
 
-    public static String pretty(List<String> userPermissions) {
+    public static String prettyPrint(List<String> userPermissions) {
         if (userPermissions == null) {
             return "";
         }
@@ -55,6 +58,54 @@ public class PrettyPrintHelper {
             sb.append("U");
         }
 
+        return sb.toString();
+    }
+
+    public static String prettyPrintState(UserRunnerStatus runnerStatus) {
+        StringBuilder sb = new StringBuilder(runnerStatus.shortId());
+        sb.append("[");
+        switch (runnerStatus.getInnerStatus().status()) {
+            case RUNNING:
+                sb.append("RUN");
+                break;
+            case CANCELLED:
+                sb.append("CANCEL");
+                break;
+            case NEW:
+                sb.append("WAIT");
+                break;
+            case FAILED:
+                sb.append("FAIL");
+                break;
+            case STOPPED:
+                sb.append("STOP");
+                break;
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+    public static String prettyPrintState(UserBuilderStatus builderStatus) {
+        StringBuilder sb = new StringBuilder(builderStatus.shortId());
+        sb.append("[");
+        switch (builderStatus.getInnerStatus().status()) {
+            case IN_QUEUE:
+                sb.append("WAIT");
+                break;
+            case IN_PROGRESS:
+                sb.append("RUN");
+                break;
+            case FAILED:
+                sb.append("FAIL");
+                break;
+            case CANCELLED:
+                sb.append("CANCEL");
+                break;
+            case SUCCESSFUL:
+                sb.append("OK");
+                break;
+        }
+        sb.append("]");
         return sb.toString();
     }
 }

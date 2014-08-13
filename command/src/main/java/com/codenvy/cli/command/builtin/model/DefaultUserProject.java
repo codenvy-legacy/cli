@@ -10,18 +10,18 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
-import com.codenvy.cli.command.builtin.helper.UserPermissionsHelper;
+import com.codenvy.cli.command.builtin.helper.PrettyPrintHelper;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
-import com.codenvy.client.model.ProjectReference;
 
 import org.fusesource.jansi.Ansi;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
+import static com.codenvy.cli.command.builtin.helper.PrettyPrintHelper.prettyPrint;
+import static com.codenvy.cli.command.builtin.helper.PrettyPrintHelper.prettyPrintState;
 import static com.codenvy.cli.command.builtin.util.SHA1.sha1;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
@@ -130,7 +130,7 @@ public class DefaultUserProject implements UserProject {
         String runnersList = "";
         List<UserRunnerStatus> runners = getWorkspace().getMultiRemoteCodenvy().getRunners(projectReference);
         for (UserRunnerStatus runner : runners) {
-            runnersList = runnersList.concat(runner.shortId()).concat(" ");
+            runnersList = runnersList.concat(prettyPrintState(runner)).concat(" ");
         }
         if (runners.isEmpty()) {
             runnersList = "none";
@@ -139,7 +139,7 @@ public class DefaultUserProject implements UserProject {
         String buildersList = "";
         List<UserBuilderStatus> builders = getWorkspace().getMultiRemoteCodenvy().getBuilders(projectReference);
         for (UserBuilderStatus builder : builders) {
-            buildersList = buildersList.concat(builder.shortId()).concat(" ");
+            buildersList = buildersList.concat(prettyPrintState(builder)).concat(" ");
         }
         if (builders.isEmpty()) {
             buildersList = "none";
@@ -149,7 +149,7 @@ public class DefaultUserProject implements UserProject {
         String permissions = "";
         List<String> userPermissions = getWorkspace().getMultiRemoteCodenvy().getProjectPermissions(projectReference);
         if (userPermissions != null) {
-            permissions = UserPermissionsHelper.pretty(userPermissions);
+            permissions = prettyPrint(userPermissions);
         }
 
 
@@ -167,8 +167,8 @@ public class DefaultUserProject implements UserProject {
                                      .withEntry(bold("privacy"), getInnerReference().visibility())
                                      .withEntry(bold("ide url"), projectReference.getInnerReference().ideUrl())
                                      .withEntry(bold("permissions"), permissions)
-                                     .withEntry(bold("runners"), runnersList)
                                      .withEntry(bold("builders"), buildersList)
+                                     .withEntry(bold("runners"), runnersList)
                                      .withUppercasePropertyName()
                                      .toAscii();
 

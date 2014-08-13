@@ -12,7 +12,7 @@ package com.codenvy.cli.command.builtin;
 
 import jline.console.ConsoleReader;
 
-import com.codenvy.cli.command.builtin.helper.UserPermissionsHelper;
+import com.codenvy.cli.command.builtin.helper.PrettyPrintHelper;
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
@@ -26,6 +26,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static com.codenvy.cli.command.builtin.helper.PrettyPrintHelper.prettyPrint;
+import static com.codenvy.cli.command.builtin.helper.PrettyPrintHelper.prettyPrintState;
 
 /**
  * List command.
@@ -117,7 +120,7 @@ public class ListCommand extends AbsCommand {
                     projectNames.add(project.name());
                     types.add(project.getInnerReference().projectTypeId());
                     privacies.add(project.getInnerReference().visibility());
-                    permissions.add(UserPermissionsHelper.pretty(userPermissions));
+                    permissions.add(prettyPrint(userPermissions));
                 } else {
                     // blank data
                     ids.add("");
@@ -134,7 +137,7 @@ public class ListCommand extends AbsCommand {
                     runnerIDs.add("none");
                 } else if (i <= runners.size()) {
                     // print runner
-                    runnerIDs.add(prettyPrint(runners.get(i - 1)));
+                    runnerIDs.add(prettyPrintState(runners.get(i - 1)));
                 } else {
                     runnerIDs.add("");
                 }
@@ -144,7 +147,7 @@ public class ListCommand extends AbsCommand {
                     builderIDs.add("none");
                 } else if (i <= builders.size()) {
                     // print builder
-                    builderIDs.add(prettyPrint(builders.get(i - 1)));
+                    builderIDs.add(prettyPrintState(builders.get(i - 1)));
                 } else {
                     builderIDs.add("");
                 }
@@ -169,54 +172,5 @@ public class ListCommand extends AbsCommand {
         return null;
     }
 
-
-
-    protected String prettyPrint(UserRunnerStatus runnerStatus) {
-        StringBuilder sb = new StringBuilder(runnerStatus.shortId());
-        sb.append("[");
-        switch (runnerStatus.getInnerStatus().status()) {
-            case RUNNING:
-                sb.append("RUN");
-                break;
-            case CANCELLED:
-                sb.append("CANCEL");
-                break;
-            case NEW:
-                sb.append("WAIT");
-                break;
-            case FAILED:
-                sb.append("FAIL");
-                break;
-            case STOPPED:
-                sb.append("STOP");
-                break;
-        }
-        sb.append("]");
-        return sb.toString();
-    }
-
-    protected String prettyPrint(UserBuilderStatus builderStatus) {
-        StringBuilder sb = new StringBuilder(builderStatus.shortId());
-        sb.append("[");
-        switch (builderStatus.getInnerStatus().status()) {
-            case IN_QUEUE:
-                sb.append("WAIT");
-                break;
-            case IN_PROGRESS:
-                sb.append("RUN");
-                break;
-            case FAILED:
-                sb.append("FAIL");
-                break;
-            case CANCELLED:
-                sb.append("CANCEL");
-                break;
-            case SUCCESSFUL:
-                sb.append("OK");
-                break;
-        }
-        sb.append("]");
-        return sb.toString();
-    }
 
 }
