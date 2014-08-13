@@ -17,12 +17,12 @@ import java.util.List;
  * Allows to convert permissions to pretty print permissions
  * @author Florent Benoit
  */
-public class UserPermissionsHelper {
+public class PrettyPrintHelper {
 
     /**
      * Utility class, no public constructor.
      */
-    private UserPermissionsHelper() {
+    private PrettyPrintHelper() {
 
     }
 
@@ -40,15 +40,21 @@ public class UserPermissionsHelper {
         if (userPermissions.contains("write")) {
             sb.append("W");
         }
-        if (userPermissions.contains("update_acl")) {
-            sb.append("U");
-        }
-        if (userPermissions.contains("run")) {
-            sb.append("X");
-        }
+
+        // build permission if before the run
         if (userPermissions.contains("build")) {
             sb.append("B");
         }
+
+        if (userPermissions.contains("run")) {
+            sb.append("X");
+        }
+
+        // Update ACL should be the last permission
+        if (userPermissions.contains("update_acl")) {
+            sb.append("U");
+        }
+
         return sb.toString();
     }
 }

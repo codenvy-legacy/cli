@@ -159,7 +159,7 @@ public class ListCommand extends AbsCommand {
 
         // verbose mode : add permissions, runners and builders
         if (verbose) {
-            asciiArray = buildAsciiArray().withColumns(ids, remotes, workspaces, projectNames, types, privacies, permissions, builderIDs, runnerIDs).withTitle("ID", "Remote", "Workspace", "Project", "Type", "Privacy", "Perms", "Builders", "Runners");
+            asciiArray = buildAsciiArray().withColumns(ids, remotes, workspaces, projectNames, types, privacies, permissions, builderIDs, runnerIDs).withTitle("ID", "Remote", "Workspace", "Project", "Type", "Privacy", "Perm", "Builders", "Runners");
         } else {
             asciiArray = buildAsciiArray().withColumns(ids, remotes, workspaces, projectNames, types, privacies).withTitle("ID", "Remote", "Workspace", "Project", "Type", "Privacy");
         }

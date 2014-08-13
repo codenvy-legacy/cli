@@ -128,7 +128,7 @@ public class ListCommandTest extends AbsCommandTest {
 
         CommandInvoker.Result result = commandInvoker.invoke();
 
-        assertEquals(result.disableAnsi().getOutputStream(), format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY,PERMS,BUILDERS,RUNNERS%n" +
+        assertEquals(result.disableAnsi().getOutputStream(), format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY,PERM,BUILDERS,RUNNERS%n" +
                                                                     project1Id + ",default," + workspace1.workspaceReference().name() + "," + project1.name() + "," + project1.projectTypeId() + "," + project1.visibility()  + ",,none,none%n" +
                                                                     "%n"));
 
