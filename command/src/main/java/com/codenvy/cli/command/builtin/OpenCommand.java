@@ -80,7 +80,7 @@ public class OpenCommand extends AbsCommand {
 
 
     protected void openProject() {
-        UserProjectReference project = getMultiRemoteCodenvy().getProject(id);
+        UserProjectReference project = getMultiRemoteCodenvy().getProjectReference(id);
         if (project == null) {
             Ansi buffer = Ansi.ansi();
             buffer.fg(RED);

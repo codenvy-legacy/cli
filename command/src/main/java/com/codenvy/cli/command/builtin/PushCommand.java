@@ -14,7 +14,6 @@ package com.codenvy.cli.command.builtin;
 import jline.console.ConsoleReader;
 
 import com.codenvy.cli.command.builtin.model.UserProjectReference;
-import com.codenvy.cli.command.builtin.util.metadata.CodenvyMetadata;
 import com.codenvy.client.model.ProjectReference;
 
 import org.apache.karaf.shell.commands.Argument;
@@ -37,7 +36,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import static com.codenvy.cli.command.builtin.Constants.CODENVY_FOLDERNAME;
 import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
@@ -77,7 +75,7 @@ public class PushCommand extends AbsPushPullCommand {
         }
 
         // get project for the given shortID
-        UserProjectReference project = getMultiRemoteCodenvy().getProject(projectId);
+        UserProjectReference project = getMultiRemoteCodenvy().getProjectReference(projectId);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();

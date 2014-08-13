@@ -61,7 +61,7 @@ public class CloneLocalCommand extends AbsPushPullCommand {
         }
 
         // get project for the given shortID
-        UserProjectReference project = getMultiRemoteCodenvy().getProject(projectId);
+        UserProjectReference project = getMultiRemoteCodenvy().getProjectReference(projectId);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();

@@ -85,6 +85,10 @@ public class ModernFormatter implements AsciiFormatter {
 
     @Override
     public String formatFormValue(String value, AsciiFormInfo asciiFormInfo) {
+        if (value == null) {
+            return " ";
+        }
+
         // just adding text after adding a space
 
         return " ".concat(value);

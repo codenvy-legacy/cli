@@ -108,7 +108,7 @@ public class StopCommand extends AbsCommand {
 
     protected void stopProjectProcesses() {
         // needs to find all run processes of the project
-        UserProjectReference foundProject = getMultiRemoteCodenvy().getProject(id);
+        UserProjectReference foundProject = getMultiRemoteCodenvy().getProjectReference(id);
 
         // not found, errors already printed
         if (foundProject == null) {

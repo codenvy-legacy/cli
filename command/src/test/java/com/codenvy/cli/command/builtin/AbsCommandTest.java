@@ -111,7 +111,7 @@ public abstract class AbsCommandTest {
 
     protected String getProjectId(DummyProject dummyProject) {
         // compute short id
-        String fullID = dummyProject.workspaceId() + dummyProject.id();
+        String fullID = dummyProject.workspaceId() + dummyProject.name();
 
         // p is for project
         return sha1("p", fullID).substring(0, 7);

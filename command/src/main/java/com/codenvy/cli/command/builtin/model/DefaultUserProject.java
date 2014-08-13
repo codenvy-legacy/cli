@@ -10,12 +10,16 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
+import com.codenvy.cli.command.builtin.helper.UserPermissionsHelper;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.client.Codenvy;
+import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 
 import org.fusesource.jansi.Ansi;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static com.codenvy.cli.command.builtin.util.SHA1.sha1;
@@ -23,16 +27,21 @@ import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD_OFF;
 
 /**
- * Implements the {@link UserProjectReference} interface providing links between project and workspaces.
+ * Implements the {@link com.codenvy.cli.command.builtin.model.UserProject} interface providing links between project and workspaces.
  *
  * @author Florent Benoit
  */
-public class DefaultUserProjectReference implements UserProjectReference {
+public class DefaultUserProject implements UserProject {
 
     /**
      * Current project
      */
-    private ProjectReference project;
+    private Project project;
+
+    /**
+     * Current project
+     */
+    private UserProjectReference projectReference;
 
     /**
      * Current workspace
@@ -56,8 +65,9 @@ public class DefaultUserProjectReference implements UserProjectReference {
      * @param workspace
      *         the current workspace
      */
-    public DefaultUserProjectReference(Codenvy codenvy, ProjectReference project, UserWorkspace workspace) {
+    public DefaultUserProject(Codenvy codenvy, UserProjectReference projectReference, Project project, UserWorkspace workspace) {
         this.codenvy = codenvy;
+        this.projectReference = projectReference;
         this.project = project;
         this.workspace = workspace;
 
@@ -101,7 +111,7 @@ public class DefaultUserProjectReference implements UserProjectReference {
     /**
      * @return the inner project object
      */
-    public ProjectReference getInnerReference() {
+    public Project getInnerReference() {
         return project;
     }
 
@@ -118,7 +128,7 @@ public class DefaultUserProjectReference implements UserProjectReference {
 
     public String toString() {
         String runnersList = "";
-        List<UserRunnerStatus> runners = getWorkspace().getMultiRemoteCodenvy().getRunners(this);
+        List<UserRunnerStatus> runners = getWorkspace().getMultiRemoteCodenvy().getRunners(projectReference);
         for (UserRunnerStatus runner : runners) {
             runnersList = runnersList.concat(runner.shortId()).concat(" ");
         }
@@ -127,7 +137,7 @@ public class DefaultUserProjectReference implements UserProjectReference {
         }
 
         String buildersList = "";
-        List<UserBuilderStatus> builders = getWorkspace().getMultiRemoteCodenvy().getBuilders(this);
+        List<UserBuilderStatus> builders = getWorkspace().getMultiRemoteCodenvy().getBuilders(projectReference);
         for (UserBuilderStatus builder : builders) {
             buildersList = buildersList.concat(builder.shortId()).concat(" ");
         }
@@ -135,11 +145,28 @@ public class DefaultUserProjectReference implements UserProjectReference {
             buildersList = "none";
         }
 
+
+        String permissions = "";
+        List<String> userPermissions = getWorkspace().getMultiRemoteCodenvy().getProjectPermissions(projectReference);
+        if (userPermissions != null) {
+            permissions = UserPermissionsHelper.pretty(userPermissions);
+        }
+
+
+        // Date format
+        SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy HH:mm:ss ");
+
+
         return new DefaultAsciiForm().withEntry(bold("id"), shortId())
-                                     .withEntry(bold("workspace"), getWorkspace().name())
                                      .withEntry(bold("project"), name())
+                                     .withEntry(bold("workspace name"), getWorkspace().name())
+                                     .withEntry(bold("workspace id"), getWorkspace().id())
+                                     .withEntry(bold("project type"), getInnerReference().projectTypeId())
+                                     .withEntry(bold("creation date"), dateFormat.format(project.creationDate()))
+                                     .withEntry(bold("last modification"), dateFormat.format(project.modificationDate()))
                                      .withEntry(bold("privacy"), getInnerReference().visibility())
-                                     .withEntry(bold("ide url"), getInnerReference().ideUrl())
+                                     .withEntry(bold("ide url"), projectReference.getInnerReference().ideUrl())
+                                     .withEntry(bold("permissions"), permissions)
                                      .withEntry(bold("runners"), runnersList)
                                      .withEntry(bold("builders"), buildersList)
                                      .withUppercasePropertyName()

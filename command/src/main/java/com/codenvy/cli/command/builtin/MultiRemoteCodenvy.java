@@ -11,10 +11,12 @@
 package com.codenvy.cli.command.builtin;
 
 import com.codenvy.cli.command.builtin.model.DefaultUserBuilderStatus;
+import com.codenvy.cli.command.builtin.model.DefaultUserProject;
 import com.codenvy.cli.command.builtin.model.DefaultUserProjectReference;
 import com.codenvy.cli.command.builtin.model.DefaultUserRunnerStatus;
 import com.codenvy.cli.command.builtin.model.DefaultUserWorkspace;
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
+import com.codenvy.cli.command.builtin.model.UserProject;
 import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.cli.command.builtin.model.UserWorkspace;
@@ -226,7 +228,7 @@ public class MultiRemoteCodenvy {
     /**
      * Allows to search a project
      */
-    protected UserProjectReference getProject(String shortId) {
+    protected UserProjectReference getProjectReference(String shortId) {
         if (shortId == null || shortId.length() < 2) {
             throw new IllegalArgumentException("The identifier should at least contain two digits");
         }
@@ -261,6 +263,26 @@ public class MultiRemoteCodenvy {
 
 
     }
+
+
+    /**
+     * Allows to search a project
+     */
+    protected UserProject getProject(String shortId) {
+       UserProjectReference projectReference = getProjectReference(shortId);
+        if (projectReference == null) {
+            return null;
+        }
+
+
+        Project project = projectReference.getCodenvy().project().getProject(projectReference.getWorkspace().id(), projectReference.getInnerReference()).execute();
+        if (project == null) {
+            return null;
+        }
+
+        return new DefaultUserProject(projectReference.getCodenvy(), projectReference, project, projectReference.getWorkspace());
+    }
+
 
     public boolean hasAvailableRemotes() {
         return !availableRemotes.isEmpty();

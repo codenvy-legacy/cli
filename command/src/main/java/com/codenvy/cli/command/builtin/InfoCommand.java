@@ -11,6 +11,7 @@
 package com.codenvy.cli.command.builtin;
 
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
+import com.codenvy.cli.command.builtin.model.UserProject;
 import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 
@@ -101,7 +102,7 @@ public class InfoCommand extends AbsCommand {
 
 
     protected void displayProject() {
-        UserProjectReference foundProject = getMultiRemoteCodenvy().getProject(id);
+        UserProject foundProject = getMultiRemoteCodenvy().getProject(id);
 
         // not found, errors already printed
         if (foundProject == null) {

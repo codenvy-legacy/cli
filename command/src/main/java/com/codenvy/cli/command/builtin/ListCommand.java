@@ -12,6 +12,7 @@ package com.codenvy.cli.command.builtin;
 
 import jline.console.ConsoleReader;
 
+import com.codenvy.cli.command.builtin.helper.UserPermissionsHelper;
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
@@ -116,7 +117,7 @@ public class ListCommand extends AbsCommand {
                     projectNames.add(project.name());
                     types.add(project.getInnerReference().projectTypeId());
                     privacies.add(project.getInnerReference().visibility());
-                    permissions.add(convert(userPermissions));
+                    permissions.add(UserPermissionsHelper.pretty(userPermissions));
                 } else {
                     // blank data
                     ids.add("");
@@ -169,30 +170,6 @@ public class ListCommand extends AbsCommand {
     }
 
 
-    protected String convert(List<String> userPermissions) {
-        if (userPermissions == null) {
-            return "";
-        }
-
-        StringBuilder sb = new StringBuilder("");
-
-        if (userPermissions.contains("read")) {
-            sb.append("R");
-        }
-        if (userPermissions.contains("write")) {
-            sb.append("W");
-        }
-        if (userPermissions.contains("update_acl")) {
-            sb.append("U");
-        }
-        if (userPermissions.contains("run")) {
-            sb.append("X");
-        }
-        if (userPermissions.contains("build")) {
-            sb.append("B");
-        }
-        return sb.toString();
-    }
 
     protected String prettyPrint(UserRunnerStatus runnerStatus) {
         StringBuilder sb = new StringBuilder(runnerStatus.shortId());

@@ -89,7 +89,7 @@ public class BuildCommand extends AbsCommand {
         }
 
         // get project for the given shortID
-        UserProjectReference project = getMultiRemoteCodenvy().getProject(projectID);
+        UserProjectReference project = getMultiRemoteCodenvy().getProjectReference(projectID);
 
         if (project == null) {
             Ansi buffer = Ansi.ansi();
