@@ -733,4 +733,7 @@ public class MultiRemoteCodenvy {
     }
 
 
+    protected Codenvy getCodenvy(String remoteName) {
+        return readyRemotes.get(remoteName);
+    }
 }

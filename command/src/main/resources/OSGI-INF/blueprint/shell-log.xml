@@ -64,6 +64,9 @@
             <action class="com.codenvy.cli.command.builtin.PushCommand" />
         </command>
         <command>
+            <action class="com.codenvy.cli.command.builtin.CreateFactoryCommand" />
+        </command>
+        <command>
             <action class="com.codenvy.cli.command.builtin.ExitCommand" />
         </command>
         <command>
