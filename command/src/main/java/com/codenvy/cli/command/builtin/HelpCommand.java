@@ -49,6 +49,7 @@ public class HelpCommand extends AbsCommand {
 
         String value = buildAsciiForm().withEntry(color("remote"), "Add or remove remote Codenvy cloud references")
                                        .withEntry(color("login"), "Login to a remote Codenvy cloud")
+                                       .withEntry(color("logout"), "Logout to a remote Codenvy cloud")
                                        .withEntry(color("list"), "List workspaces, projects and processes")
                                        .withEntry(color("clone-local"), "Clone a remote Codenvy project to a local directory")
                                        .withEntry(color("build"), "Build a project")

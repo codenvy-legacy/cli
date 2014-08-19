@@ -469,6 +469,49 @@ public class MultiRemoteCodenvy {
     }
 
 
+    /**
+     * Logout to the given remote cloud
+     * @param remoteName the remote name
+     * @return true if logout successfully
+     */
+    public boolean logout(String remoteName) {
+
+        // get URL of the remote
+        Remote remote;
+
+        if (remoteName == null) {
+            remote = getDefaultRemote();
+            if (remote == null) {
+                System.out.println("No default remote found'");
+                return false;
+            }
+            remoteName = getDefaultRemoteName();
+        } else {
+            remote = getRemote(remoteName);
+        }
+
+        if (remote == null) {
+            System.out.println("Unable to find the given remote '" + remoteName + "'");
+            return false;
+        }
+
+        // Get current credentials
+        Preferences preferencesRemotes = globalPreferences.path("remotes");
+        RemoteCredentials remoteCredentials = preferencesRemotes.get(remoteName, RemoteCredentials.class);
+
+        // disable token
+        remoteCredentials.setToken("");
+
+        // merge it
+        preferencesRemotes.merge(remoteName, remoteCredentials);
+
+        // refresh current links
+        refresh();
+
+        return true;
+    }
+
+
     protected void refresh() {
         init();
     }

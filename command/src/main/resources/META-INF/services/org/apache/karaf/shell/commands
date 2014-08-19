@@ -18,6 +18,7 @@ com.codenvy.cli.command.builtin.ListCommand
 com.codenvy.cli.command.builtin.RemoteCommand
 com.codenvy.cli.command.builtin.OpenCommand
 com.codenvy.cli.command.builtin.LoginCommand
+com.codenvy.cli.command.builtin.LogoutCommand
 com.codenvy.cli.command.builtin.StopCommand
 com.codenvy.cli.command.builtin.PullCommand
 com.codenvy.cli.command.builtin.PushCommand
