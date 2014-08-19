@@ -1,0 +1,12 @@
+{
+    "v":"1.2",
+    "vcs":"git",
+    "vcsurl":"$GITURL$",
+    "commitid" : "$GITCOMMITID$",
+    "action":"openproject",
+    "projectattributes":{
+        "pname":"$PROJECTNAME$",
+        "ptype":"$PROJECTTYPE$"
+    },
+    "author": "CLI"
+}

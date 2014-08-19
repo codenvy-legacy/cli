@@ -41,6 +41,11 @@ public class Constants {
     public static final String DEFAULT_PREFERENCES_RESOURCENAME = "/" + Constants.class.getPackage().getName().replace(".", "/") + "/" + "default-preferences.json";
 
     /**
+     * Default template factory
+     */
+    public static final String TEMPLATE_PROJECT_FACTORY = "/" + Constants.class.getPackage().getName().replace(".", "/") + "/" + "template-project-factory.json";
+
+    /**
      * Path to the configuration file of Codenvy.
      */
     public static final String PREFERENCES_STORE_FILE = PREFERENCES_FOLDER + File.separator + "preferences.json";

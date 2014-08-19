@@ -10,10 +10,15 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
+import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.client.Codenvy;
+import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.model.Factory;
 import com.codenvy.client.model.Link;
+import com.codenvy.client.model.git.Log;
+import com.codenvy.client.model.git.Revision;
 
+import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.fusesource.jansi.Ansi;
@@ -26,12 +31,15 @@ import org.json.simple.parser.ParseException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -39,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.codenvy.cli.command.builtin.Constants.TEMPLATE_PROJECT_FACTORY;
 import static java.lang.String.format;
 import static org.fusesource.jansi.Ansi.Color.RED;
 
@@ -50,13 +59,17 @@ import static org.fusesource.jansi.Ansi.Color.RED;
 @Command(scope = "codenvy", name = "create-factory", description = "Create a factory")
 public class CreateFactoryCommand extends AbsCommand {
 
-    @Option(name = "--remote", description = "Name of the remote codenvy", required = false)
+    @Argument(name = "projectId", description = "ProjectID")
+    private String projectId;
+
+
+    @Option(name = "--remote", description = "Name of the remote codenvy")
     private String remoteName;
 
     /**
      * Specify the path of a JSON file.
      */
-    @Option(name = "--in", description = "Specify the input JSON file", required = true)
+    @Option(name = "--in", description = "Specify the input JSON file")
     private String path;
 
     /**
@@ -83,17 +96,129 @@ public class CreateFactoryCommand extends AbsCommand {
     protected Object doExecute() {
         init();
 
+        // check remote
+        if (!getSelectedRemote()) {
+            return null;
+        }
 
-        File jsonFile = new File(path);
-        if (!jsonFile.exists()) {
+        String factoryLink = null;
+        if (projectId != null) {
+            factoryLink = createFactoryProject();
+        } else if (path != null) {
+            factoryLink = createPathFactory();
+        }
+
+        if (invoke && factoryLink != null) {
+            openURL(factoryLink);
+        } else if (factoryLink != null) {
+            System.out.println("Factory URL: " + factoryLink);
+        }
+
+        return null;
+    }
+
+    protected String createFactoryProject() {
+        // get project
+        UserProjectReference project = getMultiRemoteCodenvy().getProjectReference(projectId);
+        if (project == null) {
             Ansi buffer = Ansi.ansi();
             buffer.fg(RED);
-            buffer.a(format("The path %s does not exists", path));
+            buffer.a("No matching project for identifier '").a(projectId).a("'.");
             buffer.reset();
             System.out.println(buffer.toString());
             return null;
         }
 
+        // get a git URL
+        String gitURL = project.getCodenvy().git().readOnlyUrl(project.getInnerReference()).execute();
+
+        // get last commit ID
+        Log log;
+        try {
+            log = project.getCodenvy().git().log(project.getInnerReference(), null).execute();
+        } catch (CodenvyErrorException e) {
+            // need to init the repo first
+            project.getCodenvy().git().init(project.getInnerReference()).execute();
+
+            // then get the log again
+            log = project.getCodenvy().git().log(project.getInnerReference(), null).execute();
+        }
+        String commitId = "";
+        List<Revision> commits = log.getCommits();
+        if (!commits.isEmpty()) {
+            commitId = commits.get(0).getId();
+        }
+
+        //TODO: replace it with Factory class object
+        String template = getTemplateFactoryJson();
+        if (template.isEmpty()) {
+            return null;
+        }
+
+        // replace template data
+        template = template.replace("$GITURL$", gitURL)
+                           .replace("$GITCOMMITID$", commitId)
+                           .replace("$PROJECTNAME$", project.name())
+                           .replace("$PROJECTTYPE$", project.getInnerReference().projectTypeId());
+
+        if (nonEncoded && !encoded) {
+            // write content of the json file
+            File tmpFile = null;
+            try {
+                tmpFile = Files.createTempFile("projectjson", "json").toFile();
+            } catch (IOException e) {
+                Ansi buffer = Ansi.ansi();
+                buffer.fg(RED);
+                buffer.a("Unable to create temporary file");
+                buffer.reset();
+                System.out.println(buffer.toString());
+                return null;
+            }
+            tmpFile.deleteOnExit();
+            try (FileOutputStream fileOutputStream = new FileOutputStream(tmpFile)) {
+                fileOutputStream.write(template.getBytes("UTF-8"));
+            } catch (IOException e) {
+                Ansi buffer = Ansi.ansi();
+                buffer.fg(RED);
+                buffer.a("Unable to write temporary file");
+                buffer.reset();
+                System.out.println(buffer.toString());
+                return null;
+            }
+
+            return getNonEncodedFactory(tmpFile);
+        } else {
+            // default is encoded
+            return getEncodedFactory(template);
+        }
+
+
+    }
+
+    protected String getTemplateFactoryJson() {
+        StringBuilder content = new StringBuilder();
+        // now read factory template
+        try (InputStream readInputStream = CreateFactoryCommand.class.getResourceAsStream(TEMPLATE_PROJECT_FACTORY);
+             Reader inputStreamReader = new InputStreamReader(readInputStream, Charset.defaultCharset());
+             BufferedReader reader = new BufferedReader(inputStreamReader)
+        ) {
+            String line = null;
+            while( ( line = reader.readLine() ) != null ) {
+                content.append( line );
+                content.append( System.lineSeparator() );
+            }
+        } catch (IOException e) {
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a(format("Unable to load the content of the %s", TEMPLATE_PROJECT_FACTORY));
+            buffer.reset();
+            System.out.println(buffer.toString());
+        }
+        return content.toString();
+
+    }
+
+    protected boolean getSelectedRemote() {
         // no remote, use default
         if (remoteName == null) {
             remoteName = getMultiRemoteCodenvy().getDefaultRemoteName();
@@ -104,9 +229,25 @@ public class CreateFactoryCommand extends AbsCommand {
                 buffer.a(format("The specified remote %s does not exists", remoteName));
                 buffer.reset();
                 System.out.println(buffer.toString());
-                return null;
-
+                return false;
             }
+        }
+        return true;
+    }
+
+
+    /**
+     * Create factory based on the path
+     */
+    protected String createPathFactory() {
+        File jsonFile = new File(path);
+        if (!jsonFile.exists()) {
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a(format("The path %s does not exists", path));
+            buffer.reset();
+            System.out.println(buffer.toString());
+            return null;
         }
 
         String factoryLink;
@@ -117,26 +258,38 @@ public class CreateFactoryCommand extends AbsCommand {
             factoryLink = getEncodedFactory(jsonFile);
         }
 
-        if (invoke && factoryLink != null) {
-            openURL(factoryLink);
-        } else if (factoryLink != null) {
-            System.out.println("Factory URL: " + factoryLink);
-        }
-        return null;
+        return factoryLink;
     }
 
 
+
+
+    protected String getEncodedFactory(String content) {
+        Codenvy codenvy = getMultiRemoteCodenvy().getCodenvy(remoteName);
+
+        Factory factory = codenvy.factory().save(content).execute();
+
+        // Search links
+        String createProjectUrl = null;
+        List<Link> links = factory.getLinks();
+        for (Link link : links) {
+            if ("create-project".equals(link.rel())) {
+                createProjectUrl = link.href();
+                break;
+            }
+        }
+        return createProjectUrl;
+    }
+
     /**
      * Build an encoded factory based on the given JSON file
-     * @param jsonFile the path to the json file
+     * @param jsonFile the file containing all the data
      * @return the factory link
      */
     protected String getEncodedFactory(File jsonFile) {
-
-        Codenvy codenvy = getMultiRemoteCodenvy().getCodenvy(remoteName);
         StringBuilder content = new StringBuilder();
-        try (FileInputStream fileInputStream = new FileInputStream(jsonFile);
-             Reader inputStreamReader = new InputStreamReader(fileInputStream, Charset.defaultCharset());
+        try (InputStream readInputStream = new FileInputStream(jsonFile);
+             Reader inputStreamReader = new InputStreamReader(readInputStream, Charset.defaultCharset());
              BufferedReader reader = new BufferedReader(inputStreamReader)
         ) {
             String         line = null;
@@ -151,21 +304,7 @@ public class CreateFactoryCommand extends AbsCommand {
             buffer.reset();
             System.out.println(buffer.toString());
         }
-
-        Factory factory = codenvy.factory().save(content.toString()).execute();
-
-        // Search links
-        String createProjectUrl = null;
-        List<Link> links = factory.getLinks();
-        for (Link link : links) {
-            if ("create-project".equals(link.rel())) {
-                createProjectUrl = link.href();
-                break;
-            }
-        }
-
-        return createProjectUrl;
-
+        return getEncodedFactory(content.toString());
     }
 
     /**
