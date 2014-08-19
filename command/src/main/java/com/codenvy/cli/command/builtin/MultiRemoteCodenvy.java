@@ -124,6 +124,20 @@ public class MultiRemoteCodenvy {
         }
     }
 
+    protected List<UserProjectReference> getProjects(String remoteName) {
+
+        Codenvy codenvy = readyRemotes.get(remoteName);
+        if (codenvy == null) {
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a(String.format("The remote %s doesn't exists", remoteName));
+            buffer.reset();
+            System.out.println(buffer.toString());
+            return Collections.emptyList();
+        }
+
+        return getProjects(remoteName, codenvy);
+    }
 
     protected List<UserProjectReference> getProjects() {
         List<UserProjectReference> projects = new ArrayList<>();

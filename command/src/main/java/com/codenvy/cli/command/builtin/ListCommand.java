@@ -12,7 +12,6 @@ package com.codenvy.cli.command.builtin;
 
 import jline.console.ConsoleReader;
 
-import com.codenvy.cli.command.builtin.helper.PrettyPrintHelper;
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
@@ -41,6 +40,8 @@ public class ListCommand extends AbsCommand {
     @Option(name="-v", aliases = {"--verbose"}, description = "Verbose output")
     private boolean verbose;
 
+    @Option(name = "--remote", description = "Restrict list to this given remote codenvy", required = false)
+    private String remoteName;
 
     /**
      * Prints the current projects per workspace
@@ -58,7 +59,12 @@ public class ListCommand extends AbsCommand {
         if (isProgressEnabled()) {
             new ConsoleReader().resetPromptLine("Retrieving projects...", "", 0);
         }
-        List<UserProjectReference> projects = getMultiRemoteCodenvy().getProjects();
+        List<UserProjectReference> projects;
+        if (remoteName != null) {
+            projects = getMultiRemoteCodenvy().getProjects(remoteName);
+        } else {
+            projects = getMultiRemoteCodenvy().getProjects();
+        }
         if (isProgressEnabled()) {
             new ConsoleReader().resetPromptLine("", "", 0);
         }
