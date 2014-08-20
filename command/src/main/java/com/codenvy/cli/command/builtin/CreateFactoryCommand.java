@@ -129,9 +129,6 @@ public class CreateFactoryCommand extends AbsCommand {
             return null;
         }
 
-        // get a git URL
-        String gitURL = project.getCodenvy().git().readOnlyUrl(project.getInnerReference()).execute();
-
         // get last commit ID
         Log log;
         try {
@@ -148,6 +145,10 @@ public class CreateFactoryCommand extends AbsCommand {
         if (!commits.isEmpty()) {
             commitId = commits.get(0).getId();
         }
+
+        // get a git URL
+        String gitURL = project.getCodenvy().git().readOnlyUrl(project.getInnerReference()).execute();
+
 
         //TODO: replace it with Factory class object
         String template = getTemplateFactoryJson();
