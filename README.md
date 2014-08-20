@@ -21,8 +21,7 @@ Codenvy command line interface V2
 
 ## Building
 1. Checkout of the project: git clone https://github.com/codenvy/cli
-2. Go in the v2 branch: git checkout v2
-3. Build: mvn clean install
+2. Build: mvn clean install
 
 ## Running
 1. Launch from the root directory of the project:
