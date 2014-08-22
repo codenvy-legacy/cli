@@ -267,7 +267,14 @@ public class CreateFactoryCommand extends AbsCommand {
 
     protected String getEncodedFactory(String content) {
         Codenvy codenvy = getMultiRemoteCodenvy().getCodenvy(remoteName);
-
+        if (codenvy == null) {
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a(format("Please login into the remote %s", remoteName));
+            buffer.reset();
+            System.out.println(buffer.toString());
+            return null;
+        }
         Factory factory = codenvy.factory().save(content).execute();
 
         // Search links
