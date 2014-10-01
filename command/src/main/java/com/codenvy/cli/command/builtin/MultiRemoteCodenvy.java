@@ -44,6 +44,7 @@ import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.RunnerStatus;
 import com.codenvy.client.model.Workspace;
 import com.codenvy.client.model.WorkspaceReference;
+import com.codenvy.client.model.runner.RunOptionsBuilder;
 
 import org.apache.felix.service.command.CommandSession;
 import org.apache.karaf.shell.console.CommandSessionHolder;
@@ -59,7 +60,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import static com.codenvy.cli.command.builtin.Constants.DEFAULT_CREATE_PROJECT_TYPE;
 import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.MODERN;
 import static java.lang.String.format;
 import static org.apache.karaf.shell.console.SessionProperties.PRINT_STACK_TRACES;
@@ -668,7 +668,15 @@ public class MultiRemoteCodenvy {
     }
 
 
-    protected UserProjectReference createProject(String name, String workspaceName, String remoteName, String projectType) {
+    /**
+     * Creates a project with the given name
+     * @param name the name of the project to create
+     * @param workspaceName the name of the workspace
+     * @param remoteName the name of the remote
+     * @param configurationFile the configuration Factory JSON file
+     * @return the reference to the created project
+     */
+    protected UserProjectReference createProject(String name, String workspaceName, String remoteName, String configurationFile) {
 
         // Remote ?
         if (remoteName == null) {
@@ -709,14 +717,12 @@ public class MultiRemoteCodenvy {
             }
         }
 
-        if (projectType == null) {
-            projectType = DEFAULT_CREATE_PROJECT_TYPE;
-        }
 
+        // Let's create the project
 
         // OK, now we have everything, we can create the project
-        ProjectReference projectToCreate = codenvyClient.newProjectBuilder().withName(name).withWorkspaceId(userWorkspace.id()).withWorkspaceName(
-                workspaceName).withProjectTypeId(projectType).withDescription(name).build();
+        ProjectReference projectToCreate =
+                codenvyClient.newProjectBuilder().withName(name).withWorkspaceId(userWorkspace.id()).withWorkspaceName(workspaceName).build();
 
         try {
             remoteCodenvy.project().create(projectToCreate).execute();
@@ -747,6 +753,10 @@ public class MultiRemoteCodenvy {
 
         return builtUserProjectReference;
 
+    }
+
+    protected RunOptionsBuilder getRunOptionsBuilder() {
+        return codenvyClient.newRunOptionsBuilder();
     }
 
     protected boolean isStackTraceEnabled() {

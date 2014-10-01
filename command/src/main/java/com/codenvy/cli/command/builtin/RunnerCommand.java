@@ -20,6 +20,7 @@ import com.codenvy.client.model.Link;
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.RunnerState;
 import com.codenvy.client.model.RunnerStatus;
+import com.codenvy.client.model.runner.RunOptions;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
@@ -62,6 +63,8 @@ public class RunnerCommand extends AbsCommand {
     @Option(name = "--bg", description = "Run background", required = false)
     private boolean background;
 
+    @Option(name = "--memory", description = "Define the size in MB for the run command", required = false)
+    private int memorySize;
 
     private ExecutorService executorService;
 
@@ -71,8 +74,6 @@ public class RunnerCommand extends AbsCommand {
     @Override
     protected Object doExecute() throws Exception {
         init();
-
-
 
         // not logged in
         if (!checkifEnabledRemotes()) {
@@ -103,10 +104,15 @@ public class RunnerCommand extends AbsCommand {
 
         final ProjectReference projectToRun = project.getInnerReference();
 
+        RunOptions runOptions = null;
+       if (memorySize > 0) {
+           runOptions = getMultiRemoteCodenvy().getRunOptionsBuilder().withMemorySize(memorySize).build();
+       }
+
         // Ok now we have the project, run it
         final RunnerStatus runnerStatus;
         try {
-            runnerStatus = project.getCodenvy().runner().run(projectToRun).execute();
+            runnerStatus = project.getCodenvy().runner().run(projectToRun, runOptions).execute();
         } catch (CodenvyErrorException e) {
             Boolean val = (Boolean)session.get(SessionProperties.PRINT_STACK_TRACES);
             if (val != null && val.booleanValue()) {
