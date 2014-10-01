@@ -16,9 +16,6 @@ import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
-import org.fusesource.jansi.Ansi;
-
-import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
  * Allows to create a project
@@ -28,7 +25,10 @@ import static org.fusesource.jansi.Ansi.Color.RED;
 public class CreateProjectCommand extends AbsCommand {
 
 
-    @Argument(name = "name", description = "Name of the project", required = true, index = 0)
+    @Argument(name = "configFile", description = "Configuration file of the project", required = true, index = 0)
+    private String configurationFile;
+
+    @Argument(name = "name", description = "Name of the project", required = true, index = 1)
     private String name;
 
     @Option(name = "--workspace", description = "Specify the workspace to use")
@@ -36,9 +36,6 @@ public class CreateProjectCommand extends AbsCommand {
 
     @Option(name = "--remote", description = "Specify the remote to use")
     private String remote;
-
-    @Option(name = "--type", description = "Specify the type of the project")
-    private String projectType;
 
     @Option(name = "--open", description = "Open the project once created")
     private boolean openProject;
@@ -55,18 +52,7 @@ public class CreateProjectCommand extends AbsCommand {
             return null;
         }
 
-        // do we have the project name ?
-        if (name == null) {
-            Ansi buffer = Ansi.ansi();
-            buffer.fg(RED);
-            buffer.a("No name of the project has been set");
-            buffer.reset();
-            System.out.println(buffer.toString());
-            return null;
-        }
-
-
-        UserProjectReference userProjectReference = getMultiRemoteCodenvy().createProject(name, workspace, remote, projectType);
+        UserProjectReference userProjectReference = getMultiRemoteCodenvy().createProject(name, workspace, remote, configurationFile);
 
         if (userProjectReference != null) {
             System.out.println(String.format("Project %s has been created", name));
