@@ -63,7 +63,7 @@ public class RunnerCommand extends AbsCommand {
     @Option(name = "--bg", description = "Run background", required = false)
     private boolean background;
 
-    @Option(name = "--memory", description = "Define the size in MB for the run command", required = false)
+    @Option(name = "--ram", description = "Set RAM for runner process", required = false)
     private int memorySize;
 
     private ExecutorService executorService;
