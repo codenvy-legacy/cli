@@ -163,6 +163,11 @@ CLASSPATH="$CLASSPATH:$KARAF_HOME/system/com/codenvy/cli/cli-preferences-impl/${
 CLASSPATH="$CLASSPATH:$KARAF_HOME/system/com/codenvy/platform-api-client-java/uberjar/${com.codenvy.client.version}/uberjar-${com.codenvy.client.version}.jar"
 CLASSPATH="$CLASSPATH:$KARAF_HOME/system/jline/jline/2.11/jline-2.11.jar"]]></replacevalue>
                                 </replace>
+                                <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/bin/setenv.bat">
+                                    <replacetoken><![CDATA[
+rem SET KARAF_TITLE]]></replacetoken>
+                                    <replacevalue><![CDATA[SET KARAF_TITLE=Codenvy]]></replacevalue>
+                                </replace>
                                 <replace file="target/classes/bin/windows/codenvy.bat">
                                     <replacetoken><![CDATA[set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\jline\jline\2.11\jline-2.11.jar]]></replacetoken>
                                     <replacevalue><![CDATA[set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\lib\codenvy-branding.jar
