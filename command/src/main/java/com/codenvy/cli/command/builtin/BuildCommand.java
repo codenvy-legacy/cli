@@ -19,6 +19,7 @@ import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.model.BuilderState;
 import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.Link;
+import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 
 import org.apache.karaf.shell.commands.Argument;
@@ -102,6 +103,17 @@ public class BuildCommand extends AbsCommand {
 
 
         final ProjectReference projectToBuild = project.getInnerReference();
+        // first check if the project has a builder
+        Project projectDescription = project.getCodenvy().project().getProject(projectToBuild.workspaceId(), projectToBuild).execute();
+        if (projectDescription != null && projectDescription.builder() == null) {
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a("The selected project '").a(projectDescription.name()).a("' with ID '").a(projectID).a("' has no builder defined so this project can't be built.");
+            buffer.reset();
+            System.out.println(buffer.toString());
+            return null;
+        }
+
 
         // Ok now we have the project
         final BuilderStatus builderStatus = project.getCodenvy().builder().build(projectToBuild).execute();
