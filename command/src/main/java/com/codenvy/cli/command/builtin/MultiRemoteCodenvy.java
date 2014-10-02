@@ -222,7 +222,16 @@ public class MultiRemoteCodenvy {
 
         WorkspaceClient workspaceClient = codenvy.workspace();
         Request<List<Workspace>> request = workspaceClient.all();
-        List<Workspace> readWorkspaces = request.execute();
+        List<Workspace> readWorkspaces;
+        try {
+             readWorkspaces = request.execute();
+        } catch (CodenvyErrorException e) {
+            if (isStackTraceEnabled()) {
+                throw e;
+            }
+            System.err.println("Error while retrieving projects on remote '" + remote + "'");
+            return projects;
+        }
 
         for (Workspace workspace : readWorkspaces) {
             WorkspaceReference ref = workspace.workspaceReference();
