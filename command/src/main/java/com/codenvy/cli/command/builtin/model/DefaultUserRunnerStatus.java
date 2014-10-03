@@ -10,13 +10,17 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
+import com.codenvy.cli.command.builtin.util.ascii.AsciiForm;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.client.model.RunnerState;
 import com.codenvy.client.model.RunnerStatus;
+import com.codenvy.client.model.builder.BuilderMetric;
+import com.codenvy.client.model.runner.RunnerMetric;
 
 import org.fusesource.jansi.Ansi;
 
 import java.util.Date;
+import java.util.List;
 
 import static com.codenvy.cli.command.builtin.util.SHA1.sha1;
 import static org.fusesource.jansi.Ansi.Attribute.INTENSITY_BOLD;
@@ -119,15 +123,39 @@ public class DefaultUserRunnerStatus implements UserRunnerStatus {
             access = "N/A";
         }
 
-        return new DefaultAsciiForm().withEntry(bold("id"), shortId())
-                                     .withEntry(bold("workspace"), getProject().getWorkspace().name())
-                                     .withEntry(bold("project"), getProject().name())
-                                     .withEntry(bold("run url"), access)
-                                     .withEntry(bold("status"), state.toString())
-                                     .withEntry(bold("start time"), startTime)
-                                     .withEntry(bold("stop time"), stopTime)
-                                     .withUppercasePropertyName()
-                                     .toAscii();
+        // run stats and build stats
+        List<BuilderMetric> builderMetricList = getInnerStatus().getBuildStats();
+        List<RunnerMetric> runnerMetricList = getInnerStatus().getRunStats();
+
+        AsciiForm form = new DefaultAsciiForm().withEntry(bold("id"), shortId())
+                              .withEntry(bold("workspace"), getProject().getWorkspace().name())
+                              .withEntry(bold("project"), getProject().name())
+                              .withEntry(bold("run url"), access)
+                              .withEntry(bold("status"), state.toString())
+                              .withEntry(bold("start time"), startTime)
+                              .withEntry(bold("stop time"), stopTime)
+                              .withUppercasePropertyName();
+
+        // add stats if present
+        if (builderMetricList != null) {
+            for (BuilderMetric builderMetric : builderMetricList) {
+                String name = builderMetric.getName();
+                String value = builderMetric.getValue();
+                form.withEntry(bold("BUILD ").concat("(").concat(name).concat(")"), value);
+            }
+        }
+        if (runnerMetricList != null) {
+            for (RunnerMetric runnerMetric : runnerMetricList) {
+                String name = runnerMetric.getName();
+                String value = runnerMetric.getValue();
+                form.withEntry(bold("RUN ").concat("(").concat(name).concat(")"), value);
+            }
+        }
+
+
+
+
+        return form.toAscii();
 
     }
 }
