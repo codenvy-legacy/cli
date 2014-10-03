@@ -36,12 +36,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>${com.googlecode.json-simple.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.karaf.shell</groupId>
             <artifactId>org.apache.karaf.shell.console</artifactId>
             <version>${org.apache.karaf.version}</version>
