@@ -17,6 +17,7 @@ import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.client.CodenvyErrorException;
 import com.codenvy.client.model.Link;
+import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.RunnerState;
 import com.codenvy.client.model.RunnerStatus;
@@ -104,10 +105,22 @@ public class RunnerCommand extends AbsCommand {
 
         final ProjectReference projectToRun = project.getInnerReference();
 
+        // first check if the project has a runner
+        Project projectDescription = project.getCodenvy().project().getProject(projectToRun.workspaceId(), projectToRun).execute();
+        if (projectDescription != null && projectDescription.runner() == null) {
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a("The selected project '").a(projectDescription.name()).a("' with ID '").a(projectId).a("' has no runner defined so this project can't be run.");
+            buffer.reset();
+            System.out.println(buffer.toString());
+            return null;
+        }
+
+
         RunOptions runOptions = null;
-       if (memorySize > 0) {
-           runOptions = getMultiRemoteCodenvy().getRunOptionsBuilder().withMemorySize(memorySize).build();
-       }
+        if (memorySize > 0) {
+            runOptions = getMultiRemoteCodenvy().getRunOptionsBuilder().withMemorySize(memorySize).build();
+        }
 
         // Ok now we have the project, run it
         final RunnerStatus runnerStatus;
