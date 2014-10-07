@@ -61,6 +61,9 @@
             <action class="com.codenvy.cli.command.builtin.PullCommand" />
         </command>
         <command>
+            <action class="com.codenvy.cli.command.builtin.ImportProjectCommand" />
+        </command>
+        <command>
             <action class="com.codenvy.cli.command.builtin.CloneLocalCommand" />
         </command>
         <command>

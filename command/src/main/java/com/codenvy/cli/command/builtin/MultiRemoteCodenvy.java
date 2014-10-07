@@ -25,6 +25,7 @@ import com.codenvy.cli.command.builtin.util.ascii.AsciiForm;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiArray;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.cli.command.builtin.util.ascii.FormatterMode;
+import com.codenvy.cli.command.builtin.util.zip.ZipUtils;
 import com.codenvy.cli.preferences.Preferences;
 import com.codenvy.cli.security.PreferencesDataStore;
 import com.codenvy.cli.security.RemoteCredentials;
@@ -50,11 +51,20 @@ import org.apache.felix.service.command.CommandSession;
 import org.apache.karaf.shell.console.CommandSessionHolder;
 import org.fusesource.jansi.Ansi;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -71,6 +81,10 @@ import static org.fusesource.jansi.Ansi.Color.RED;
  * @author Florent Benoit
  */
 public class MultiRemoteCodenvy {
+
+    public static enum Importer {
+        GIT, ZIP;
+    }
 
     private CodenvyClient codenvyClient;
 
@@ -677,15 +691,239 @@ public class MultiRemoteCodenvy {
     }
 
 
+    public UserWorkspace getUserWorkspace(String remote, String workspaceName) {
+
+        // Remote ?
+        if (remote == null) {
+            remote = getDefaultRemoteName();
+        }
+
+        // try to connect to the remote
+        if (getRemote(remote) == null) {
+            System.out.println(format("The remote named %s doesn't exists", remote));
+            return null;
+        }
+
+        // check if remote is ready
+        Codenvy remoteCodenvy = getCodenvy(remote);
+        if (remoteCodenvy == null) {
+            System.out.println(format("The remote named %s is not yet available. Need to login first", remote));
+            return null;
+        }
+
+
+        UserWorkspace userWorkspace;
+        List<UserWorkspace> workspaces = getWorkspaces(remote, remoteCodenvy);
+
+        if (workspaceName == null) {
+            if (workspaces.size() > 1) {
+                System.out.println(format("Too many workspaces in the remote %s. Please specify the name of the workspace", remote));
+                return null;
+            } else if (workspaces.isEmpty()) {
+                System.out.println("No workspace found in the remote %s. Please specify another remote or create a workspace first");
+                return null;
+            }
+            userWorkspace = workspaces.get(0);
+        } else {
+            // needs to find the workspace
+            userWorkspace = getWorkspaceWithName(workspaceName, remote, remoteCodenvy);
+            if (userWorkspace == null) {
+                System.out.println(format("The workspace with name %s has not been found in the remote %s", workspaceName, remote));
+                return null;
+            }
+        }
+        return userWorkspace;
+    }
+
+
+    /**
+     *
+     * @param workspace
+     * @param name
+     * @param param
+     * @param importerType
+     * @return
+     */
+    protected UserProjectReference importProject(UserWorkspace workspace, String name, String param, String importerType, Path configurationPath) {
+
+        //
+        String projectName = name;
+
+        // needs to analyze param
+
+        // 1]
+        // param is available on the current filesystem
+
+        File file = new File(param);
+        InputStream streamToSend = null;
+        if (file.exists()) {
+
+            if (projectName == null) {
+                projectName = file.getName();
+            }
+
+            // this is on the filesystem
+            if (file.isFile()) {
+                // 2] zip file ?
+                if (!file.getName().endsWith(".zip")) {
+                    Ansi buffer = Ansi.ansi();
+                    buffer.fg(RED);
+                    buffer.a("The given file '").a(file.getName()).a("' should be a zip file.");
+                    buffer.reset();
+                    System.out.println(buffer.toString());
+                    return null;
+                }
+                streamToSend = ZipUtils.getZipProjectStream(file);
+
+            } else {
+                // 3] directory, need to zip the content of this directory
+
+                streamToSend = ZipUtils.getZipProjectStream(file);
+            }
+
+
+            // needs to create project
+            ProjectReference projectToCreate =
+                    codenvyClient.newProjectBuilder().withName(projectName).withWorkspaceId(workspace.id()).withWorkspaceName(workspace.name()).withProjectTypeId("blank").build();
+
+            System.out.print("Creating project...");
+            try {
+                workspace.getCodenvy().project().create(projectToCreate).execute();
+            } catch (CodenvyErrorException e) {
+                if (isStackTraceEnabled()) {
+                    throw e;
+                }
+                System.out.println("Unable to create the project:" + e.getMessage());
+                return null;
+            }
+            System.out.println("done !");
+
+
+            // Project has been created, send the data
+            System.out.print("Uploading data...");
+            workspace.getCodenvy().project().importArchive(workspace.id(), projectToCreate, streamToSend).execute();
+            System.out.println("done !");
+
+            if (configurationPath != null) {
+                // Update it
+                System.out.print("Now updating project configuration...");
+                workspace.getCodenvy().project().updateProject(projectToCreate, configurationPath);
+                System.out.println("done !");
+            }
+
+            return new DefaultUserProjectReference(workspace.getCodenvy(), projectToCreate, workspace);
+
+
+        } else {
+            // 4]
+            // not a file. is it a URL
+            URI uri;
+            try {
+                uri = new URI(param);
+            } catch (URISyntaxException e) {
+                Ansi buffer = Ansi.ansi();
+                buffer.fg(RED);
+                buffer.a("The given value '").a(param).a("' is neither a local path nor a valid URI.");
+                buffer.reset();
+                System.out.println(buffer.toString());
+                return null;
+            }
+
+            Importer importer = null;
+            if (importerType != null) {
+                importer = Importer.valueOf(importerType.toUpperCase(Locale.ENGLISH));
+            } else {
+                // try to autodetect type
+
+                if ("git".equals(uri.getScheme())) {
+                    importer = Importer.GIT;
+                } else if (uri.toString().contains("github.com")) {
+                    importer = Importer.GIT;
+                }
+
+
+                if (uri.toString().endsWith(".zip")) {
+                    importer = Importer.ZIP;
+                }
+            }
+
+            // is it a git
+            if (importer == null) {
+                Ansi buffer = Ansi.ansi();
+                buffer.fg(RED);
+                buffer.a("Importer not given and auto-detect of the import type was not possible. Please provide the importer.");
+                buffer.reset();
+                System.out.println(buffer.toString());
+                return null;
+            }
+
+            // find name if not defined
+            if (projectName == null) {
+                projectName = uri.getPath().replace(".", "_").replace("/", "_");
+            }
+
+
+            // Create factory content
+            String factoryContent = "{\n" +
+                                    "   \"v\" : \"2.0\",\n" +
+                                    "  \"source\" : {\n" +
+                                    "     \"location\" : \"$LOCATION$\",\n" +
+                                    "      \"type\" : \"$IMPORTER$\"\n" +
+                                    "    }\n" +
+                                    "}\n";
+
+            factoryContent = factoryContent.replace("$LOCATION$", param).replace("$IMPORTER$", importer.name().toLowerCase(Locale.ENGLISH));
+
+            // Dump the content
+            Path factoryPath;
+            try {
+                // create
+                factoryPath = Files.createTempFile(new File(System.getProperty("java.io.tmpdir")).toPath(), "factory", ".json");
+
+                // dump
+                Files.write(factoryPath, factoryContent.getBytes(Charset.defaultCharset()));
+            } catch (IOException e) {
+                Ansi buffer = Ansi.ansi();
+                buffer.fg(RED);
+                buffer.a("Unable to generate factory content." + e.getMessage());
+                buffer.reset();
+                System.out.println(buffer.toString());
+                if (isStackTraceEnabled()) {
+                    throw new IllegalArgumentException("Unable to generate factory content", e);
+                }
+                return null;
+            }
+
+
+            Project project = workspace.getCodenvy().project().importProject(workspace.id(), projectName, factoryPath).execute();
+
+            if (configurationPath != null) {
+                // Update it
+                System.out.print("Now updating project configuration...");
+                workspace.getCodenvy().project().updateProject(project, configurationPath);
+                System.out.println("done !");
+            }
+
+
+            return new DefaultUserProjectReference(workspace.getCodenvy(), project, workspace);
+
+
+        }
+
+    }
+
+
+
+
     /**
      * Creates a project with the given name
      * @param name the name of the project to create
      * @param workspaceName the name of the workspace
      * @param remoteName the name of the remote
-     * @param configurationFile the configuration Factory JSON file
+     * @param configurationPath the configuration Factory JSON file
      * @return the reference to the created project
      */
-    protected UserProjectReference createProject(String name, String workspaceName, String remoteName, String configurationFile) {
+    protected UserProjectReference createProject(String name, String workspaceName, String remoteName, Path configurationPath) {
 
         // Remote ?
         if (remoteName == null) {
@@ -726,13 +964,13 @@ public class MultiRemoteCodenvy {
             }
         }
 
-
         // Let's create the project
 
         // OK, now we have everything, we can create the project
         ProjectReference projectToCreate =
-                codenvyClient.newProjectBuilder().withName(name).withWorkspaceId(userWorkspace.id()).withWorkspaceName(workspaceName).build();
+                codenvyClient.newProjectBuilder().withName(name).withWorkspaceId(userWorkspace.id()).withWorkspaceName(workspaceName).withProjectTypeId("blank").build();
 
+        System.out.print("Creating project...");
         try {
             remoteCodenvy.project().create(projectToCreate).execute();
         } catch (CodenvyErrorException e) {
@@ -742,6 +980,7 @@ public class MultiRemoteCodenvy {
             System.out.println("Unable to create the project:" + e.getMessage());
             return null;
         }
+        System.out.println("done !");
 
         List<ProjectReference> projects = remoteCodenvy.project().getWorkspaceProjects(userWorkspace.id()).execute();
         ProjectReference newProject = null;
@@ -758,7 +997,11 @@ public class MultiRemoteCodenvy {
 
         UserProjectReference builtUserProjectReference = new DefaultUserProjectReference(remoteCodenvy, newProject, userWorkspace);
 
-        System.out.println(builtUserProjectReference);
+
+        // Update it
+        System.out.print("Now updating project configuration...");
+        remoteCodenvy.project().updateProject(builtUserProjectReference.getInnerReference(), configurationPath);
+        System.out.println("done !");
 
         return builtUserProjectReference;
 
