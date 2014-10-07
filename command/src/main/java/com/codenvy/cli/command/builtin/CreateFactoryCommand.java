@@ -14,6 +14,7 @@ import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Factory;
 import com.codenvy.client.model.Link;
+import com.codenvy.client.model.Project;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
@@ -41,24 +42,17 @@ import static org.fusesource.jansi.Ansi.Color.RED;
 @Command(scope = "codenvy", name = "create-factory", description = "Create a factory")
 public class CreateFactoryCommand extends AbsCommand {
 
-    @Argument(name = "projectId", description = "ProjectID")
-    private String projectId;
+    /**
+     * VCS Provider Name property.
+     */
+    private static final String VCS_PROVIDER_NAME = "vcs.provider.name";
+
+    @Argument(name = "parameter", description = "ProjectID or path to the Codenvy Factory JSON file", required = true)
+    private String parameter;
 
 
     @Option(name = "--remote", description = "Name of the remote codenvy")
     private String remoteName;
-
-    /**
-     * Specify the path of a JSON file.
-     */
-    @Option(name = "--in", description = "Specify the input JSON file")
-    private String path;
-
-    /**
-     * Use encoded factories
-     */
-    @Option(name = "--encoded", description = "Use encoded factory")
-    private boolean encoded;
 
     /**
      * Invoke the factory link once it has been built
@@ -77,11 +71,25 @@ public class CreateFactoryCommand extends AbsCommand {
             return null;
         }
 
+        // is that the parameter is a path ?
+        File jsonFile = new File(parameter);
         String factoryLink = null;
-        if (projectId != null) {
-            factoryLink = createFactoryProject();
-        } else if (path != null) {
-            factoryLink = createPathFactory();
+        if (!jsonFile.exists()) {
+            // try as projectID
+            UserProjectReference projectReference = getMultiRemoteCodenvy().getProjectReference(parameter);
+            if (projectReference == null) {
+                Ansi buffer = Ansi.ansi();
+                buffer.fg(RED);
+                buffer.a("No matching project for identifier '").a(parameter).a("'.");
+                buffer.reset();
+                System.out.println(buffer.toString());
+                return null;
+
+            }
+            factoryLink = createFactoryProject(projectReference);
+        } else {
+            // JSON file is here, use it.
+            factoryLink = getEncodedFactory(jsonFile);
         }
 
         if (invoke && factoryLink != null) {
@@ -93,41 +101,38 @@ public class CreateFactoryCommand extends AbsCommand {
         return null;
     }
 
-    protected String createFactoryProject() {
-        // get project
-        UserProjectReference project = getMultiRemoteCodenvy().getProjectReference(projectId);
-        if (project == null) {
+    /**
+     * Creates a factory link for the given project.
+     * @param projectReference the {@link com.codenvy.cli.command.builtin.model.UserProjectReference project reference on which we need to create the factory link}
+     * @return the factory link
+     */
+    protected String createFactoryProject(UserProjectReference projectReference) {
+        // get project attributes
+        Project projectDescription = projectReference.getCodenvy().project().getProject(projectReference.getInnerReference().workspaceId(), projectReference.getInnerReference()).execute();
+        if (projectDescription == null) {
             Ansi buffer = Ansi.ansi();
             buffer.fg(RED);
-            buffer.a("No matching project for identifier '").a(projectId).a("'.");
+            buffer.a("No matching project for identifier '").a(parameter).a("'.");
             buffer.reset();
             System.out.println(buffer.toString());
             return null;
         }
 
-        // get last commit ID
-//        Log log;
-//        try {
-//            log = project.getCodenvy().git().log(project.getInnerReference(), null).execute();
-//        } catch (CodenvyErrorException e) {
-//            // need to init the repo first
-//            project.getCodenvy().git().init(project.getInnerReference()).execute();
-//
-//            // then get the log again
-//            log = project.getCodenvy().git().log(project.getInnerReference(), null).execute();
-//        }
-//        String commitId = "";
-//        List<Revision> commits = log.getCommits();
-//        if (!commits.isEmpty()) {
-//            commitId = commits.get(0).getId();
-//        }
-//
-//        // get a git URL
-//        String gitURL = project.getCodenvy().git().readOnlyUrl(project.getInnerReference()).execute();
+        // project is under VCS ?
+        List<String> vcsList = projectDescription.attributes().get(VCS_PROVIDER_NAME);
 
+        // Not under VCS so needs to initialize
+        if (vcsList == null || vcsList.isEmpty()) {
+            // need to init the repo
+            projectReference.getCodenvy().git().init(projectReference.getInnerReference()).execute();
+        }
 
-        // default is encoded
-        return getEncodedFactory("");
+        // Ok so now we have a project that is under VCS so want to export it
+        String content = projectReference.getCodenvy().factory().export(projectReference.getInnerReference()).execute();
+
+        // and then get factory from the project json content
+        return getEncodedFactory(content, projectReference.getCodenvy());
+
     }
 
 
@@ -149,29 +154,12 @@ public class CreateFactoryCommand extends AbsCommand {
     }
 
 
-    /**
-     * Create factory based on the path
-     */
-    protected String createPathFactory() {
-        File jsonFile = new File(path);
-        if (!jsonFile.exists()) {
-            Ansi buffer = Ansi.ansi();
-            buffer.fg(RED);
-            buffer.a(format("The path %s does not exists", path));
-            buffer.reset();
-            System.out.println(buffer.toString());
-            return null;
+
+    protected String getEncodedFactory(String content, Codenvy codenvy) {
+
+        if (codenvy == null) {
+            codenvy = getMultiRemoteCodenvy().getCodenvy(remoteName);
         }
-
-        // default is encoded
-        return getEncodedFactory(jsonFile);
-    }
-
-
-
-
-    protected String getEncodedFactory(String content) {
-        Codenvy codenvy = getMultiRemoteCodenvy().getCodenvy(remoteName);
         if (codenvy == null) {
             Ansi buffer = Ansi.ansi();
             buffer.fg(RED);
@@ -205,7 +193,7 @@ public class CreateFactoryCommand extends AbsCommand {
              Reader inputStreamReader = new InputStreamReader(readInputStream, Charset.defaultCharset());
              BufferedReader reader = new BufferedReader(inputStreamReader)
         ) {
-            String         line = null;
+            String line;
             while( ( line = reader.readLine() ) != null ) {
                 content.append( line );
                 content.append( System.lineSeparator() );
@@ -217,7 +205,7 @@ public class CreateFactoryCommand extends AbsCommand {
             buffer.reset();
             System.out.println(buffer.toString());
         }
-        return getEncodedFactory(content.toString());
+        return getEncodedFactory(content.toString(), null);
     }
 
 
