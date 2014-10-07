@@ -16,6 +16,11 @@ import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
+import org.fusesource.jansi.Ansi;
+
+import java.io.File;
+
+import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
  * Allows to create a project
@@ -26,7 +31,7 @@ public class CreateProjectCommand extends AbsCommand {
 
 
     @Argument(name = "configFile", description = "Configuration file of the project", required = true, index = 0)
-    private String configurationFile;
+    private String configurationFileProperty;
 
     @Argument(name = "name", description = "Name of the project", required = true, index = 1)
     private String name;
@@ -52,7 +57,18 @@ public class CreateProjectCommand extends AbsCommand {
             return null;
         }
 
-        UserProjectReference userProjectReference = getMultiRemoteCodenvy().createProject(name, workspace, remote, configurationFile);
+        // is that the parameter is a path ?
+        File configFile = new File(configurationFileProperty);
+        if (!configFile.exists()) {
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a("The configuration file '").a(configurationFileProperty).a("' does not exists.");
+            buffer.reset();
+            System.out.println(buffer.toString());
+            return null;
+        }
+
+        UserProjectReference userProjectReference = getMultiRemoteCodenvy().createProject(name, workspace, remote, configFile.toPath());
 
         if (userProjectReference != null) {
             System.out.println(String.format("Project %s has been created", name));
