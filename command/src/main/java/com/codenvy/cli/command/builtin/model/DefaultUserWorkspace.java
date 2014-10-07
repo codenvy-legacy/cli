@@ -102,4 +102,11 @@ public class DefaultUserWorkspace implements UserWorkspace {
     public MultiRemoteCodenvy getMultiRemoteCodenvy() {
         return multiRemoteCodenvy;
     }
+
+    @Override
+    public Codenvy getCodenvy() {
+        return codenvy;
+    }
+
+
 }
