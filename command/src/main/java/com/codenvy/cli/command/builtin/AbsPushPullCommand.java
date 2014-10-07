@@ -15,12 +15,10 @@ import jline.console.ConsoleReader;
 
 import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.util.metadata.CodenvyMetadata;
+import com.codenvy.cli.command.builtin.util.zip.ZipUtils;
 import com.codenvy.client.Response;
-import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 
-import org.apache.karaf.shell.commands.Argument;
-import org.apache.karaf.shell.commands.Option;
 import org.fusesource.jansi.Ansi;
 
 import java.io.File;
@@ -142,7 +140,7 @@ public abstract class AbsPushPullCommand extends AbsCommand {
         ProjectReference projectToPull = project.getInnerReference();
         // Now compare resources (if overriding)
         List<File> list = new ArrayList<>();
-        getAllFiles(dest, list);
+        ZipUtils.getAllFiles(dest, list);
         int size = list.size();
         int count = 0;
         for (File f : list) {
@@ -215,16 +213,6 @@ public abstract class AbsPushPullCommand extends AbsCommand {
             System.out.println(buffer.toString());
         }
         return null;
-    }
-
-    public static void getAllFiles(File dir, List<File> fileList) throws IOException {
-        File[] files = dir.listFiles();
-        for (File file : files) {
-            fileList.add(file);
-            if (file.isDirectory()) {
-                getAllFiles(file, fileList);
-            }
-        }
     }
 
 }

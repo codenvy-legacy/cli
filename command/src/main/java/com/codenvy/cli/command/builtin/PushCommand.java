@@ -14,6 +14,7 @@ package com.codenvy.cli.command.builtin;
 import jline.console.ConsoleReader;
 
 import com.codenvy.cli.command.builtin.model.UserProjectReference;
+import com.codenvy.cli.command.builtin.util.zip.ZipUtils;
 import com.codenvy.client.model.ProjectReference;
 
 import org.apache.karaf.shell.commands.Argument;
@@ -21,20 +22,9 @@ import org.apache.karaf.shell.commands.Command;
 import org.fusesource.jansi.Ansi;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 import static org.fusesource.jansi.Ansi.Color.RED;
 
@@ -94,7 +84,7 @@ public class PushCommand extends AbsPushPullCommand {
         System.out.print("Pushing...");
 
         // create zip of the current archive
-        final InputStream exportedZipInputStream = getZipProjectStream(directoryToSend);
+        final InputStream exportedZipInputStream = ZipUtils.getZipProjectStream(directoryToSend);
 
         // send it
         project.getCodenvy().project().importArchive(projectToPush.workspaceId(), projectToPush, exportedZipInputStream).execute();
@@ -132,94 +122,5 @@ public class PushCommand extends AbsPushPullCommand {
     }
 
 
-    public static InputStream getZipProjectStream(final File directoryToSend) {
-
-
-        final AtomicBoolean writeDoneSignal = new AtomicBoolean(false);
-        final CountDownLatch writeStartLock = new CountDownLatch(1);
-
-        final PipedInputStream pipedInputStream = new PipedInputStream() {
-            @Override
-            public int read(byte[] b, int off, int len) throws IOException {
-                try {
-                    // Wait until writer get created and connected
-                    writeStartLock.await();
-
-                    // Hack to avoid premature closing of this PipedInputStream by a reader whose basing closing action on assumption that
-                    // if read() send -1 the stream is to be closed (for instance InputStreamProvider of Jersey). The stream can be only
-                    // closed when the thread where PipedOutputStream write is ended. Otherwise, if PipedOutputStream write ’slower’ than
-                    // PipedInputStream is read, there could be underflow and read could send -1 whereas there's still some data to be
-                    // written.
-                    int result = super.read(b, off, len);
-                    if (result == -1 && !writeDoneSignal.get()) {
-                        return 0;
-                    }
-                    return result;
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-        };
-
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new ZipRunnable(pipedInputStream, writeStartLock, directoryToSend, writeDoneSignal));
-
-        return pipedInputStream;
-    }
-
-    private static class ZipRunnable implements Runnable {
-        private final PipedInputStream pipedInputStream;
-        private final CountDownLatch writeStartLock;
-        private final File           directoryToSend;
-        private final AtomicBoolean  writeDoneSignal;
-
-        public ZipRunnable(PipedInputStream pipedInputStream, CountDownLatch writeStartLock, File directoryToSend,
-                           AtomicBoolean writeDoneSignal) {
-            this.pipedInputStream = pipedInputStream;
-            this.writeStartLock = writeStartLock;
-            this.directoryToSend = directoryToSend;
-            this.writeDoneSignal = writeDoneSignal;
-        }
-
-        @Override
-    public void run() {
-        try {
-            final PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream);
-            // Writer is on, unlock the reader
-            writeStartLock.countDown();
-            final ZipOutputStream outputStream = new ZipOutputStream(pipedOutputStream);
-
-
-            List<File> listFiles = new ArrayList<>();
-            getAllFiles(directoryToSend, listFiles);
-            for (File file : listFiles) {
-                if (!file.isDirectory()) { // we only zip files, not directories
-
-                    String entryPath = file.getPath().substring(directoryToSend.getPath().length() + 1);
-
-                    ZipEntry zipEntry = new ZipEntry(entryPath);
-                    outputStream.putNextEntry(zipEntry);
-
-                    try (FileInputStream fis = new FileInputStream(file)) {
-                        byte[] bytes = new byte[1024];
-                        int length;
-                        while ((length = fis.read(bytes)) >= 0) {
-                            outputStream.write(bytes, 0, length);
-                        }
-
-                        outputStream.closeEntry();
-                    }
-                }
-            }
-
-            // Flag for writing end, see hack above for PipedInputStream#read(…).
-            writeDoneSignal.set(true);
-            outputStream.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    }
 }
 
