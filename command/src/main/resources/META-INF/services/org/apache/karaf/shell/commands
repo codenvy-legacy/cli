@@ -10,6 +10,7 @@
 #
 
 com.codenvy.cli.command.builtin.HelpCommand
+com.codenvy.cli.command.builtin.HelpNonInteractiveCommand
 com.codenvy.cli.command.builtin.RunnerCommand
 com.codenvy.cli.command.builtin.BuildCommand
 com.codenvy.cli.command.builtin.LogsCommand
