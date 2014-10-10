@@ -75,7 +75,8 @@ public class HelpCommand extends AbsCommand {
         buffer.a("\n");
         buffer.a("To add a new remote, use 'remote add <remote-name> <URL>'");
 
-
+        buffer.a("\n");
+        buffer.a("Use '\u001B[1m[command] --help\u001B[0m' for help on a specific command.\r\n");
         System.out.println(buffer.toString());
         return null;
     }
