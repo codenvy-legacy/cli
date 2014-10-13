@@ -45,7 +45,9 @@ public class CodenvyMetadata {
         // Codenvy Folder
         File codenvyFolder = new File(projectFolder, Constants.CODENVY_FOLDERNAME);
         if (!codenvyFolder.exists()) {
-            throw new IllegalStateException("No denvy folder found in the directory" + projectFolder);
+            if (!codenvyFolder.mkdirs()) {
+                throw new IllegalStateException("Unable to create Codenvy metadata folder in the directory" + projectFolder);
+            }
         }
 
         this.metadataFile = new File(codenvyFolder, METADATA_FILENAME);
