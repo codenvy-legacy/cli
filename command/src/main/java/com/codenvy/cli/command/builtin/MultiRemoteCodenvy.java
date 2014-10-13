@@ -25,6 +25,7 @@ import com.codenvy.cli.command.builtin.util.ascii.AsciiForm;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiArray;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.cli.command.builtin.util.ascii.FormatterMode;
+import com.codenvy.cli.command.builtin.util.metadata.CodenvyMetadata;
 import com.codenvy.cli.command.builtin.util.zip.ZipUtils;
 import com.codenvy.cli.preferences.Preferences;
 import com.codenvy.cli.security.PreferencesDataStore;
@@ -794,7 +795,8 @@ public class MultiRemoteCodenvy {
 
             // needs to create project
             ProjectReference projectToCreate =
-                    codenvyClient.newProjectBuilder().withName(projectName).withWorkspaceId(workspace.id()).withWorkspaceName(workspace.name()).withType("blank").build();
+                    codenvyClient.newProjectBuilder().withName(projectName).withWorkspaceId(workspace.id()).withWorkspaceName(workspace.name()).withType(
+                            "blank").build();
 
             System.out.print("Creating project...");
             try {
@@ -978,7 +980,8 @@ public class MultiRemoteCodenvy {
 
         // OK, now we have everything, we can create the project
         ProjectReference projectToCreate =
-                codenvyClient.newProjectBuilder().withName(name).withWorkspaceId(userWorkspace.id()).withWorkspaceName(workspaceName).withType("blank").build();
+                codenvyClient.newProjectBuilder().withName(name).withWorkspaceId(userWorkspace.id()).withWorkspaceName(
+                        workspaceName).withType("blank").build();
 
         System.out.print("Creating project...");
         try {
@@ -1065,4 +1068,21 @@ public class MultiRemoteCodenvy {
     protected Codenvy getCodenvy(String remoteName) {
         return readyRemotes.get(remoteName);
     }
+
+
+    protected boolean storeMetadata(UserProjectReference project, File dest) {
+        try {
+            CodenvyMetadata codenvyMetadata = new CodenvyMetadata(project, dest);
+            codenvyMetadata.write();
+        } catch (Exception e) {
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a("Unable to write metadata in pulled project " + project.name());
+            buffer.reset();
+            System.out.println(buffer.toString());
+            return false;
+        }
+        return true;
+    }
+
 }

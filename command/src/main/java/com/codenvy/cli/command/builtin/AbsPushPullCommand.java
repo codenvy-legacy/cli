@@ -121,20 +121,6 @@ public abstract class AbsPushPullCommand extends AbsCommand {
         System.out.println("done !                                ");
     }
 
-    protected boolean storeMetadata(UserProjectReference project, File dest) {
-        try {
-            CodenvyMetadata codenvyMetadata = new CodenvyMetadata(project, dest);
-            codenvyMetadata.write();
-        } catch (Exception e) {
-            Ansi buffer = Ansi.ansi();
-            buffer.fg(RED);
-            buffer.a("Unable to write metadata in pulled project " + project.name());
-            buffer.reset();
-            System.out.println(buffer.toString());
-            return false;
-        }
-        return true;
-    }
 
     protected void override(UserProjectReference project, File dest) throws IOException {
         ProjectReference projectToPull = project.getInnerReference();

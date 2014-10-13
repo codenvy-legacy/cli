@@ -105,7 +105,7 @@ public class CloneLocalCommand extends AbsPushPullCommand {
         pull(project, dest);
 
         // create metadata
-        storeMetadata(project, dest);
+        getMultiRemoteCodenvy().storeMetadata(project, dest);
 
         // Now compare resources (if overriding)
         if (override) {
