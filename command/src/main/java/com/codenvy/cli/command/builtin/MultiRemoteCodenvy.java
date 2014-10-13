@@ -626,7 +626,7 @@ public class MultiRemoteCodenvy {
         if (project == null) {
             return Collections.emptyList();
         }
-        return project.userPermissions();
+        return project.permissions();
     }
 
 
@@ -784,7 +784,7 @@ public class MultiRemoteCodenvy {
 
             // needs to create project
             ProjectReference projectToCreate =
-                    codenvyClient.newProjectBuilder().withName(projectName).withWorkspaceId(workspace.id()).withWorkspaceName(workspace.name()).withProjectTypeId("blank").build();
+                    codenvyClient.newProjectBuilder().withName(projectName).withWorkspaceId(workspace.id()).withWorkspaceName(workspace.name()).withType("blank").build();
 
             System.out.print("Creating project...");
             try {
@@ -968,7 +968,7 @@ public class MultiRemoteCodenvy {
 
         // OK, now we have everything, we can create the project
         ProjectReference projectToCreate =
-                codenvyClient.newProjectBuilder().withName(name).withWorkspaceId(userWorkspace.id()).withWorkspaceName(workspaceName).withProjectTypeId("blank").build();
+                codenvyClient.newProjectBuilder().withName(name).withWorkspaceId(userWorkspace.id()).withWorkspaceName(workspaceName).withType("blank").build();
 
         System.out.print("Creating project...");
         try {

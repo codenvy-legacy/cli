@@ -11,18 +11,11 @@
 package com.codenvy.cli.command.builtin;
 
 import com.codenvy.cli.command.builtin.util.ascii.FormatterMode;
-import com.codenvy.client.Codenvy;
-import com.codenvy.client.CodenvyClient;
-import com.codenvy.client.dummy.DummyCodenvy;
-import com.codenvy.client.dummy.DummyCodenvyBuilder;
 import com.codenvy.client.dummy.DummyCodenvyClient;
 import com.codenvy.client.dummy.project.DummyProject;
 import com.codenvy.client.dummy.workspace.DummyWorkspace;
 
 import org.apache.felix.service.command.CommandSession;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import static com.codenvy.cli.command.builtin.util.ascii.FormatterMode.CSV;
@@ -89,7 +82,7 @@ public class ListCommandTest extends AbsCommandTest {
 
         CommandInvoker commandInvoker = getInvoker();
         DummyWorkspace workspace1 = commandInvoker.getCodenvyClient().newWorkspaceBuilder("WORKSPACE1").build();
-        DummyProject project1 = commandInvoker.getCodenvyClient().newProjectBuilder(workspace1.workspaceReference(), "project1").withProjectTypeId(
+        DummyProject project1 = commandInvoker.getCodenvyClient().newProjectBuilder(workspace1.workspaceReference(), "project1").withType(
                 "java").withVisibility("public").build();
         commandInvoker.getDefaultRemoteCodenvy().workspace().registerWorkspace(workspace1);
         commandInvoker.getDefaultRemoteCodenvy().project().registerProject(project1);
@@ -102,7 +95,7 @@ public class ListCommandTest extends AbsCommandTest {
         CommandInvoker.Result result = commandInvoker.invoke();
 
         assertEquals(result.disableAnsi().getOutputStream(), format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY%n" +
-                                                                    project1Id + ",default," + workspace1.workspaceReference().name() + "," + project1.name() + "," + project1.projectTypeId() + "," + project1.visibility() + "%n" +
+                                                                    project1Id + ",default," + workspace1.workspaceReference().name() + "," + project1.name() + "," + project1.type() + "," + project1.visibility() + "%n" +
                                                                     "%n"));
 
     }
@@ -117,7 +110,7 @@ public class ListCommandTest extends AbsCommandTest {
         CommandInvoker commandInvoker = getInvoker().option("-v", true);
 
         DummyWorkspace workspace1 = commandInvoker.getCodenvyClient().newWorkspaceBuilder("WORKSPACE1").build();
-        DummyProject project1 = commandInvoker.getCodenvyClient().newProjectBuilder(workspace1.workspaceReference(), "project1").withProjectTypeId("java").withVisibility("public").build();
+        DummyProject project1 = commandInvoker.getCodenvyClient().newProjectBuilder(workspace1.workspaceReference(), "project1").withType("java").withVisibility("public").build();
         commandInvoker.getDefaultRemoteCodenvy().workspace().registerWorkspace(workspace1);
         commandInvoker.getDefaultRemoteCodenvy().project().registerProject(project1);
 
@@ -129,7 +122,7 @@ public class ListCommandTest extends AbsCommandTest {
         CommandInvoker.Result result = commandInvoker.invoke();
 
         assertEquals(result.disableAnsi().getOutputStream(), format("ID,REMOTE,WORKSPACE,PROJECT,TYPE,PRIVACY,PERM,BUILDERS,RUNNERS%n" +
-                                                                    project1Id + ",default," + workspace1.workspaceReference().name() + "," + project1.name() + "," + project1.projectTypeId() + "," + project1.visibility()  + ",,none,none%n" +
+                                                                    project1Id + ",default," + workspace1.workspaceReference().name() + "," + project1.name() + "," + project1.type() + "," + project1.visibility()  + ",,none,none%n" +
                                                                     "%n"));
 
     }

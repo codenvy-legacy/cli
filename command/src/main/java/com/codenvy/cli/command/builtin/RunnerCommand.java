@@ -107,13 +107,16 @@ public class RunnerCommand extends AbsCommand {
 
         // first check if the project has a runner
         Project projectDescription = project.getCodenvy().project().getProject(projectToRun.workspaceId(), projectToRun).execute();
-        if (projectDescription != null && projectDescription.runner() == null) {
-            Ansi buffer = Ansi.ansi();
-            buffer.fg(RED);
-            buffer.a("The selected project '").a(projectDescription.name()).a("' with ID '").a(projectId).a("' has no runner defined so this project can't be run.");
-            buffer.reset();
-            System.out.println(buffer.toString());
-            return null;
+        if (projectDescription != null) {
+            if (projectDescription.runners() == null || projectDescription.runners().defaultRunner() == null) {
+                Ansi buffer = Ansi.ansi();
+                buffer.fg(RED);
+                buffer.a("The selected project '").a(projectDescription.name()).a("' with ID '").a(projectId)
+                      .a("' has no runner defined so this project can't be run.");
+                buffer.reset();
+                System.out.println(buffer.toString());
+                return null;
+            }
         }
 
 

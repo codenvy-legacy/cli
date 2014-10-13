@@ -124,7 +124,7 @@ public class ListCommand extends AbsCommand {
                     remotes.add(project.getWorkspace().getRemote());
                     workspaces.add(project.getWorkspace().name());
                     projectNames.add(project.name());
-                    types.add(project.getInnerReference().projectTypeId());
+                    types.add(project.getInnerReference().type());
                     privacies.add(project.getInnerReference().visibility());
                     permissions.add(prettyPrint(userPermissions));
                 } else {

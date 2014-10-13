@@ -10,7 +10,6 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin.model;
 
-import com.codenvy.cli.command.builtin.helper.PrettyPrintHelper;
 import com.codenvy.cli.command.builtin.util.ascii.DefaultAsciiForm;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.Project;
@@ -161,7 +160,7 @@ public class DefaultUserProject implements UserProject {
                                      .withEntry(bold("project"), name())
                                      .withEntry(bold("workspace name"), getWorkspace().name())
                                      .withEntry(bold("workspace id"), getWorkspace().id())
-                                     .withEntry(bold("project type"), getInnerReference().projectTypeId())
+                                     .withEntry(bold("project type"), getInnerReference().type())
                                      .withEntry(bold("creation date"), dateFormat.format(project.creationDate()))
                                      .withEntry(bold("last modification"), dateFormat.format(project.modificationDate()))
                                      .withEntry(bold("privacy"), getInnerReference().visibility())
