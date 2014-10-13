@@ -766,7 +766,8 @@ public class MultiRemoteCodenvy {
         // param is available on the current filesystem
 
         File file = new File(param);
-        InputStream streamToSend = null;
+        InputStream streamToSend;
+        boolean isDirectory = false;
         if (file.exists()) {
 
             if (projectName == null) {
@@ -788,7 +789,7 @@ public class MultiRemoteCodenvy {
 
             } else {
                 // 3] directory, need to zip the content of this directory
-
+                isDirectory = true;
                 streamToSend = ZipUtils.getZipProjectStream(file);
             }
 
@@ -823,7 +824,15 @@ public class MultiRemoteCodenvy {
                 System.out.println("done !");
             }
 
-            return new DefaultUserProjectReference(workspace.getCodenvy(), projectToCreate, workspace);
+            UserProjectReference userProjectReference = new DefaultUserProjectReference(workspace.getCodenvy(), projectToCreate, workspace);
+
+
+            // if directory, add Codenvy metadata in order to sync the project
+            if (isDirectory) {
+                storeMetadata(userProjectReference, file);
+            }
+
+            return userProjectReference;
 
 
         } else {
