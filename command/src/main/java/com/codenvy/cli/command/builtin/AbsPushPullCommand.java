@@ -137,13 +137,16 @@ public abstract class AbsPushPullCommand extends AbsCommand {
                 continue;
             }
 
-            if (f.getPath().substring(project.name().length() + 1).startsWith(Constants.CODENVY_FOLDERNAME)) {
+            // Compute local path
+            int i = f.getAbsolutePath().indexOf(project.name());
+            String localPath = f.getAbsolutePath().substring(i + project.name().length() + 1);
+
+            if (localPath.startsWith(Constants.CODENVY_FOLDERNAME)) {
                 continue;
             }
 
             // check file exists on the remote side
-            if (!project.getCodenvy().project().hasFile(projectToPull, f.getPath().substring(project.name().concat("/").length()))
-                        .execute().booleanValue()) {
+            if (!project.getCodenvy().project().hasFile(projectToPull, localPath).execute().booleanValue()) {
                 if (!f.delete()) {
                     System.out.println("Unable to remove local file " + f);
                 }
