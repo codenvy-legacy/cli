@@ -22,6 +22,7 @@ import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.RunnerState;
 import com.codenvy.client.model.RunnerStatus;
 import com.codenvy.client.model.runner.RunOptions;
+import com.codenvy.client.model.runner.RunOptionsBuilder;
 
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
@@ -58,14 +59,17 @@ public class RunnerCommand extends AbsCommand {
     @Argument(name = "project-id", description = "Specify the project ID to use", required = true, multiValued = false)
     private String projectId;
 
-    @Option(name = "--fg", description = "Run foreground", required = false)
+    @Option(name = "--fg", description = "Run foreground")
     private boolean foreground;
 
-    @Option(name = "--bg", description = "Run background", required = false)
+    @Option(name = "--bg", description = "Run background")
     private boolean background;
 
-    @Option(name = "--ram", description = "Set RAM for runner process", required = false)
+    @Option(name = "--ram", description = "Set RAM for runner process")
     private int memorySize;
+
+    @Option(name = "--env", description = "Set Environment for runner process")
+    private String environment;
 
     private ExecutorService executorService;
 
@@ -119,11 +123,16 @@ public class RunnerCommand extends AbsCommand {
             }
         }
 
-
-        RunOptions runOptions = null;
+        RunOptionsBuilder runOptionsBuilder = getMultiRemoteCodenvy().getRunOptionsBuilder();
         if (memorySize > 0) {
-            runOptions = getMultiRemoteCodenvy().getRunOptionsBuilder().withMemorySize(memorySize).build();
+            runOptionsBuilder.withMemorySize(memorySize);
         }
+        if (environment != null) {
+            runOptionsBuilder.withEnvironmentId(environment);
+        }
+
+        RunOptions runOptions = runOptionsBuilder.build();
+
 
         // Ok now we have the project, run it
         final RunnerStatus runnerStatus;
