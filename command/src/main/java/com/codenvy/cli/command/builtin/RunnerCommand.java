@@ -144,15 +144,15 @@ public class RunnerCommand extends AbsCommand {
 
 
         // ok so now we've started the run
-        if (foreground) {
-            this.executorService = Executors.newFixedThreadPool(3);
-        try {
-            useForeGround(userRunnerStatus);
-        } finally {
-            this.executorService.shutdown();
-        }
-        } else {
+        if (background) {
             useBackGround(userRunnerStatus);
+        } else {
+            this.executorService = Executors.newFixedThreadPool(3);
+            try {
+                useForeGround(userRunnerStatus);
+            } finally {
+                this.executorService.shutdown();
+            }
         }
 
         return null;

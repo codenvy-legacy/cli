@@ -124,15 +124,15 @@ public class BuildCommand extends AbsCommand {
         UserBuilderStatus userBuilderStatus = new DefaultUserBuilderStatus(builderStatus, project);
 
         // ok so now we've started the run
-        if (foreground) {
+        if (background) {
+            useBackGround(userBuilderStatus);
+        } else {
             this.executorService = Executors.newFixedThreadPool(3);
             try {
                 useForeGround(userBuilderStatus);
             } finally {
                 this.executorService.shutdown();
             }
-        } else {
-            useBackGround(userBuilderStatus);
         }
 
         return null;
