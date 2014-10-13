@@ -72,6 +72,7 @@ public class CreateProjectCommand extends AbsCommand {
 
         if (userProjectReference != null) {
             System.out.println(String.format("Project %s has been created", name));
+            System.out.println(String.format("The project is available at %s", userProjectReference.getInnerReference().ideUrl()));
             if (openProject) {
                 openURL(userProjectReference.getInnerReference().ideUrl());
             }
