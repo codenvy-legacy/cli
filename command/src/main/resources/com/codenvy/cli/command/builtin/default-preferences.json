@@ -4,7 +4,7 @@
     "remotes" : {
         "default" : {
             "defaultRemote" : true,
-            "url" : "http://codenvy-next.com"
+            "url" : "https://codenvy.com"
         }
     }
 }
