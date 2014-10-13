@@ -138,7 +138,7 @@ public class MultiRemoteCodenvy {
         }
     }
 
-    protected List<UserProjectReference> getProjects(String remoteName) {
+    protected List<UserProjectReference> getProjects(String remoteName, boolean onlyPublic) {
 
         Codenvy codenvy = readyRemotes.get(remoteName);
         if (codenvy == null) {
@@ -150,10 +150,16 @@ public class MultiRemoteCodenvy {
             return Collections.emptyList();
         }
 
-        return getProjects(remoteName, codenvy);
+        return getProjects(remoteName, codenvy, onlyPublic);
     }
 
+
     protected List<UserProjectReference> getProjects() {
+        return getProjects(false);
+    }
+
+
+    protected List<UserProjectReference> getProjects(boolean onlyPublic) {
         List<UserProjectReference> projects = new ArrayList<>();
 
         Set<Map.Entry<String, Codenvy>> entries = readyRemotes.entrySet();
@@ -161,7 +167,7 @@ public class MultiRemoteCodenvy {
         while (iterator.hasNext()) {
             Map.Entry<String, Codenvy> entry = iterator.next();
             try {
-                List<UserProjectReference> foundProjects = getProjects(entry.getKey(), entry.getValue());
+                List<UserProjectReference> foundProjects = getProjects(entry.getKey(), entry.getValue(), onlyPublic);
                 if (!foundProjects.isEmpty()) {
                     projects.addAll(foundProjects);
                 }
@@ -229,7 +235,7 @@ public class MultiRemoteCodenvy {
      *         the codenvy object used to retrieve the data
      * @return the list of projects
      */
-    protected List<UserProjectReference> getProjects(String remote, Codenvy codenvy) {
+    protected List<UserProjectReference> getProjects(String remote, Codenvy codenvy, boolean onlyPublic) {
         List<UserProjectReference> projects = new ArrayList<>();
 
         // For each workspace, search the project and compute
@@ -254,6 +260,10 @@ public class MultiRemoteCodenvy {
 
             List<ProjectReference> readProjects = codenvy.project().getWorkspaceProjects(ref.id()).execute();
             for (ProjectReference readProject : readProjects) {
+                // skip private projects
+                if (onlyPublic && "private".equals(readProject.visibility())) {
+                    continue;
+                }
                 DefaultUserProjectReference project = new DefaultUserProjectReference(codenvy, readProject, defaultUserWorkspace);
                 projects.add(project);
             }

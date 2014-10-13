@@ -40,6 +40,10 @@ public class ListCommand extends AbsCommand {
     @Option(name="-v", aliases = {"--verbose"}, description = "Verbose output")
     private boolean verbose;
 
+    @Option(name="--public", description = "Public workspaces")
+    private boolean publicWorkSpaces;
+
+
     @Option(name = "--remote", description = "Restrict list to this given remote codenvy", required = false)
     private String remoteName;
 
@@ -61,9 +65,9 @@ public class ListCommand extends AbsCommand {
         }
         List<UserProjectReference> projects;
         if (remoteName != null) {
-            projects = getMultiRemoteCodenvy().getProjects(remoteName);
+            projects = getMultiRemoteCodenvy().getProjects(remoteName, publicWorkSpaces);
         } else {
-            projects = getMultiRemoteCodenvy().getProjects();
+            projects = getMultiRemoteCodenvy().getProjects(publicWorkSpaces);
         }
         if (isProgressEnabled()) {
             new ConsoleReader().resetPromptLine("", "", 0);
