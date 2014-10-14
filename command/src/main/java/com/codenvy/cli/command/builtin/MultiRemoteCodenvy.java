@@ -246,7 +246,7 @@ public class MultiRemoteCodenvy {
         List<Workspace> readWorkspaces;
         try {
              readWorkspaces = request.execute();
-        } catch (CodenvyErrorException e) {
+        } catch (CodenvyErrorException | CodenvyException e) {
             if (isStackTraceEnabled()) {
                 throw e;
             }
@@ -802,7 +802,7 @@ public class MultiRemoteCodenvy {
             System.out.print("Creating project...");
             try {
                 workspace.getCodenvy().project().create(projectToCreate).execute();
-            } catch (CodenvyErrorException e) {
+            } catch (CodenvyErrorException | CodenvyException e) {
                 if (isStackTraceEnabled()) {
                     throw e;
                 }
