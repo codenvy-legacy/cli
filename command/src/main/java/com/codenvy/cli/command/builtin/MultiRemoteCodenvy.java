@@ -887,9 +887,9 @@ public class MultiRemoteCodenvy {
             // Create factory content
             String factoryContent = "{\n" +
                                     "   \"v\" : \"2.0\",\n" +
-                                    "  \"source\" : {\n" +
-                                    "     \"location\" : \"$LOCATION$\",\n" +
-                                    "      \"type\" : \"$IMPORTER$\"\n" +
+                                    "    \"source\" : { \"project\" : { \"location\" : \"$LOCATION$\",\n" +
+                                    "          \"type\" : \"$IMPORTER$\"\n" +
+                                    "        }\n" +
                                     "    }\n" +
                                     "}\n";
 
