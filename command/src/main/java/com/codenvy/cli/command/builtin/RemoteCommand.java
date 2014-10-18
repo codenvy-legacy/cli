@@ -22,7 +22,7 @@ import org.fusesource.jansi.Ansi;
 @Command(scope = "codenvy", name = "remote", description = "Add or remove remote Codenvy cloud references")
 public class RemoteCommand extends AbsCommand {
 
-    @Argument(name = "flag", description = "Manage remote : add/remove/rename", required = false, multiValued = false, index = 0)
+    @Argument(name = "flag", description = "Manage remote : add/remove/rename/set-default", required = false, multiValued = false, index = 0)
     private String flag;
 
     @Argument(name = "name", description = "name of the remote", required = false, multiValued = false, index = 1)
@@ -46,6 +46,9 @@ public class RemoteCommand extends AbsCommand {
             return null;
         } else if ("remove".equals(flag)) {
             removeRemote();
+            return null;
+        } else if ("set-default".equals(flag)) {
+            setDefault();
             return null;
 /*        } else if ("rename".equals(flag)) {
             renameRemote();
@@ -104,6 +107,24 @@ public class RemoteCommand extends AbsCommand {
             return;
         }
 
+    }
+
+
+
+    protected void setDefault() {
+        Ansi buffer = Ansi.ansi();
+        // OK, so we need to have name
+        if (!ok(name)) {
+            buffer.a("Invalid set-default command: should be remote set-default <env-name>");
+            System.out.println(buffer.toString());
+            return;
+        }
+
+        if (getMultiRemoteCodenvy().setDefaultRemote(name)) {
+            buffer.a("The remote Codenvy '").a(name).a("'  is now the default remote");
+            System.out.println(buffer.toString());
+            return;
+        }
     }
 
     boolean ok(String param) {
