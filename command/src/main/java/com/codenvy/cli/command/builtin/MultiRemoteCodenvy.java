@@ -246,6 +246,12 @@ public class MultiRemoteCodenvy {
         List<Workspace> readWorkspaces;
         try {
              readWorkspaces = request.execute();
+        } catch (CodenvyAuthenticationException e) {
+            if (isStackTraceEnabled()) {
+                throw e;
+            }
+            System.err.println("Token has expired on '" + remote + "'. Please login again or logout on this remote");
+            return projects;
         } catch (CodenvyErrorException | CodenvyException e) {
             if (isStackTraceEnabled()) {
                 throw e;
@@ -577,6 +583,35 @@ public class MultiRemoteCodenvy {
 
         // delete
         preferencesRemotes.delete(name);
+
+        // refresh current links
+        refresh();
+
+        // OK
+        return true;
+    }
+
+    protected boolean setDefaultRemote(String name) {
+        // check env does exists
+        if (!getRemoteNames().contains(name)) {
+            System.out.println("The remote with name '" + name + "' does not exists");
+            return false;
+        }
+
+        // Iterate on each remote, remove default except for the expected one
+        Map preferencesRemotes = globalPreferences.get("remotes", Map.class);
+        if (preferencesRemotes != null) {
+
+            //  Iterate
+            Iterator<String> remoteIterator = preferencesRemotes.keySet().iterator();
+            Preferences remotesPreferences = globalPreferences.path("remotes");
+            while (remoteIterator.hasNext()) {
+                String remote = remoteIterator.next();
+                Remote tmpEnv = remotesPreferences.get(remote, Remote.class);
+                tmpEnv.setDefaultRemote(name.equals(remote));
+                remotesPreferences.merge(remote, tmpEnv);
+            }
+        }
 
         // refresh current links
         refresh();
