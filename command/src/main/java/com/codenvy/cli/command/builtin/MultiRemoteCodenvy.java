@@ -430,7 +430,9 @@ public class MultiRemoteCodenvy {
                 }
             }
         }
-        return null;
+
+        // No remote is an error case
+        throw new IllegalStateException("No default remote found. Needs to use --remote to specify a remote");
     }
 
     public String getDefaultRemoteName() {
@@ -447,7 +449,8 @@ public class MultiRemoteCodenvy {
                 }
             }
         }
-        return null;
+        // No remote is an error case
+        throw new IllegalStateException("No default remote found. Needs to use --remote to specify a remote");
     }
 
 
