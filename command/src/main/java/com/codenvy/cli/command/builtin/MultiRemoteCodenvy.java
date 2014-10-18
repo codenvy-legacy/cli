@@ -461,10 +461,6 @@ public class MultiRemoteCodenvy {
 
         if (remoteName == null) {
             remote = getDefaultRemote();
-            if (remote == null) {
-                System.out.println("No default remote found'");
-                return false;
-            }
             remoteName = getDefaultRemoteName();
         } else {
             remote = getRemote(remoteName);
@@ -538,10 +534,6 @@ public class MultiRemoteCodenvy {
 
         if (remoteName == null) {
             remote = getDefaultRemote();
-            if (remote == null) {
-                System.out.println("No default remote found'");
-                return false;
-            }
             remoteName = getDefaultRemoteName();
         } else {
             remote = getRemote(remoteName);
