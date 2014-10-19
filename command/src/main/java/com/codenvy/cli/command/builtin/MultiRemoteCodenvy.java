@@ -576,6 +576,12 @@ public class MultiRemoteCodenvy {
         // it exists, remove it
         Preferences preferencesRemotes = globalPreferences.path("remotes");
 
+        Remote remote = getRemote(name);
+        if (remote.isDefaultRemote()) {
+            System.out.println("The default remote cannot be removed.");
+            return false;
+        }
+
         // delete
         preferencesRemotes.delete(name);
 
