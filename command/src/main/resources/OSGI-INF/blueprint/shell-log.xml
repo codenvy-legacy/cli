@@ -73,7 +73,7 @@
             <action class="com.codenvy.cli.command.builtin.ExitCommand" />
         </command>
         <command>
-            <action class="com.codenvy.cli.command.builtin.DestroyCommand" />
+            <action class="com.codenvy.cli.command.builtin.DeleteProjectCommand" />
             <completers>
                 <ref component-id="projectIDCompleter"/>
                 <null/>

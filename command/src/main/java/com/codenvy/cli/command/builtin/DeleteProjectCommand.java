@@ -21,12 +21,12 @@ import org.fusesource.jansi.Ansi;
 import static org.fusesource.jansi.Ansi.Color.RED;
 
 /**
- * Destroy command.
+ * Delete Project command.
  * This command will destroy a project
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "destroy", description = "Destroy a project")
-public class DestroyCommand extends AbsCommand {
+@Command(scope = "codenvy", name = "delete-project", description = "Delete a project")
+public class DeleteProjectCommand extends AbsCommand {
 
     @Argument(name = "project-id", description = "Specify the project ID to use", required = true, multiValued = false)
     private String projectId;
@@ -68,7 +68,7 @@ public class DestroyCommand extends AbsCommand {
         final ProjectReference projectToDestroy = project.getInnerReference();
 
         project.getCodenvy().project().deleteResources(projectToDestroy, "").execute();
-        System.out.println(String.format("The project %s has been destroyed", projectToDestroy.name()));
+        System.out.println(String.format("The project %s has been deleted", projectToDestroy.name()));
 
 
         return null;

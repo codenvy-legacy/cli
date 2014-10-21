@@ -61,7 +61,7 @@ public class HelpCommand extends AbsCommand {
                                        .withEntry(color("create-project"), "Create a project")
                                        .withEntry(color("create-factory"), "Create a factory")
                                        .withEntry(color("privacy"), "Change privacy for a project")
-                                       .withEntry(color("destroy"), "Destroy a project")
+                                       .withEntry(color("delete-project"), "Delete a project")
                                        .withEntry(color("push"), "Push a project")
                                        .withEntry(color("pull"), "Pull a project")
                                        .alphabeticalSort().toAscii();
