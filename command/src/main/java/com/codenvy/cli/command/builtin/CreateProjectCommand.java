@@ -89,7 +89,7 @@ public class CreateProjectCommand extends AbsCommand {
         UserProjectReference userProjectReference = getMultiRemoteCodenvy().importProject(userWorkspace, name, param, importer, configurationPath);
 
         if (userProjectReference != null) {
-            System.out.println(String.format("Project %s has been imported into workspace %s", userProjectReference.name(), userProjectReference.getWorkspace().name()));
+            System.out.println(String.format("Project '%s' has been created in workspace '%s' with project ID '%s'", userProjectReference.name(), userProjectReference.getWorkspace().name(), userProjectReference.shortId()));
             if (openProject) {
                 openURL(userProjectReference.getInnerReference().ideUrl());
             }
