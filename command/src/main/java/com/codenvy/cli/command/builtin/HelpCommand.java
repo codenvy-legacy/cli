@@ -59,7 +59,6 @@ public class HelpCommand extends AbsCommand {
                                        .withEntry(color("open"), "Starts a browser session to access a project, builder or runner")
                                        .withEntry(color("stop"), "Stop one or more runner processes")
                                        .withEntry(color("create-project"), "Create a project")
-                                       .withEntry(color("import-project"), "Import a project")
                                        .withEntry(color("create-factory"), "Create a factory")
                                        .withEntry(color("privacy"), "Change privacy for a project")
                                        .withEntry(color("destroy"), "Destroy a project")
