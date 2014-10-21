@@ -267,13 +267,13 @@ public class RunnerCommand extends AbsCommand {
 
             RunnerState newState = current;
             RunnerStatus updatedRunnerStatus = null;
-            new ConsoleReader().resetPromptLine("Waiting ...", "", 1);
+            new ConsoleReader().resetPromptLine("Starting ...", "", 1);
             List<String> progress = Arrays.asList("|", "/", "-", "\\");
 
             int index = 0;
 
             while (newState == current) {
-                new ConsoleReader().resetPromptLine("Waiting ...", progress.get(index), 1);
+                new ConsoleReader().resetPromptLine("Starting ...", progress.get(index), 1);
 
                 try {
                     updatedRunnerStatus = status.getProject().getCodenvy().runner()
@@ -295,7 +295,7 @@ public class RunnerCommand extends AbsCommand {
                 }
 
             }
-            new ConsoleReader().resetPromptLine("Waiting done", "", 0);
+            new ConsoleReader().resetPromptLine("Starting done", "", 0);
             System.out.println();
 
             // status has been changed
