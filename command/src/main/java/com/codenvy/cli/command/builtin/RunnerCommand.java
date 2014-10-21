@@ -224,6 +224,10 @@ public class RunnerCommand extends AbsCommand {
             System.out.println(logs);
         }
 
+        Ansi buffer = Ansi.ansi();
+        buffer.a("Runner ID is ").a(INTENSITY_BOLD).a(userRunnerStatus.shortId()).a(INTENSITY_BOLD_OFF);
+        System.out.println(buffer.toString());
+
     }
 
 

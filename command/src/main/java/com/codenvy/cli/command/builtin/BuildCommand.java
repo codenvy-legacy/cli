@@ -207,6 +207,10 @@ public class BuildCommand extends AbsCommand {
             System.out.println(format("Project %s has been cancelled", newStatus.getProject().name()));
         }
 
+        Ansi buffer = Ansi.ansi();
+        buffer.a("Builder ID is ").a(INTENSITY_BOLD).a(userBuilderStatus.shortId()).a(INTENSITY_BOLD_OFF);
+        System.out.println(buffer.toString());
+
 
 
     }
