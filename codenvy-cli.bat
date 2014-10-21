@@ -1,9 +1,11 @@
 @echo off
 
-set FILE=assembly\target\codenvy-*
+set DIRNAME=%~dp0%
+
+set FILE=%DIRNAME%\assembly\target\codenvy-*
 for /F %%i in ("%FILE%") do (set VERSION=%%~nxi)
 
-set ASSEMBLY_BIN_DIR=assembly\target\%VERSION%\%VERSION%\bin
+set ASSEMBLY_BIN_DIR=%DIRNAME%\assembly\target\%VERSION%\%VERSION%\bin
 
 IF exist %ASSEMBLY_BIN_DIR% (
     call %ASSEMBLY_BIN_DIR%\codenvy-cli.bat %1 %2 %3 %4 %5 %6 %7 %8
