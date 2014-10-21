@@ -812,6 +812,23 @@ public class MultiRemoteCodenvy {
 
             // this is on the filesystem
             if (file.isFile()) {
+
+
+                // 2a] json file ?
+                if (file.getName().endsWith(".json")) {
+                    Project project = workspace.getCodenvy().project().importProject(workspace.id(), projectName, file.toPath()).execute();
+
+                    // Update it
+                    System.out.print("Now updating project configuration...");
+                    workspace.getCodenvy().project().updateProject(project, file.toPath());
+                    System.out.println("done !");
+
+
+                    return new DefaultUserProjectReference(workspace.getCodenvy(), project, workspace);
+                }
+
+
+
                 // 2] zip file ?
                 if (!file.getName().endsWith(".zip")) {
                     Ansi buffer = Ansi.ansi();
