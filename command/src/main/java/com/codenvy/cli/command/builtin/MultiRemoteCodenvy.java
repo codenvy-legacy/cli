@@ -176,7 +176,7 @@ public class MultiRemoteCodenvy {
                 if (isStackTraceEnabled()) {
                     throw e;
                 }
-                System.err.println("Authentication problem on remote '" + entry.getKey() + "'");
+                System.err.println("Authentication token has expired on remote '" + entry.getKey() + "'. Please login again or logout on this remote to refresh the token.");
             }
         }
         return projects;
@@ -250,7 +250,7 @@ public class MultiRemoteCodenvy {
             if (isStackTraceEnabled()) {
                 throw e;
             }
-            System.err.println("Token has expired on '" + remote + "'. Please login again or logout on this remote");
+            System.err.println("Authentication token has expired on remote '" + remote + "'. Please login again or logout on this remote to refresh the token.");
             return projects;
         } catch (CodenvyErrorException | CodenvyException e) {
             if (isStackTraceEnabled()) {
