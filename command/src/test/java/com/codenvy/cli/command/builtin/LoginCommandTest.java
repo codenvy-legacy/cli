@@ -59,7 +59,7 @@ public class LoginCommandTest extends AbsCommandTest {
         CommandInvoker commandInvoker = getInvoker().argument("username", username).option("--remote", remoteName);
 
         // set strange password !
-        commandInvoker.setSystemIn(password + "\n");
+        commandInvoker.setSystemIn(password + System.lineSeparator());
 
         // Mock remote
         CommandSession commandSession = commandInvoker.getCommandSession();
