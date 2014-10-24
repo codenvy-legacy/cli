@@ -59,7 +59,9 @@ public class LoginCommand extends AbsCommand {
                 }
                 System.out.println(System.lineSeparator());
             } else {
-                username = new ConsoleReader().readLine("Username:");
+                ConsoleReader consoleReader = new ConsoleReader(System.in, System.out);
+                consoleReader.setExpandEvents(false);
+                username = consoleReader.readLine("Username:");
             }
         }
 
@@ -72,7 +74,9 @@ public class LoginCommand extends AbsCommand {
                 }
                 System.out.println(System.lineSeparator());
             } else {
-                password = new ConsoleReader().readLine(String.format("Password for %s:", username), Character.valueOf('*'));
+                ConsoleReader consoleReader = new ConsoleReader(System.in, System.out);
+                consoleReader.setExpandEvents(false);
+                password = consoleReader.readLine(String.format("Password for %s:", username), Character.valueOf('*'));
             }
         }
 
