@@ -16,12 +16,12 @@
     <parent>
         <artifactId>maven-depmgt-pom</artifactId>
         <groupId>com.codenvy</groupId>
-        <version>1.8.18.1</version>
+        <version>1.8.18.3-SNAPSHOT</version>
         <relativePath />
     </parent>
     <groupId>com.codenvy.cli</groupId>
     <artifactId>codenvy-cli</artifactId>
-    <version>2.1.0</version>
+    <version>2.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Codenvy CLI</name>
     <licenses>
