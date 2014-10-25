@@ -40,6 +40,8 @@ public abstract class AbsCommandTest {
     @BeforeClass
     public void initMocks() {
         MockitoAnnotations.initMocks(this);
+        // Disable the direct console access on Windows as we are intercepting System.in
+        System.setProperty("jline.WindowsTerminal.directConsole", "false");
 
     }
 
