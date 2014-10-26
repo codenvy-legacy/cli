@@ -10,16 +10,17 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
-import jline.console.ConsoleReader;
-
+import com.codenvy.cli.command.builtin.helper.WaitingAction;
+import com.codenvy.cli.command.builtin.helper.WaitingActionCondition;
+import com.codenvy.cli.command.builtin.helper.WaitingActionConditionState;
 import com.codenvy.cli.command.builtin.model.DefaultUserRunnerStatus;
 import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.client.CodenvyErrorException;
+import com.codenvy.client.Request;
 import com.codenvy.client.model.Link;
 import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
-import com.codenvy.client.model.RunnerState;
 import com.codenvy.client.model.RunnerStatus;
 import com.codenvy.client.model.runner.RunOptions;
 import com.codenvy.client.model.runner.RunOptionsBuilder;
@@ -29,16 +30,6 @@ import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.apache.karaf.shell.console.SessionProperties;
 import org.fusesource.jansi.Ansi;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static com.codenvy.client.model.RunnerState.CANCELLED;
 import static com.codenvy.client.model.RunnerState.FAILED;
@@ -71,7 +62,6 @@ public class RunnerCommand extends AbsCommand {
     @Option(name = "--env", description = "Set Environment for runner process")
     private String environment;
 
-    private ExecutorService executorService;
 
     /**
      * Execute the command
@@ -156,12 +146,7 @@ public class RunnerCommand extends AbsCommand {
         if (background) {
             useBackGround(userRunnerStatus);
         } else {
-            this.executorService = Executors.newFixedThreadPool(3);
-            try {
-                useForeGround(userRunnerStatus);
-            } finally {
-                this.executorService.shutdown();
-            }
+            useForeGround(userRunnerStatus);
         }
 
         return null;
@@ -171,33 +156,23 @@ public class RunnerCommand extends AbsCommand {
      * Run has been launched, as we're in foregroudn mode, we need to wait that the process start
      * @param userRunnerStatus the runner status
      */
-    protected void useForeGround(UserRunnerStatus userRunnerStatus) {
-        if (executorService == null) {
-            throw new IllegalStateException("No executor thead");
-        }
-        //ok process has been launched
+    protected void useForeGround(final UserRunnerStatus userRunnerStatus) {
+
+        WaitingActionCondition<RunnerStatus> condition = new RunnerStatusWaitingActionCondition(userRunnerStatus);
 
         // now we have to wait that the process is updated
-        ChangeStatus changeStatus = new ChangeStatus(userRunnerStatus);
+        Request<RunnerStatus> request = userRunnerStatus.getProject().getCodenvy().runner()
+                                .status(userRunnerStatus.getProject().getInnerReference(), userRunnerStatus.getInnerStatus().processId());
+        WaitingAction<RunnerStatus> waitingAction = new WaitingAction<>("Starting project...", "Project started.", request, condition);
 
-        Future<UserRunnerStatus> newStatusTask = executorService.submit(changeStatus);
-        UserRunnerStatus newStatus;
-        // wait for 5 minutes
-        try {
-            newStatus = newStatusTask.get(5, TimeUnit.MINUTES);
-        } catch (InterruptedException | ExecutionException  | TimeoutException e) {
-            if (isStackTraceEnabled()) {
-                throw new IllegalStateException(e);
-            }
-            System.out.println("Unable to get updated status for runner " + userRunnerStatus);
-            return;
-        }
+        RunnerStatus executedStatus = waitingAction.execute();
 
-
-        if (newStatus == null) {
+        if (executedStatus == null) {
             System.out.println("Unable to find updated status");
             return;
         }
+
+        UserRunnerStatus newStatus = new DefaultUserRunnerStatus(executedStatus, userRunnerStatus.getProject());
 
         // it is now running
         if (RUNNING == newStatus.getInnerStatus().status()) {
@@ -243,64 +218,18 @@ public class RunnerCommand extends AbsCommand {
 
     }
 
+    private static class RunnerStatusWaitingActionCondition implements WaitingActionCondition<RunnerStatus> {
+        private final UserRunnerStatus userRunnerStatus;
 
-    static class ChangeStatus implements Callable<UserRunnerStatus> {
-
-        private UserRunnerStatus status;
-
-        private RunnerState current;
-
-        public ChangeStatus(UserRunnerStatus status) {
-            this.status = status;
-            this.current = status.getInnerStatus().status();
+        public RunnerStatusWaitingActionCondition(UserRunnerStatus userRunnerStatus) {
+            this.userRunnerStatus = userRunnerStatus;
         }
 
-        /**
-         * Computes a result, or throws an exception if unable to do so.
-         *
-         * @return computed result
-         * @throws Exception
-         *         if unable to compute a result
-         */
         @Override
-        public UserRunnerStatus call() throws Exception {
-
-            RunnerState newState = current;
-            RunnerStatus updatedRunnerStatus = null;
-            new ConsoleReader().resetPromptLine("Starting ...", "", 1);
-            List<String> progress = Arrays.asList("|", "/", "-", "\\");
-
-            int index = 0;
-
-            while (newState == current) {
-                new ConsoleReader().resetPromptLine("Starting ...", progress.get(index), 1);
-
-                try {
-                    updatedRunnerStatus = status.getProject().getCodenvy().runner()
-                                                .status(status.getProject().getInnerReference(), status.getInnerStatus().processId())
-                                                .execute();
-                } catch (CodenvyErrorException e) {
-                    return null;
-                }
-
-                newState = updatedRunnerStatus.status();
-
-                // Wait 3 seconds
-                Thread.sleep(3000L);
-
-                index++;
-
-                if (index >= progress.size()) {
-                    index = 0;
-                }
-
+        public void check(WaitingActionConditionState<RunnerStatus> checker) {
+            if (userRunnerStatus.getInnerStatus().status() != checker.current().status()) {
+                checker.setComplete();
             }
-            new ConsoleReader().resetPromptLine("Starting done", "", 0);
-            System.out.println();
-
-            // status has been changed
-            return new DefaultUserRunnerStatus(updatedRunnerStatus, status.getProject());
-
         }
     }
 }

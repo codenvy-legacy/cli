@@ -10,12 +10,13 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
-import jline.console.ConsoleReader;
-
+import com.codenvy.cli.command.builtin.helper.WaitingAction;
+import com.codenvy.cli.command.builtin.helper.WaitingActionCondition;
+import com.codenvy.cli.command.builtin.helper.WaitingActionConditionState;
 import com.codenvy.cli.command.builtin.model.DefaultUserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProjectReference;
-import com.codenvy.client.CodenvyErrorException;
+import com.codenvy.client.Request;
 import com.codenvy.client.model.BuilderState;
 import com.codenvy.client.model.BuilderStatus;
 import com.codenvy.client.model.Link;
@@ -26,16 +27,6 @@ import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.fusesource.jansi.Ansi;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static com.codenvy.client.model.BuilderState.CANCELLED;
 import static com.codenvy.client.model.BuilderState.FAILED;
@@ -61,11 +52,6 @@ public class BuildCommand extends AbsCommand {
 
     @Option(name = "--bg", description = "Run background", required = false)
     private boolean background;
-
-    /**
-     * Executor service.
-     */
-    private ExecutorService executorService;
 
     /**
      * Execute the command
@@ -127,12 +113,7 @@ public class BuildCommand extends AbsCommand {
         if (background) {
             useBackGround(userBuilderStatus);
         } else {
-            this.executorService = Executors.newFixedThreadPool(3);
-            try {
-                useForeGround(userBuilderStatus);
-            } finally {
-                this.executorService.shutdown();
-            }
+            useForeGround(userBuilderStatus);
         }
 
         return null;
@@ -158,32 +139,23 @@ public class BuildCommand extends AbsCommand {
      * @param userBuilderStatus the runner status
      */
     protected void useForeGround(UserBuilderStatus userBuilderStatus) {
-        if (executorService == null) {
-            throw new IllegalStateException("No executor thead");
-        }
-        //ok process has been launched
+
+        WaitingActionCondition<BuilderStatus> condition = new BuilderStatusWaitingActionCondition(userBuilderStatus);
 
         // now we have to wait that the process is updated
-        ChangeStatus changeStatus = new ChangeStatus(userBuilderStatus);
+        Request<BuilderStatus> request = userBuilderStatus.getProject().getCodenvy().builder()
+                                              .status(userBuilderStatus.getProject().getInnerReference(), userBuilderStatus.getInnerStatus().taskId());
+        WaitingAction<BuilderStatus> waitingAction = new WaitingAction<>("Build task waiting a remote builder...", "Build finished.", request, condition);
 
-        Future<UserBuilderStatus> newStatusTask = executorService.submit(changeStatus);
-        UserBuilderStatus newStatus;
-        // wait for 5 minutes
-        try {
-            newStatus = newStatusTask.get(5, TimeUnit.MINUTES);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            if (isStackTraceEnabled()) {
-                throw new IllegalStateException(e);
-            }
-            System.out.println("Unable to get updated status for runner " + userBuilderStatus);
-            return;
-        }
+        BuilderStatus executedStatus = waitingAction.execute();
 
-
-        if (newStatus == null) {
+        if (executedStatus == null) {
             System.out.println("Unable to find updated status");
             return;
         }
+
+        //ok process has been launched
+        UserBuilderStatus newStatus =  new DefaultUserBuilderStatus(executedStatus, userBuilderStatus.getProject());
 
         // print logs if not cancelled
         if (CANCELLED != newStatus.getInnerStatus().status()) {
@@ -216,73 +188,25 @@ public class BuildCommand extends AbsCommand {
     }
 
 
-    static class ChangeStatus implements Callable<UserBuilderStatus> {
+    private static class BuilderStatusWaitingActionCondition implements WaitingActionCondition<BuilderStatus> {
+        private boolean inProgress = false;
+        private BuilderState currentState;
 
-        private UserBuilderStatus status;
-
-        private BuilderState current;
-
-        public ChangeStatus(UserBuilderStatus status) {
-            this.status = status;
-            this.current = status.getInnerStatus().status();
+        public BuilderStatusWaitingActionCondition(UserBuilderStatus userBuilderStatus) {
+            this.currentState = userBuilderStatus.getInnerStatus().status();
         }
 
-        /**
-         * Computes a result, or throws an exception if unable to do so.
-         *
-         * @return computed result
-         * @throws Exception
-         *         if unable to compute a result
-         */
         @Override
-        public UserBuilderStatus call() throws Exception {
-
-            BuilderState newState = current;
-            BuilderStatus updatedBuilderStatus = null;
-            String txt = "Build task waiting a remote builder ...";
-            new ConsoleReader().resetPromptLine(txt, "", 1);
-            List<String> progress = Arrays.asList("|", "/", "-", "\\");
-
-            int index = 0;
-            boolean inProgress = false;
-
-            while (newState == current) {
-                new ConsoleReader().resetPromptLine(txt, progress.get(index), 1);
-
-                try {
-                    updatedBuilderStatus = status.getProject().getCodenvy().builder()
-                                                .status(status.getProject().getInnerReference(), status.getInnerStatus().taskId())
-                                                .execute();
-                } catch (CodenvyErrorException e) {
-                    return null;
-                }
-
-                newState = updatedBuilderStatus.status();
-
-                // Wait 3 seconds
-                Thread.sleep(3000L);
-
-                index++;
-
-                if (index >= progress.size()) {
-                    index = 0;
-                }
-
-                if (IN_PROGRESS == newState && !inProgress) {
-                    new ConsoleReader().resetPromptLine(txt, " found !", 0);
-                    System.out.println("");
-                    txt = "Build is in progress ...";
-                    current = IN_PROGRESS;
-                    inProgress = true;
-                }
-
-
+        public void check(WaitingActionConditionState<BuilderStatus> checker) {
+            BuilderStatus current = checker.current();
+            if (!inProgress && IN_PROGRESS == current.status()) {
+                currentState = IN_PROGRESS;
+                inProgress = true;
+                checker.updatedText("Build is in progress ...");
             }
-            new ConsoleReader().resetPromptLine("Build job finished", "", 0);
-            System.out.println();
-
-            // status has been changed
-            return new DefaultUserBuilderStatus(updatedBuilderStatus, status.getProject());
+            if (currentState != current.status()) {
+                checker.setComplete();
+            }
 
         }
     }
