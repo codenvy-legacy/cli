@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
+import com.codenvy.cli.command.builtin.helper.BeforeAfterAction;
 import com.codenvy.cli.command.builtin.model.DefaultUserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.DefaultUserProject;
 import com.codenvy.cli.command.builtin.model.DefaultUserProjectReference;
@@ -816,13 +817,15 @@ public class MultiRemoteCodenvy {
 
                 // 2a] json file ?
                 if (file.getName().endsWith(".json")) {
-                    Project project = workspace.getCodenvy().project().importProject(workspace.id(), projectName, file.toPath()).execute();
+
+                    BeforeAfterAction beforeAfterAction = new BeforeAfterAction("Creating project from JSON file...", "Project created.");
+                    Request<Project> projectRequest = workspace.getCodenvy().project().importProject(workspace.id(), projectName, file.toPath());
+                    Project project = beforeAfterAction.execute(projectRequest);
 
                     // Update it
-                    System.out.print("Now updating project configuration...");
-                    workspace.getCodenvy().project().updateProject(project, file.toPath());
-                    System.out.println("done !");
-
+                    beforeAfterAction = new BeforeAfterAction("Updating project configuration...", "Project configuration updated.");
+                    Request<Project> updateRequest = workspace.getCodenvy().project().updateProject(project, file.toPath());
+                    beforeAfterAction.execute(updateRequest);
 
                     return new DefaultUserProjectReference(workspace.getCodenvy(), project, workspace);
                 }
@@ -852,9 +855,10 @@ public class MultiRemoteCodenvy {
                     codenvyClient.newProjectBuilder().withName(projectName).withWorkspaceId(workspace.id()).withWorkspaceName(workspace.name()).withType(
                             "blank").build();
 
-            System.out.print("Creating project...");
+            BeforeAfterAction beforeAfterAction = new BeforeAfterAction("Creating project from '" + file.getName() + "' ...", "Project created.");
+            Request<Project> createRequest = workspace.getCodenvy().project().create(projectToCreate);
             try {
-                workspace.getCodenvy().project().create(projectToCreate).execute();
+                beforeAfterAction.execute(createRequest);
             } catch (CodenvyErrorException | CodenvyException e) {
                 if (isStackTraceEnabled()) {
                     throw e;
@@ -862,19 +866,18 @@ public class MultiRemoteCodenvy {
                 System.out.println("Unable to create the project:" + e.getMessage());
                 return null;
             }
-            System.out.println("done !");
 
 
             // Project has been created, send the data
-            System.out.print("Uploading data...");
-            workspace.getCodenvy().project().importArchive(workspace.id(), projectToCreate, streamToSend).execute();
-            System.out.println("done !");
+            beforeAfterAction = new BeforeAfterAction("Uploading data from '" + file.getName() + "' ...", "Data uploaded.");
+            Request<Void> importArchiveRequest = workspace.getCodenvy().project().importArchive(workspace.id(), projectToCreate, streamToSend);
+            beforeAfterAction.execute(importArchiveRequest);
 
             if (configurationPath != null) {
                 // Update it
-                System.out.print("Now updating project configuration...");
-                workspace.getCodenvy().project().updateProject(projectToCreate, configurationPath);
-                System.out.println("done !");
+                beforeAfterAction = new BeforeAfterAction("Updating project configuration...", "Project configuration updated.");
+                Request<Project> updateRequest = workspace.getCodenvy().project().updateProject(projectToCreate, configurationPath);
+                beforeAfterAction.execute(updateRequest);
             }
 
             UserProjectReference userProjectReference = new DefaultUserProjectReference(workspace.getCodenvy(), projectToCreate, workspace);
@@ -889,6 +892,7 @@ public class MultiRemoteCodenvy {
 
 
         } else {
+
             // 4]
             // not a file. is it a URL
             URI uri;
@@ -968,20 +972,19 @@ public class MultiRemoteCodenvy {
                 return null;
             }
 
+            BeforeAfterAction beforeAfterAction = new BeforeAfterAction("Creating project from remote URI '" + uri.toString() + "' ...", "Project created.");
+            Request<Project> projectRequest = workspace.getCodenvy().project().importProject(workspace.id(), projectName, factoryPath);
+            Project project = beforeAfterAction.execute(projectRequest);
 
-            Project project = workspace.getCodenvy().project().importProject(workspace.id(), projectName, factoryPath).execute();
 
             if (configurationPath != null) {
                 // Update it
-                System.out.print("Now updating project configuration...");
-                workspace.getCodenvy().project().updateProject(project, configurationPath);
-                System.out.println("done !");
+                beforeAfterAction = new BeforeAfterAction("Updating project configuration...", "Project updated.");
+                Request<Project> updatedRequest = workspace.getCodenvy().project().updateProject(project, configurationPath);
+                beforeAfterAction.execute(updatedRequest);
             }
 
-
             return new DefaultUserProjectReference(workspace.getCodenvy(), project, workspace);
-
-
         }
 
     }
