@@ -102,7 +102,7 @@ public class ZipUtils {
                     if (!file.isDirectory()) { // we only zip files, not directories
 
                         String entryPath = file.getPath().substring(directoryToSend.getPath().length() + 1);
-
+                        entryPath = entryPath.replace(File.separatorChar, '/');
                         ZipEntry zipEntry = new ZipEntry(entryPath);
                         outputStream.putNextEntry(zipEntry);
 
