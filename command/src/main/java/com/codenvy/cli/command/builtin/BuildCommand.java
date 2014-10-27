@@ -145,7 +145,7 @@ public class BuildCommand extends AbsCommand {
         // now we have to wait that the process is updated
         Request<BuilderStatus> request = userBuilderStatus.getProject().getCodenvy().builder()
                                               .status(userBuilderStatus.getProject().getInnerReference(), userBuilderStatus.getInnerStatus().taskId());
-        WaitingAction<BuilderStatus> waitingAction = new WaitingAction<>("Build task waiting a remote builder...", "Build finished.", request, condition);
+        WaitingAction<BuilderStatus> waitingAction = new WaitingAction<>("Build task waiting for a remote builder...", "Build finished.", request, condition);
 
         BuilderStatus executedStatus = waitingAction.execute();
 
