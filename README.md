@@ -12,6 +12,8 @@
 Codenvy command line interface V2
 =================================
 
+<http://codenvy.github.io/cli/>
+
 
 ![CLI](http://codenvy.github.io/cli/img/cli.gif)
 
