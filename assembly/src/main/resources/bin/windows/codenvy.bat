@@ -106,20 +106,22 @@ if not "%JAVA%" == "" goto :Check_JAVA_END
 
 if "%JAVA_OPTS%" == "" set JAVA_OPTS=%DEFAULT_JAVA_OPTS%
 
+if "%EXTRA_JAVA_OPTS%" == "" goto :KARAF_EXTRA_JAVA_OPTS_END
+    set JAVA_OPTS="%JAVA_OPTS% %EXTRA_JAVA_OPTS%"
+:KARAF_EXTRA_JAVA_OPTS_END
+
 if "%KARAF_DEBUG%" == "" goto :KARAF_DEBUG_END
     rem Use the defaults if JAVA_DEBUG_OPTS was not set
     if "%JAVA_DEBUG_OPTS%" == "" set JAVA_DEBUG_OPTS=%DEFAULT_JAVA_DEBUG_OPTS%
 
-    set "JAVA_OPTS=%JAVA_DEBUG_OPTS% %JAVA_OPTS%"
+    set JAVA_OPTS="%JAVA_DEBUG_OPTS% %JAVA_OPTS%"
     call :warn Enabling Java debug options: %JAVA_DEBUG_OPTS%
 :KARAF_DEBUG_END
 
-set CLASSPATH=%KARAF_HOME%\system\org\apache\karaf\shell\org.apache.karaf.shell.console\3.0.1\org.apache.karaf.shell.console-3.0.1.jar
-set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\org\ops4j\pax\logging\pax-logging-api\1.7.2\pax-logging-api-1.7.2.jar
-set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\jline\jline\2.11\jline-2.11.jar
-
-
 set COMMAND=%1
+set CLASSPATH=%KARAF_HOME%\system\org\apache\karaf\shell\org.apache.karaf.shell.console\3.0.2\org.apache.karaf.shell.console-3.0.2.jar
+set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\org\ops4j\pax\logging\pax-logging-api\1.7.4\pax-logging-api-1.7.4.jar
+set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\jline\jline\2.12\jline-2.12.jar
 
 :EXECUTE
     SHIFT

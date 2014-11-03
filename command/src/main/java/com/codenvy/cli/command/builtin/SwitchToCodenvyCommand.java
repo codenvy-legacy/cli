@@ -30,6 +30,9 @@ public class SwitchToCodenvyCommand extends AbsCommand {
         session.put("SCOPE", "codenvy:*");
         session.put("SUBSHELL", "codenvy");
 
+        // remove exit command
+        session.execute("removecommand * exit");
+
         init();
 
         return null;

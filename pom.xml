@@ -64,7 +64,7 @@
         <license_years>2012-2014</license_years>
         <maven-bundle-plugin.version>2.5.0</maven-bundle-plugin.version>
         <org.apache.karaf.feature-plugin.version>2.3.5</org.apache.karaf.feature-plugin.version>
-        <org.apache.karaf.version>3.0.1</org.apache.karaf.version>
+        <org.apache.karaf.version>3.0.2</org.apache.karaf.version>
         <osgi-core.version>5.0.0</osgi-core.version>
     </properties>
     <repositories>

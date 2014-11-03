@@ -47,7 +47,6 @@
             <outputDirectory>/</outputDirectory>
             <includes>
                 <include>bin/setenv*</include>
-                <include>bin/shell*</include>
             </includes>
             <fileMode>0755</fileMode>
         </fileSet>

@@ -19,7 +19,7 @@ import org.osgi.framework.Bundle;
  *
  * @author Florent Benoit
  */
-@Command(scope = "*", name = "exit", description = "Exit of the shell")
+@Command(scope = "codenvy", name = "exit", description = "Exit of the shell")
 public class ExitCommand extends AbsCommand {
 
     /**
