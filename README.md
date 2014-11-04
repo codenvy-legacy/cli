@@ -13,7 +13,11 @@ Codenvy command line interface V2
 =================================
 
 
-![CLI](http://codenvy.github.io/cli/img/cli.gif)
+![CLI](https://raw.githubusercontent.com/benoitf/cli-web-site/master/img/cli.gif)
+
+Documentation for the CLI can be found on http://docs.codenvy.com/cli
+
+CLI Syntax documentation: http://docs.codenvy.com/cli/cli-syntax/
 
 
 # Quick Start for the developer
