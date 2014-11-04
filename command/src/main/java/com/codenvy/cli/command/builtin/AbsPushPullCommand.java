@@ -159,6 +159,16 @@ public abstract class AbsPushPullCommand extends AbsCommand {
 
     protected String getProjectFromDirectory(File directory) {
 
+        // directory doesn't exists
+        if (!directory.exists()) {
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a("The specified path '").a(directory.getAbsolutePath()).a("' doesn't exists.");
+            buffer.reset();
+            System.out.println(buffer.toString());
+            return null;
+        }
+
         // path is not a directory
         if (!directory.isDirectory()) {
             Ansi buffer = Ansi.ansi();
@@ -169,22 +179,12 @@ public abstract class AbsPushPullCommand extends AbsCommand {
             return null;
         }
 
-        // directory doesn't exists
-        if (!directory.exists()) {
-            Ansi buffer = Ansi.ansi();
-            buffer.fg(RED);
-            buffer.a("The specified directory '").a(directory.getAbsolutePath()).a("' doesn't exists.");
-            buffer.reset();
-            System.out.println(buffer.toString());
-            return null;
-        }
-
         // codenvy folder
         File codenvyFolder = new File(directory, CODENVY_FOLDERNAME);
         if (!codenvyFolder.exists() || !codenvyFolder.isDirectory()) {
             Ansi buffer = Ansi.ansi();
             buffer.fg(RED);
-            buffer.a("The specified directory '").a(directory.getAbsolutePath()).a("' is not a codenvy directory.");
+            buffer.a("The specified directory '").a(directory.getAbsolutePath()).a("' is not a codenvy project directory (created with clone-local command).");
             buffer.reset();
             System.out.println(buffer.toString());
             return null;

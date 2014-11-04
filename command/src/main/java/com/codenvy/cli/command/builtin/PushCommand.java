@@ -32,7 +32,7 @@ import static org.fusesource.jansi.Ansi.Color.RED;
  * Allows to push a given project
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "push", description = "Push a project")
+@Command(scope = "codenvy", name = "push", description = "Push local project changes back to Codenvy")
 public class PushCommand extends AbsPushPullCommand {
 
     @Argument(name = "codenvy-directory", description = "Specify the directory of a codenvy project")

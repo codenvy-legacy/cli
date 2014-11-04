@@ -62,8 +62,8 @@ public class HelpCommand extends AbsCommand {
                                        .withEntry(color("create-factory"), "Create a factory")
                                        .withEntry(color("privacy"), "Change privacy for a project")
                                        .withEntry(color("delete-project"), "Delete a project")
-                                       .withEntry(color("push"), "Push a project")
-                                       .withEntry(color("pull"), "Pull a project")
+                                       .withEntry(color("push"), "Push local project changes back to Codenvy")
+                                       .withEntry(color("pull"), "Update project sync point directory created by clone-local")
                                        .alphabeticalSort().toAscii();
         buffer.a(value);
 

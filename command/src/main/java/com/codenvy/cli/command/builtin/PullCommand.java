@@ -24,7 +24,7 @@ import static org.fusesource.jansi.Ansi.Color.RED;
  * Allows to pull a given project
  * @author Florent Benoit
  */
-@Command(scope = "codenvy", name = "pull", description = "Pull a project")
+@Command(scope = "codenvy", name = "pull", description = "Update project sync point directory created by clone-local")
 public class PullCommand extends AbsPushPullCommand {
 
     @Argument(name = "codenvy-directory", description = "Specify the directory of a codenvy project")
