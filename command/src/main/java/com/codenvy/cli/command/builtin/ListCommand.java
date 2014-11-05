@@ -50,7 +50,7 @@ public class ListCommand extends AbsCommand {
     /**
      * Prints the current projects per workspace
      */
-    protected Object doExecute() throws IOException {
+    protected Object execute() throws IOException {
         init();
 
         // not logged in

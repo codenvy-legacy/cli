@@ -33,7 +33,7 @@ public class HelpNonInteractiveCommand extends AbsCommand {
      * Display the help for the given command.
      * @return nothing
      */
-    protected Object doExecute() throws Exception {
+    protected Object execute() throws Exception {
         init();
 
         if (command == null) {

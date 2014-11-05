@@ -40,7 +40,7 @@ public class LogsCommand extends AbsCommand {
     /**
      * Execute the current command
      */
-    protected Object doExecute() throws Exception {
+    protected Object execute() throws Exception {
         init();
 
         // not logged in

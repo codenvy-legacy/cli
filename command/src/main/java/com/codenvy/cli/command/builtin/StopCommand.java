@@ -40,7 +40,7 @@ public class StopCommand extends AbsCommand {
     /**
      * Prints the current projects per workspace
      */
-    protected Object doExecute() {
+    protected Object execute() {
         init();
 
         // not logged in

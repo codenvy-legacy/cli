@@ -63,7 +63,7 @@ public class CreateFactoryCommand extends AbsCommand {
     /**
      * Prints the current projects per workspace
      */
-    protected Object doExecute() {
+    protected Object execute() {
         init();
 
         // check remote

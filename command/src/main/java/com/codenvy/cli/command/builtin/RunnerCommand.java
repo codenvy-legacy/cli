@@ -67,7 +67,7 @@ public class RunnerCommand extends AbsCommand {
      * Execute the command
      */
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object execute() throws Exception {
         init();
 
         // not logged in

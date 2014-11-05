@@ -26,7 +26,7 @@ public class ExitCommand extends AbsCommand {
      * Execute the command
      */
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object execute() throws Exception {
         init();
 
         // stop system bundle

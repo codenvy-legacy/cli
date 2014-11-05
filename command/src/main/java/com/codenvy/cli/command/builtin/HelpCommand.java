@@ -36,7 +36,7 @@ public class HelpCommand extends AbsCommand {
      * Display the current commands.
      * @return nothing
      */
-    protected Object doExecute() {
+    protected Object execute() {
         init();
 
         Ansi buffer = Ansi.ansi();

@@ -10,15 +10,8 @@
  *******************************************************************************/
 package com.codenvy.cli.command.builtin;
 
-import jline.console.ConsoleReader;
-
-import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 
 import static java.lang.String.format;
 
@@ -33,7 +26,7 @@ public class LogoutCommand extends AbsCommand {
     private String remoteName;
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object execute() throws Exception {
 
         init();
 

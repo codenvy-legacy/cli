@@ -40,7 +40,7 @@ public class LoginCommand extends AbsCommand {
 
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object execute() throws Exception {
 
         init();
 

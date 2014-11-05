@@ -23,7 +23,7 @@ public class SwitchToCodenvyCommand extends AbsCommand {
      * Change to codenvy subshell
      */
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object execute() throws Exception {
 
 
         // Change default scope/subshell after login to be ready with codenvy commands

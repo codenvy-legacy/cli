@@ -12,7 +12,6 @@ package com.codenvy.cli.command.builtin;
 
 import com.codenvy.cli.command.builtin.model.UserBuilderStatus;
 import com.codenvy.cli.command.builtin.model.UserProject;
-import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 
 import org.apache.karaf.shell.commands.Argument;
@@ -35,7 +34,7 @@ public class InfoCommand extends AbsCommand {
     @Argument(name = "id", description = "Specify the project/runner/builder ID", required = false, multiValued = false)
     private String id;
 
-    protected Object doExecute() throws Exception {
+    protected Object execute() throws Exception {
         init();
 
         // not logged in

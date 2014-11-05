@@ -34,7 +34,7 @@ public class PullCommand extends AbsPushPullCommand {
      * Execute the command
      */
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object execute() throws Exception {
         init();
 
         // not logged in

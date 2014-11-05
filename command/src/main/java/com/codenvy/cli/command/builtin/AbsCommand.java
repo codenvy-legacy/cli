@@ -19,6 +19,8 @@ import com.codenvy.cli.preferences.Preferences;
 import com.codenvy.cli.preferences.PreferencesAPI;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyClient;
+import com.codenvy.client.CodenvyErrorException;
+import com.codenvy.client.CodenvyException;
 
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.apache.karaf.shell.console.SessionProperties;
@@ -63,6 +65,33 @@ public abstract class AbsCommand extends OsgiCommandSupport {
      * Global preferences instance
      */
     private Preferences globalPreferences;
+
+    /**
+     * Execute the action of the command
+     * @return an object
+     * @throws Exception if there is any error
+     */
+    protected abstract Object execute() throws Exception;
+
+    /**
+     * final method in order to force to use the subclasses to define the execute() method.
+     */
+    protected final Object doExecute() throws Exception {
+        try {
+            return execute();
+        } catch (CodenvyErrorException | CodenvyException e) {
+            if (isStackTraceEnabled()) {
+                throw e;
+            }
+            Ansi buffer = Ansi.ansi();
+            buffer.fg(RED);
+            buffer.a(e.getMessage());
+            buffer.reset();
+            System.out.println(buffer.toString());
+        }
+        return null;
+    }
+
 
     @PostConstruct
     public void init() {
