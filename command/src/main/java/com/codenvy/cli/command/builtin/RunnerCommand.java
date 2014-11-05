@@ -17,6 +17,7 @@ import com.codenvy.cli.command.builtin.model.DefaultUserRunnerStatus;
 import com.codenvy.cli.command.builtin.model.UserProjectReference;
 import com.codenvy.cli.command.builtin.model.UserRunnerStatus;
 import com.codenvy.client.CodenvyErrorException;
+import com.codenvy.client.CodenvyException;
 import com.codenvy.client.Request;
 import com.codenvy.client.model.Link;
 import com.codenvy.client.model.Project;
@@ -193,10 +194,22 @@ public class RunnerCommand extends AbsCommand {
 
         // print logs if not cancelled
         if (CANCELLED != newStatus.getInnerStatus().status()) {
-            String logs = newStatus.getProject().getCodenvy().runner()
-                                   .logs(newStatus.getProject().getInnerReference(), newStatus.getInnerStatus().processId()).execute();
-            System.out.println("Logs:");
-            System.out.println(logs);
+            try {
+                String logs = newStatus.getProject().getCodenvy().runner()
+                                       .logs(newStatus.getProject().getInnerReference(), newStatus.getInnerStatus().processId()).execute();
+                System.out.println("Logs:");
+                System.out.println(logs);
+            } catch (CodenvyErrorException | CodenvyException e) {
+                if (isStackTraceEnabled()) {
+                    throw e;
+                }
+                Ansi buffer = Ansi.ansi();
+                buffer.fg(RED);
+                buffer.a("Unable to get the logs of the run:");
+                buffer.a(e.getMessage());
+                buffer.reset();
+                System.out.println(buffer.toString());
+            }
         }
 
         Ansi buffer = Ansi.ansi();
