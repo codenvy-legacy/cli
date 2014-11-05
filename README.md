@@ -30,9 +30,11 @@ CLI Syntax documentation: http://docs.codenvy.com/cli/cli-syntax/
 ## Running
 1. Launch from the root directory of the project:
 
-  1.: Interactive client with ./codenvy-cli
+  ./codenvy
   
-  2.: Non-interactive client with ./codenvy
+  ./codenvy command-name
+  
+(if no command is entered (like help) cli will use interactive mode)
 
 
 ## Developing a new command
