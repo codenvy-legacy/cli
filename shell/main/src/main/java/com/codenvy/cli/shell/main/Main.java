@@ -37,6 +37,7 @@ public class Main {
         try {
             AnsiConsole.systemInstall();
             System.out.print(Ansi.ansi().reset());
+            System.out.flush();
         } finally {
             AnsiConsole.systemUninstall();
         }
