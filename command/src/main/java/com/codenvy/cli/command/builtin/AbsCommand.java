@@ -19,8 +19,6 @@ import com.codenvy.cli.preferences.Preferences;
 import com.codenvy.cli.preferences.PreferencesAPI;
 import com.codenvy.client.CodenvyAPI;
 import com.codenvy.client.CodenvyClient;
-import com.codenvy.client.CodenvyErrorException;
-import com.codenvy.client.CodenvyException;
 
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.apache.karaf.shell.console.SessionProperties;
@@ -79,7 +77,7 @@ public abstract class AbsCommand extends OsgiCommandSupport {
     protected final Object doExecute() throws Exception {
         try {
             return execute();
-        } catch (CodenvyErrorException | CodenvyException e) {
+        } catch (Throwable e) {
             if (isStackTraceEnabled()) {
                 throw e;
             }
