@@ -124,11 +124,21 @@ set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\org\ops4j\pax\logging\pax-logging-
 set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\jline\jline\2.12\jline-2.12.jar
 
 :EXECUTE
-    SHIFT
-    if "%SHIFT%" == "true" SET ARGS=%2 %3 %4 %5 %6 %7 %8
-    if not "%SHIFT%" == "true" SET ARGS=%1 %2 %3 %4 %5 %6 %7 %8
-    rem Execute the Java Virtual Machine
-    "%JAVA%" %JAVA_OPTS% %OPTS% -classpath "%CLASSPATH%" -Dkaraf.instances="%KARAF_HOME%\instances" -Dkaraf.home="%KARAF_HOME%" -Dkaraf.base="%KARAF_BASE%" -Dkaraf.etc="%KARAF_ETC%" -Djava.io.tmpdir="%KARAF_DATA%\tmp" -Djava.util.logging.config.file="%KARAF_BASE%\etc\java.util.logging.properties" %KARAF_OPTS% com.codenvy.cli.shell.main.Main --classpath="%KARAF_HOME%\system" codenvy:%COMMAND% %ARGS%
+set CODENVY_HOME=%KARAF_HOME%
+set FIRSTARG=%1%
+SHIFT
+
+set ARGS=%1 %2 %3 %4 %5 %6 %7
+    if "%FIRSTARG%"=="" (
+         set KARAF_HOME=
+         set KARAF_BASE=
+         set KARAF_ETC=
+         set KARAF_DATA=
+         set CLASSPATH=
+       "%CODENVY_HOME%\bin\interactive-mode"
+    ) else (
+        "%JAVA%" %JAVA_OPTS% %OPTS% -classpath "%CLASSPATH%" -Dkaraf.instances="%KARAF_HOME%\instances" -Dkaraf.home="%KARAF_HOME%" -Dkaraf.base="%KARAF_BASE%" -Dkaraf.etc="%KARAF_ETC%" -Djava.io.tmpdir="%KARAF_DATA%\tmp" -Djava.util.logging.config.file="%KARAF_BASE%\etc\java.util.logging.properties" %KARAF_OPTS% com.codenvy.cli.shell.main.Main --classpath="%KARAF_HOME%\system" codenvy:%COMMAND% %ARGS%
+    )
 
 rem # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

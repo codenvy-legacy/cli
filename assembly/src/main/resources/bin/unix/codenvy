@@ -332,10 +332,13 @@ run() {
         CLASSPATH=`cygpath --path --windows "$CLASSPATH"`
     fi
     if [ $# -gt 0 ]; then
+      # remove first argument
       shift
+      exec "$JAVA" $JAVA_OPTS -Dkaraf.instances="${KARAF_HOME}/instances" -Dkaraf.home="$KARAF_HOME" -Dkaraf.base="$KARAF_BASE" -Dkaraf.etc="$KARAF_ETC" -Djava.io.tmpdir="$KARAF_DATA/tmp" -Djava.util.logging.config.file="$KARAF_BASE/etc/java.util.logging.properties" $KARAF_OPTS $OPTS -classpath "$CLASSPATH" org.apache.karaf.shell.console.impl.Main --classpath="$KARAF_HOME/system" codenvy:$COMMAND "$*"
+    else
+      # interactive mode
+      ${KARAF_HOME}/bin/interactive-mode
     fi
-
-    exec "$JAVA" $JAVA_OPTS -Dkaraf.instances="${KARAF_HOME}/instances" -Dkaraf.home="$KARAF_HOME" -Dkaraf.base="$KARAF_BASE" -Dkaraf.etc="$KARAF_ETC" -Djava.io.tmpdir="$KARAF_DATA/tmp" -Djava.util.logging.config.file="$KARAF_BASE/etc/java.util.logging.properties" $KARAF_OPTS $OPTS -classpath "$CLASSPATH" org.apache.karaf.shell.console.impl.Main --classpath="$KARAF_HOME/system" codenvy:$COMMAND "$*"
 }
 
 main() {

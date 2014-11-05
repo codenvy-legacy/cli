@@ -92,15 +92,15 @@
     <files>
         <file>
             <source>${basedir}/target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/bin/karaf</source>
-            <outputDirectory>/bin/</outputDirectory>
-            <destName>codenvy-cli</destName>
+            <outputDirectory>/bin</outputDirectory>
+            <destName>interactive-mode</destName>
             <fileMode>0755</fileMode>
             <lineEnding>unix</lineEnding>
         </file>
         <file>
             <source>${basedir}/target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/bin/karaf.bat</source>
-            <outputDirectory>/bin/</outputDirectory>
-            <destName>codenvy-cli.bat</destName>
+            <outputDirectory>/bin</outputDirectory>
+            <destName>interactive-mode.bat</destName>
             <fileMode>0755</fileMode>
             <lineEnding>windows</lineEnding>
         </file>
