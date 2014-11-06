@@ -51,3 +51,12 @@ The first one is for providing the command to Interactive/OSGi mode and the next
 ### Advanced help 
 The guide to develop karaf command is available at http://karaf.apache.org/manual/latest/developers-guide/extending.html
 
+
+
+#### Timeouts
+
+With system properties you can increase timeout, else it's default timeout of the JVM
+
+http://docs.oracle.com/javase/8/docs/technotes/guides/net/properties.html
+`sun.net.client.defaultConnectTimeout`
+`sun.net.client.defaultReadTimeout`
