@@ -51,3 +51,4 @@ The first one is for providing the command to Interactive/OSGi mode and the next
 ### Advanced help 
 The guide to develop karaf command is available at http://karaf.apache.org/manual/latest/developers-guide/extending.html
 
+There is also `codenvy` command `stack-traces-print` to enable printing stacktraces.
