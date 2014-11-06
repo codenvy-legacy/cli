@@ -175,23 +175,6 @@ public class RunnerCommand extends AbsCommand {
 
         UserRunnerStatus newStatus = new DefaultUserRunnerStatus(executedStatus, userRunnerStatus.getProject());
 
-        // it is now running
-        if (RUNNING == newStatus.getInnerStatus().status()) {
-            String link = "";
-            Link webLink = newStatus.getInnerStatus().getWebLink();
-            if (webLink != null) {
-                link = webLink.href();
-            }
-            System.out.println(format("Project %s is now running. URL is '%s'", newStatus.getProject().name(), link));
-        } else if (STOPPED == newStatus.getInnerStatus().status()) {
-            System.out.println(format("Project %s has been executed", newStatus.getProject().name()));
-        } else if (FAILED == newStatus.getInnerStatus().status()) {
-            System.out.println(format("Project %s has failed", newStatus.getProject().name()));
-        } else if (CANCELLED == newStatus.getInnerStatus().status()) {
-            System.out.println(format("Project %s has been cancelled", newStatus.getProject().name()));
-        }
-
-
         // print logs if not cancelled
         if (CANCELLED != newStatus.getInnerStatus().status()) {
             try {
@@ -210,6 +193,22 @@ public class RunnerCommand extends AbsCommand {
                 buffer.reset();
                 System.out.println(buffer.toString());
             }
+        }
+
+        // it is now running
+        if (RUNNING == newStatus.getInnerStatus().status()) {
+            String link = "";
+            Link webLink = newStatus.getInnerStatus().getWebLink();
+            if (webLink != null) {
+                link = webLink.href();
+            }
+            System.out.println(format("Project %s is now running. URL is '%s'", newStatus.getProject().name(), link));
+        } else if (STOPPED == newStatus.getInnerStatus().status()) {
+            System.out.println(format("Project %s has been executed", newStatus.getProject().name()));
+        } else if (FAILED == newStatus.getInnerStatus().status()) {
+            System.out.println(format("Project %s has failed", newStatus.getProject().name()));
+        } else if (CANCELLED == newStatus.getInnerStatus().status()) {
+            System.out.println(format("Project %s has been cancelled", newStatus.getProject().name()));
         }
 
         Ansi buffer = Ansi.ansi();
