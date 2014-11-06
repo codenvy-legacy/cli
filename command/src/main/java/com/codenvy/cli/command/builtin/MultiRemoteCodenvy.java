@@ -84,6 +84,11 @@ import static org.fusesource.jansi.Ansi.Color.RED;
  */
 public class MultiRemoteCodenvy {
 
+    /**
+     * JSON file extension.
+     */
+    protected static final String JSON_FILE_EXTENSION = ".json";
+
     public static enum Importer {
         GIT, ZIP;
     }
@@ -816,7 +821,10 @@ public class MultiRemoteCodenvy {
 
 
                 // 2a] json file ?
-                if (file.getName().endsWith(".json")) {
+                if (file.getName().endsWith(JSON_FILE_EXTENSION)) {
+
+                    // remove .json extension
+                    projectName = projectName.substring(0, projectName.length() - JSON_FILE_EXTENSION.length());
 
                     BeforeAfterAction beforeAfterAction = new BeforeAfterAction("Creating project from JSON file...", "Project created.");
                     Request<Project> projectRequest = workspace.getCodenvy().project().importProject(workspace.id(), projectName, file.toPath());
@@ -956,7 +964,7 @@ public class MultiRemoteCodenvy {
             Path factoryPath;
             try {
                 // create
-                factoryPath = Files.createTempFile(new File(System.getProperty("java.io.tmpdir")).toPath(), "factory", ".json");
+                factoryPath = Files.createTempFile(new File(System.getProperty("java.io.tmpdir")).toPath(), "factory", JSON_FILE_EXTENSION);
 
                 // dump
                 Files.write(factoryPath, factoryContent.getBytes(Charset.defaultCharset()));
