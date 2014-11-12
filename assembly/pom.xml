@@ -19,6 +19,7 @@
         <version>2.3.0-SNAPSHOT</version>
     </parent>
     <artifactId>cli-assembly</artifactId>
+    <packaging>bundle</packaging>
     <name>Codenvy CLI :: Assembly</name>
     <dependencies>
         <!-- Dependency on the Codenvy branding for Karaf -->
