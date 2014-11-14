@@ -132,7 +132,8 @@
                             <target>
                                 <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/etc/org.apache.karaf.features.cfg">
                                     <replacetoken><![CDATA[featuresRepositories=]]></replacetoken>
-                                    <replacevalue><![CDATA[featuresRepositories=mvn:com.codenvy.platform-api-client-java/assemblies-karaf-uberjar/${com.codenvy.client.version}/xml/features,mvn:com.codenvy.cli/cli-feature/${project.version}/xml/features,]]></replacevalue>
+                                    <replacevalue><![CDATA[featuresRepositories=mvn:com.codenvy.platform-api-client-java/assemblies-karaf-uberjar/${com.codenvy.client.version}/xml/features,mvn:com.codenvy.cli/cli-feature/${project.version}/xml/features,mvn:org.apache.karaf.features/standard/${org.apache.karaf.version}/xml/features
+###]]></replacevalue>
                                 </replace>
                                 <replace file="target/dependencies/apache-karaf-minimal-${org.apache.karaf.version}/etc/org.apache.karaf.features.cfg">
                                     <replacetoken><![CDATA[featuresBoot=config,standard,region,package,kar,ssh,management]]></replacetoken>
