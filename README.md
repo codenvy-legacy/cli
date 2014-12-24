@@ -21,13 +21,18 @@ CLI Syntax documentation: http://docs.codenvy.com/cli/cli-syntax/
 
 
 # Quick Start for the developer
-------------------------------
 
-## Building
+## Online
+
+In Codenvy online IDE, New project and seelct SAMPLES CODENVY \ Codenvy CLI
+
+## Locally
+
+### Building
 1. Checkout of the project: git clone https://github.com/codenvy/cli
 2. Build: mvn clean install
 
-## Running
+### Running
 1. Launch from the root directory of the project:
 
   ./codenvy
