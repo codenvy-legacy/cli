@@ -70,6 +70,15 @@
             <action class="com.codenvy.cli.command.builtin.CreateFactoryCommand" />
         </command>
         <command>
+            <action class="com.codenvy.cli.command.builtin.DeleteFactoryCommand" />
+        </command>
+        <command>
+            <action class="com.codenvy.cli.command.builtin.UpdateFactoryCommand" />
+        </command>
+        <command>
+            <action class="com.codenvy.cli.command.builtin.ListFactoriesCommand" />
+        </command>
+        <command>
             <action class="com.codenvy.cli.command.builtin.ExitCommand" />
         </command>
         <command>

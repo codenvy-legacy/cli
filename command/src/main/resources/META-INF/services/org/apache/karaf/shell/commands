@@ -28,3 +28,6 @@ com.codenvy.cli.command.builtin.DeleteProjectCommand
 com.codenvy.cli.command.builtin.PrivacyCommand
 com.codenvy.cli.command.builtin.CloneLocalCommand
 com.codenvy.cli.command.builtin.CreateFactoryCommand
+com.codenvy.cli.command.builtin.DeleteFactoryCommand
+com.codenvy.cli.command.builtin.UpdateFactoryCommand
+com.codenvy.cli.command.builtin.ListFactoriesCommand
