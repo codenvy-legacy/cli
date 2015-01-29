@@ -247,6 +247,34 @@ setupDebugOptions() {
     fi
 }
 
+setupProxy() {
+    if [ -n "$http_proxy" ]; then
+        # http_proxy should be something like http://host:port
+        # trim the "http://" off:
+        local host="${http_proxy#http://}"
+
+        # trim the host part off:
+        local port="${host#*:}"
+
+        # The final substitution removes the port for the host,
+        # and removes any (erroneously) appended junk to the port.
+        KARAF_OPTS="$KARAF_OPTS -Dhttp.proxyHost=${host%:*} -Dhttp.proxyPort=${port%/*}"
+    fi
+
+    if [ -n "$https_proxy" ]; then
+        # https_proxy should be something like http://host:port
+        # trim the "http://" off:
+        local host="${https_proxy#http://}"
+
+        # trim the host part off:
+        local port="${host#*:}"
+
+        # The final substitution removes the port for the host,
+        # and removes any (erroneously) appended junk to the port.
+        KARAF_OPTS="$KARAF_OPTS -Dhttps.proxyHost=${host%:*} -Dhttps.proxyPort=${port%/*}"
+    fi
+}
+
 setupDefaults() {
     DEFAULT_JAVA_OPTS="-Xms$JAVA_MIN_MEM -Xmx$JAVA_MAX_MEM "
 
@@ -319,6 +347,9 @@ init() {
 
     # Install debug options
     setupDebugOptions
+
+    # Setup Proxy
+    setupProxy
 
 }
 
