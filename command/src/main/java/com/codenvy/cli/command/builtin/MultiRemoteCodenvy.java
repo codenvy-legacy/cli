@@ -47,6 +47,7 @@ import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.RunnerStatus;
 import com.codenvy.client.model.Workspace;
 import com.codenvy.client.model.WorkspaceReference;
+import com.codenvy.client.model.project.ImportResponse;
 import com.codenvy.client.model.runner.RunOptionsBuilder;
 
 import org.apache.felix.service.command.CommandSession;
@@ -827,8 +828,10 @@ public class MultiRemoteCodenvy {
                     projectName = projectName.substring(0, projectName.length() - JSON_FILE_EXTENSION.length());
 
                     BeforeAfterAction beforeAfterAction = new BeforeAfterAction("Creating project from JSON file...", "Project created.");
-                    Request<Project> projectRequest = workspace.getCodenvy().project().importProject(workspace.id(), projectName, file.toPath());
-                    Project project = beforeAfterAction.execute(projectRequest);
+                    Request<ImportResponse> importResponseRequest = workspace.getCodenvy().project().importProject(workspace.id(), projectName, file.toPath());
+                    ImportResponse importResponse = beforeAfterAction.execute(importResponseRequest);
+                    Project project = importResponse.project();
+
 
                     // Update it
                     beforeAfterAction = new BeforeAfterAction("Updating project configuration...", "Project configuration updated.");
@@ -981,9 +984,9 @@ public class MultiRemoteCodenvy {
             }
 
             BeforeAfterAction beforeAfterAction = new BeforeAfterAction("Creating project from remote URI '" + uri.toString() + "' ...", "Project created.");
-            Request<Project> projectRequest = workspace.getCodenvy().project().importProject(workspace.id(), projectName, factoryPath);
-            Project project = beforeAfterAction.execute(projectRequest);
-
+            Request<ImportResponse> importResponseRequest = workspace.getCodenvy().project().importProject(workspace.id(), projectName, factoryPath);
+            ImportResponse importResponse = beforeAfterAction.execute(importResponseRequest);
+            Project project = importResponse.project();
 
             if (configurationPath != null) {
                 // Update it
