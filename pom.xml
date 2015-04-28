@@ -57,15 +57,9 @@
         <url>https://github.com/codenvy/cli/tree/v2</url>
     </scm>
     <properties>
-        <assertj.version>1.6.1</assertj.version>
         <bnd-plugin.attributes />
         <com.codenvy.client.version>${codenvy.platform-api-client-java.version}</com.codenvy.client.version>
-        <com.fasterxml.jackson.version>2.4.1</com.fasterxml.jackson.version>
         <license_years>2012-2014</license_years>
-        <maven-bundle-plugin.version>2.5.0</maven-bundle-plugin.version>
-        <org.apache.karaf.feature-plugin.version>2.3.5</org.apache.karaf.feature-plugin.version>
-        <org.apache.karaf.version>3.0.2</org.apache.karaf.version>
-        <osgi-core.version>5.0.0</osgi-core.version>
     </properties>
     <repositories>
         <repository>
@@ -114,7 +108,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${maven-bundle-plugin.version}</version>
+                <version>${maven.bundle-plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
