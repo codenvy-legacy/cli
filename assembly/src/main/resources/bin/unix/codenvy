@@ -258,7 +258,7 @@ setupProxy() {
 
         # The final substitution removes the port for the host,
         # and removes any (erroneously) appended junk to the port.
-        KARAF_OPTS="$KARAF_OPTS -Dhttp.proxyHost=${host%:*} -Dhttp.proxyPort=${port%/*}"
+        KARAF_OPTS="$KARAF_OPTS -Dhttp.proxyHost=${host%:*} -Dhttp.proxyPort=${port%/*} -Djava.net.useSystemProxies=true"
     fi
 
     if [ -n "$https_proxy" ]; then
@@ -271,7 +271,7 @@ setupProxy() {
 
         # The final substitution removes the port for the host,
         # and removes any (erroneously) appended junk to the port.
-        KARAF_OPTS="$KARAF_OPTS -Dhttps.proxyHost=${host%:*} -Dhttps.proxyPort=${port%/*}"
+        KARAF_OPTS="$KARAF_OPTS -Dhttps.proxyHost=${host%:*} -Dhttps.proxyPort=${port%/*} -Djava.net.useSystemProxies=true"
     fi
 }
 
