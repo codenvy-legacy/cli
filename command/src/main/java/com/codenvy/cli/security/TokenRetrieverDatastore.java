@@ -21,17 +21,19 @@ import com.codenvy.client.store.DataStoreFactory;
 public class TokenRetrieverDatastore implements DataStoreFactory<String, Credentials>, DataStore<String, Credentials> {
 
     private Token token;
+    private Credentials credentials;
 
 
     @Override
     public Credentials get(String s) {
-        return null;
+        return this.credentials;
     }
 
     @Override
     public Credentials put(String s, Credentials credentials) {
         if (credentials != null) {
             this.token = credentials.token();
+            this.credentials = credentials;
         }
         return credentials;
     }

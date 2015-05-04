@@ -12,6 +12,8 @@ package com.codenvy.cli.command.builtin;
 
 import jline.console.ConsoleReader;
 
+import com.codenvy.client.auth.Token;
+
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
@@ -38,6 +40,8 @@ public class LoginCommand extends AbsCommand {
     @Argument(name = "password", description = "password of the remote instance", required = false, multiValued = false, index = 1)
     private String password;
 
+    @Option(name = "--token", description = "Token of the remote codenvy", required = false)
+    private String tokenValue;
 
     @Override
     protected Object execute() throws Exception {
@@ -65,30 +69,49 @@ public class LoginCommand extends AbsCommand {
             }
         }
 
-        if (password == null) {
-            if (isInteractive()) {
-                System.out.print("Password for " + username + ":");
-                System.out.flush();
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(session.getKeyboard(), Charset.defaultCharset()))) {
-                    password = reader.readLine();
+        // login by token and not by password
+        if (tokenValue != null) {
+            Token token = getCodenvyClient().newTokenBuilder(tokenValue).build();
+            if (getMultiRemoteCodenvy().login(remoteName, username, token)) {
+                if (remoteName == null) {
+                    System.out.println(format("Login success with given token on default remote '%s' [%s]", getMultiRemoteCodenvy().getDefaultRemoteName(),
+                                              getMultiRemoteCodenvy().getDefaultRemote().getUrl()));
+                } else {
+                    System.out.println(format("Login success with given token on remote '%s' [%s]", remoteName,
+                                              getMultiRemoteCodenvy().getRemote(remoteName).getUrl()));
                 }
-                System.out.println(System.lineSeparator());
             } else {
-                ConsoleReader consoleReader = new ConsoleReader(System.in, System.out);
-                consoleReader.setExpandEvents(false);
-                password = consoleReader.readLine(String.format("Password for %s:", username), Character.valueOf('*'));
+                System.out.println("Login failed with given token: please check the credentials.");
             }
-        }
 
-        if (getMultiRemoteCodenvy().login(remoteName, username, password)) {
-            if (remoteName == null) {
-                System.out.println(format("Login success on default remote '%s' [%s]", getMultiRemoteCodenvy().getDefaultRemoteName(),
-                                          getMultiRemoteCodenvy().getDefaultRemote().getUrl()));
-            } else {
-                System.out.println(format("Login success on remote '%s' [%s]", remoteName, getMultiRemoteCodenvy().getRemote(remoteName).getUrl()));
-            }
         } else {
-            System.out.println("Login failed: please check the credentials.");
+            if (password == null) {
+                if (isInteractive()) {
+                    System.out.print("Password for " + username + ":");
+                    System.out.flush();
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(session.getKeyboard(), Charset.defaultCharset()))) {
+                        password = reader.readLine();
+                    }
+                    System.out.println(System.lineSeparator());
+                } else {
+                    ConsoleReader consoleReader = new ConsoleReader(System.in, System.out);
+                    consoleReader.setExpandEvents(false);
+                    password = consoleReader.readLine(String.format("Password for %s:", username), Character.valueOf('*'));
+                }
+            }
+
+            if (getMultiRemoteCodenvy().login(remoteName, username, password)) {
+                if (remoteName == null) {
+                    System.out.println(format("Login success on default remote '%s' [%s]", getMultiRemoteCodenvy().getDefaultRemoteName(),
+                                              getMultiRemoteCodenvy().getDefaultRemote().getUrl()));
+                } else {
+                    System.out.println(format("Login success on remote '%s' [%s]", remoteName,
+                                              getMultiRemoteCodenvy().getRemote(remoteName).getUrl()));
+                }
+            } else {
+                System.out.println("Login failed: please check the credentials.");
+            }
         }
 
         return null;

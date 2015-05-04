@@ -460,6 +460,84 @@ public class MultiRemoteCodenvy {
         throw new IllegalStateException("No default remote found. Needs to use --remote to specify a remote");
     }
 
+    /**
+     * Login by using a token instead of a password
+     * @param remoteName the remote on which we want to log in
+     * @param username the username (email)
+     * @param token the provided token
+     * @return true if login is successful
+     */
+    public boolean login(String remoteName, String username, Token token) {
+
+        // get URL of the remote
+        Remote remote;
+
+        if (remoteName == null) {
+            remote = getDefaultRemote();
+            remoteName = getDefaultRemoteName();
+        } else {
+            remote = getRemote(remoteName);
+        }
+
+        if (remote == null) {
+            System.out.println("Unable to find the given remote '" + remoteName + "'");
+            return false;
+        }
+
+
+        String url = remote.getUrl();
+
+
+        // check that this is valid
+        Credentials codenvyCredentials = codenvyClient.newCredentialsBuilder()
+                                                      .withUsername(username)
+                                                      .withToken(token)
+                                                      .build();
+
+        TokenRetrieverDatastore tokenRetrieverDatastore = new TokenRetrieverDatastore();
+        tokenRetrieverDatastore.put(username, codenvyCredentials);
+
+
+        Codenvy codenvy = codenvyClient.newCodenvyBuilder(url, username)
+                                       .withCredentials(codenvyCredentials)
+                                       .withCredentialsStoreFactory(tokenRetrieverDatastore)
+                                       .build();
+
+        // try to connect to the remote side
+        try {
+            codenvy.user().current().execute();
+        } catch (CodenvyException e) {
+            if (isStackTraceEnabled()) {
+                throw e;
+            }
+            System.out.println("Unable to authenticate for the given credentials on URL '" + url + "'. Check the provided token.");
+            // invalid login so we don't add env
+            return false;
+        }
+
+        // get token
+        Token tokenRetrieval = tokenRetrieverDatastore.getToken();
+        if (tokenRetrieval == null) {
+            System.out.println("Unable to validate token on URL '" + url + "'");
+            // invalid login so we don't add env
+            return false;
+        }
+
+
+        // Save credentials
+        Preferences preferencesRemotes = globalPreferences.path("remotes");
+        RemoteCredentials remoteCredentials = new RemoteCredentials();
+        remoteCredentials.setToken(token.value());
+        remoteCredentials.setUsername(username);
+        // by merging
+        preferencesRemotes.merge(remoteName, remoteCredentials);
+
+        // refresh current links
+        refresh();
+
+        return true;
+    }
+
 
     public boolean login(String remoteName, String username, String password) {
 
