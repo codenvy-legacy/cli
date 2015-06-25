@@ -16,7 +16,7 @@
     <parent>
         <artifactId>codenvy-cli</artifactId>
         <groupId>com.codenvy.cli</groupId>
-        <version>2.10.1-RC-SNAPSHOT</version>
+        <version>2.10.1-SNAPSHOT</version>
     </parent>
     <artifactId>cli-shell</artifactId>
     <packaging>pom</packaging>
