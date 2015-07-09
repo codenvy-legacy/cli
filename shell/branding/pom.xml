@@ -16,7 +16,7 @@
     <parent>
         <artifactId>cli-shell</artifactId>
         <groupId>com.codenvy.cli</groupId>
-        <version>3.11.1</version>
+        <version>3.11.2-SNAPSHOT</version>
     </parent>
     <artifactId>cli-shell-branding</artifactId>
     <packaging>bundle</packaging>
