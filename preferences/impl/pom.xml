@@ -16,7 +16,7 @@
     <parent>
         <artifactId>cli-preferences</artifactId>
         <groupId>com.codenvy.cli</groupId>
-        <version>3.11.4-SNAPSHOT</version>
+        <version>3.11.4</version>
     </parent>
     <artifactId>cli-preferences-impl</artifactId>
     <packaging>bundle</packaging>
