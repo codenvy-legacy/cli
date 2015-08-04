@@ -21,7 +21,7 @@
     </parent>
     <groupId>com.codenvy.cli</groupId>
     <artifactId>codenvy-cli</artifactId>
-    <version>3.11.7-SNAPSHOT</version>
+    <version>3.11.7</version>
     <packaging>pom</packaging>
     <name>Codenvy CLI</name>
     <licenses>
@@ -53,7 +53,7 @@
     <scm>
         <connection>scm:git:git@github.com:codenvy/cli.git</connection>
         <developerConnection>scm:git:git@github.com:codenvy/cli.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>3.11.7</tag>
         <url>https://github.com/codenvy/cli/tree/v2</url>
     </scm>
     <properties>
