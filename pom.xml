@@ -15,7 +15,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>maven-depmgt-pom</artifactId>
-        <groupId>org.eclipse.che.depmgt</groupId>
+        <groupId>com.codenvy.che.depmgt</groupId>
         <version>3.12.2-SNAPSHOT</version>
         <relativePath />
     </parent>
