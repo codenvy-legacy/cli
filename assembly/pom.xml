@@ -16,7 +16,7 @@
     <parent>
         <artifactId>codenvy-cli</artifactId>
         <groupId>com.codenvy.cli</groupId>
-        <version>3.12.3-SNAPSHOT</version>
+        <version>3.12.3</version>
     </parent>
     <artifactId>cli-assembly</artifactId>
     <name>Codenvy CLI :: Assembly</name>
