@@ -16,7 +16,7 @@
     <parent>
         <artifactId>maven-depmgt-pom</artifactId>
         <groupId>com.codenvy.che.depmgt</groupId>
-        <version>3.13.1</version>
+        <version>3.13.2-SNAPSHOT</version>
         <relativePath />
     </parent>
     <groupId>com.codenvy.cli</groupId>
