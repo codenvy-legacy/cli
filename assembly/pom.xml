@@ -25,13 +25,11 @@
         <dependency>
             <groupId>com.codenvy.cli</groupId>
             <artifactId>cli-shell-branding</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <!-- Dependency on Apache Karaf -->
         <dependency>
             <groupId>org.apache.karaf</groupId>
             <artifactId>apache-karaf</artifactId>
-            <version>${org.apache.karaf.version}</version>
             <type>tar.gz</type>
             <scope>provided</scope>
             <exclusions>
@@ -70,6 +68,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <id>analyze</id>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>copy</id>
                         <phase>generate-resources</phase>
