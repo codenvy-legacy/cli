@@ -23,11 +23,13 @@
     <name>Codenvy CLI :: Shell :: Main</name>
 
     <dependencies>
-
+        <dependency>
+            <groupId>jline</groupId>
+            <artifactId>jline</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.karaf.shell</groupId>
             <artifactId>org.apache.karaf.shell.console</artifactId>
-            <version>${org.apache.karaf.version}</version>
             <scope>provided</scope>
         </dependency>
 
