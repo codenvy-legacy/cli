@@ -46,7 +46,6 @@ import com.codenvy.client.model.Project;
 import com.codenvy.client.model.ProjectReference;
 import com.codenvy.client.model.RunnerStatus;
 import com.codenvy.client.model.Workspace;
-import com.codenvy.client.model.WorkspaceReference;
 import com.codenvy.client.model.project.ImportResponse;
 import com.codenvy.client.model.runner.RunOptionsBuilder;
 
@@ -202,12 +201,12 @@ public class MultiRemoteCodenvy {
      */
     protected UserWorkspace getWorkspaceWithName(String name, String remote, Codenvy codenvy) {
         WorkspaceClient workspaceClient = codenvy.workspace();
-        Request<WorkspaceReference> request = workspaceClient.withName(name);
-        WorkspaceReference workspaceReference = request.execute();
-        if (workspaceReference == null) {
+        Request<Workspace> request = workspaceClient.withName(name);
+        Workspace workspace = request.execute();
+        if (workspace == null) {
             return null;
         }
-        return new DefaultUserWorkspace(remote, this, codenvy, workspaceReference);
+        return new DefaultUserWorkspace(remote, this, codenvy, workspace);
     }
 
     /**
@@ -229,8 +228,7 @@ public class MultiRemoteCodenvy {
         List<Workspace> readWorkspaces = request.execute();
 
         for (Workspace workspace : readWorkspaces) {
-            WorkspaceReference ref = workspace.workspaceReference();
-            workspaces.add(new DefaultUserWorkspace(remote, this, codenvy, ref));
+            workspaces.add(new DefaultUserWorkspace(remote, this, codenvy, workspace));
 
         }
         return workspaces;
@@ -268,11 +266,10 @@ public class MultiRemoteCodenvy {
         }
 
         for (Workspace workspace : readWorkspaces) {
-            WorkspaceReference ref = workspace.workspaceReference();
 
-            DefaultUserWorkspace defaultUserWorkspace = new DefaultUserWorkspace(remote, this, codenvy, ref);
+            DefaultUserWorkspace defaultUserWorkspace = new DefaultUserWorkspace(remote, this, codenvy, workspace);
 
-            List<ProjectReference> readProjects = codenvy.project().getWorkspaceProjects(ref.id()).execute();
+            List<ProjectReference> readProjects = codenvy.project().getWorkspaceProjects(workspace.id()).execute();
             for (ProjectReference readProject : readProjects) {
                 // skip private projects
                 if (onlyPublic && "private".equals(readProject.visibility())) {

@@ -16,12 +16,11 @@
     <parent>
         <artifactId>maven-depmgt-pom</artifactId>
         <groupId>com.codenvy.che.depmgt</groupId>
-        <version>3.14.0-SNAPSHOT</version>
-        <relativePath />
+        <version>4.0.0-beta-2-SNAPSHOT</version>
     </parent>
     <groupId>com.codenvy.cli</groupId>
     <artifactId>codenvy-cli</artifactId>
-    <version>3.14.0-SNAPSHOT</version>
+    <version>4.0.0-beta-2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Codenvy CLI</name>
     <licenses>
@@ -58,9 +57,95 @@
     </scm>
     <properties>
         <bnd-plugin.attributes />
-        <com.codenvy.client.version>${codenvy.platform-api-client-java.version}</com.codenvy.client.version>
+        <com.codenvy.client.version>${project.version}</com.codenvy.client.version>
+        <jline.version>2.12</jline.version>
         <license_years>2012-2014</license_years>
+        <maven.bundle-plugin.version>2.5.0</maven.bundle-plugin.version>
+        <org.apache.karaf.feature-plugin.version>2.3.5</org.apache.karaf.feature-plugin.version>
+        <org.apache.karaf.version>3.0.2</org.apache.karaf.version>
+        <org.assertj.version>1.6.1</org.assertj.version>
+        <org.assertj.version>1.6.1</org.assertj.version>
+        <org.osgi.version>5.0.0</org.osgi.version>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.codenvy.cli</groupId>
+                <artifactId>cli-command</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.codenvy.cli</groupId>
+                <artifactId>cli-preferences-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.codenvy.cli</groupId>
+                <artifactId>cli-preferences-impl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.codenvy.cli</groupId>
+                <artifactId>cli-shell-branding</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.codenvy.platform-api-client-java</groupId>
+                <artifactId>codenvy-platform-api-client-java-api</artifactId>
+                <version>${codenvy.platform-api-client-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.codenvy.platform-api-client-java</groupId>
+                <artifactId>codenvy-platform-api-client-java-dummy</artifactId>
+                <version>${codenvy.platform-api-client-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jline</groupId>
+                <artifactId>jline</artifactId>
+                <version>${jline.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>junit</artifactId>
+                        <groupId>junit</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.karaf</groupId>
+                <artifactId>apache-karaf</artifactId>
+                <version>${org.apache.karaf.version}</version>
+                <type>tar.gz</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.karaf.shell</groupId>
+                <artifactId>org.apache.karaf.shell.console</artifactId>
+                <version>${org.apache.karaf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${org.osgi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${com.fasterxml.jackson.core.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
+                <version>${com.fasterxml.jackson.core.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${org.assertj.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <repositories>
         <repository>
             <id>codenvy-public-repo</id>

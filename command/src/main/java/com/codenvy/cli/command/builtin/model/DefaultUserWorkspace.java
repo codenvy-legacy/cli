@@ -13,7 +13,7 @@ package com.codenvy.cli.command.builtin.model;
 import com.codenvy.cli.command.builtin.MultiRemoteCodenvy;
 import com.codenvy.client.Codenvy;
 import com.codenvy.client.model.ProjectReference;
-import com.codenvy.client.model.WorkspaceReference;
+import com.codenvy.client.model.Workspace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,21 +44,21 @@ public class DefaultUserWorkspace implements UserWorkspace {
     /**
      * Workspace ref object used to extract the data
      */
-    private WorkspaceReference linkWorkspace;
+    private Workspace linkWorkspace;
 
     /**
      * Build a new workspace with a link to the remote api and workspace ref
      *
      * @param codenvy
      *         codenvy object
-     * @param workspaceRef
+     * @param workspace
      *         the given workspace reference
      */
-    public DefaultUserWorkspace(String remote, MultiRemoteCodenvy multiRemoteCodenvy, Codenvy codenvy, WorkspaceReference workspaceRef) {
+    public DefaultUserWorkspace(String remote, MultiRemoteCodenvy multiRemoteCodenvy, Codenvy codenvy, Workspace workspace) {
         this.remote = remote;
         this.multiRemoteCodenvy = multiRemoteCodenvy;
         this.codenvy = codenvy;
-        this.linkWorkspace = workspaceRef;
+        this.linkWorkspace = workspace;
     }
 
     /**
