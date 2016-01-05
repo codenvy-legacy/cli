@@ -20,7 +20,7 @@
     </parent>
     <groupId>com.codenvy.cli</groupId>
     <artifactId>codenvy-cli</artifactId>
-    <version>4.0.0-beta-5</version>
+    <version>4.0.0-beta-6-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Codenvy CLI</name>
     <licenses>
@@ -52,7 +52,7 @@
     <scm>
         <connection>scm:git:git@github.com:codenvy/cli.git</connection>
         <developerConnection>scm:git:git@github.com:codenvy/cli.git</developerConnection>
-        <tag>4.0.0-beta-5</tag>
+        <tag>HEAD</tag>
         <url>https://github.com/codenvy/cli/tree/v2</url>
     </scm>
     <properties>
