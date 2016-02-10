@@ -65,6 +65,9 @@
         <org.assertj.version>1.6.1</org.assertj.version>
         <org.assertj.version>1.6.1</org.assertj.version>
         <org.osgi.version>5.0.0</org.osgi.version>
+        <version.license.header.artifactid>che-eclipse-license-resource-bundle</version.license.header.artifactid>
+        <version.license.header.groupid>org.eclipse.che.dev</version.license.header.groupid>
+        <version.license.header.version>${version.resource-bundle}</version.license.header.version>
     </properties>
     <dependencyManagement>
         <dependencies>
