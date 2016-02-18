@@ -16,7 +16,7 @@
     <parent>
         <artifactId>codenvy-cli</artifactId>
         <groupId>com.codenvy.cli</groupId>
-        <version>4.0.0-RC5</version>
+        <version>4.0.0-RC6-SNAPSHOT</version>
     </parent>
     <artifactId>cli-feature</artifactId>
     <packaging>feature</packaging>
