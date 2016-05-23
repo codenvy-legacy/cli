@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2012-2014 Codenvy, S.A.
+    Copyright (c) 2012-2016 Codenvy, S.A.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
@@ -59,7 +59,10 @@
     <properties>
         <bnd-plugin.attributes />
         <com.codenvy.client.version>${codenvy.platform-api-client-java.version}</com.codenvy.client.version>
-        <license_years>2012-2014</license_years>
+        <license_years>2012-2016</license_years>
+        <version.license.header.artifactid>che-eclipse-license-resource-bundle</version.license.header.artifactid>
+        <version.license.header.groupid>org.eclipse.che.dev</version.license.header.groupid>
+        <version.license.header.version>${version.resource-bundle}</version.license.header.version>
     </properties>
     <repositories>
         <repository>
