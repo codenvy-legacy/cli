@@ -60,6 +60,9 @@
         <bnd-plugin.attributes />
         <com.codenvy.client.version>${codenvy.platform-api-client-java.version}</com.codenvy.client.version>
         <license_years>2012-2014</license_years>
+        <version.license.header.artifactid>che-eclipse-license-resource-bundle</version.license.header.artifactid>
+        <version.license.header.groupid>org.eclipse.che.dev</version.license.header.groupid>
+        <version.license.header.version>${version.resource-bundle}</version.license.header.version>
     </properties>
     <repositories>
         <repository>
